@@ -25,8 +25,8 @@ class fecha_inhabil extends Model
     	{
             $FechaInhabil = new App\fecha_inhabil;
             $FechaInhabil->calendario_id =$calendario_id;
-            $FechaInhabil->fecha =$ArrayDatos['fecha'];
-            $FechaInhabil->completo =$ArrayDatos['completo'];
+            $FechaInhabil->fecha =$ArrayDatos->fecha;
+            $FechaInhabil->completo =$ArrayDatos->completo;
             $FechaInhabil->save();
     	}
       public function eliminar($id)

@@ -21,8 +21,8 @@ class tipo extends Model
       public function agregar($arrayDatos)
     	{
             $NuevoTipo = new App\tipo;
-            $NuevaCita->nombre =$arrayDatos['fecha'];
-            $NuevaCita->duracion =$arrayDatos['hora'];
+            $NuevaCita->nombre =$arrayDatos->fecha;
+            $NuevaCita->duracion =$arrayDatos->hora;
             $NuevaCita->save();
     	}
       public function eliminar($id)
@@ -50,8 +50,8 @@ class tipo extends Model
             }
           else
             {
-              $Tipo->nombre =   $arrayDatos['nombre'];
-              $Tipo->duracion = $arrayDatos['duracion'];
+              $Tipo->nombre =   $arrayDatos->nombre;
+              $Tipo->duracion = $arrayDatos->duracion;
               $Cita->save();
             }
     	}
