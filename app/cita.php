@@ -26,11 +26,11 @@ class cita extends Model
             $NuevaCita = new App\cita;
             $NuevaCita->calendario_id =$calendario_id;
             $NuevaCita->tipo_id =$tipo_id;
-            $NuevaCita->fecha =$arrayDatos->fecha;
-            $NuevaCita->hora =$arrayDatos->hora;
-            $NuevaCita->cliente_nombre =$arrayDatos->cliente_nombre;
-            $NuevaCita->cliente_telefono =$arrayDatos->cliente_telefono;
-            $NuevaCita->cliente_email =$arrayDatos->cliente_email;
+            $NuevaCita->fecha =$arrayDatos['fecha'];
+            $NuevaCita->hora =$arrayDatos['hora'];
+            $NuevaCita->cliente_nombre =$arrayDatos['cliente_nombre'];
+            $NuevaCita->cliente_telefono =$arrayDatos['cliente_telefono'];
+            $NuevaCita->cliente_email =$arrayDatos['cliente_email'];
             $NuevaCita->save();
         
     	}
@@ -59,9 +59,9 @@ class cita extends Model
         }
         else
           {
-            $Cita->cliente_nombre = $arrayDatos->cliente_nombre;
-            $Cita->cliente_telefono =  $arrayDatos->cliente_telefono;
-            $Cita->cliente_email =  $arrayDatos->cliente_email;
+            $Cita->cliente_nombre = $arrayDatos['cliente_nombre'];
+            $Cita->cliente_telefono =  $arrayDatos['cliente_telefono'];
+            $Cita->cliente_email =  $arrayDatos['cliente_email'];
             $Cita->save();
           }
     	}
@@ -77,8 +77,8 @@ class cita extends Model
         }
         else
           {
-            $Cita->fecha = $arrayDatos->fecha;
-            $Cita->hora =  $arrayDatos->hora;
+            $Cita->fecha = $arrayDatos['fecha'];
+            $Cita->hora =  $arrayDatos['hora'];
             $Cita->save();
           }
        

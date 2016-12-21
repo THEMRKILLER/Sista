@@ -19,8 +19,8 @@ class fechahora_inhabil extends Model
     	{
             $HoraInhabil = new App\fecha_inhabil;
             $HoraInhabil->calendario_id =$calendario_id;
-            $HoraInhabil->fecha =$ArrayDatos->fecha;
-            $HoraInhabil->completo =$ArrayDatos->completo;
+            $HoraInhabil->fecha =$ArrayDatos['fecha'];
+            $HoraInhabil->completo =$ArrayDatos['completo'];
             $HoraInhabil->save();
     	}
       public function eliminar($id)

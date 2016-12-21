@@ -10,9 +10,7 @@ class hora_habil extends Model
     	 protected $fillable = [
         'diahabil_id', 'hora',
     ];
-              /* 
-    * @param Dato String con la hora de trabajo
-    */
+
       public function agregar($Dato,$diahabil_id)
     	{
             $HoraHabil = new App\hora_habil;
