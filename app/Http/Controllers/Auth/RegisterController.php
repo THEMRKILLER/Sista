@@ -6,7 +6,7 @@ use App\User;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Foundation\Auth\RegistersUsers;
-
+use App\calendario;
 class RegisterController extends Controller
 {
     /*
@@ -71,10 +71,16 @@ class RegisterController extends Controller
 
     public function createTest()
     {
-        User::create([
+        $user = User::create([
             'name' => 'Test',
             'email' => 'test@gmail.com',
             'password' => bcrypt('1234'),
         ]);
+        $calendario = new calendario();
+        $user->calendario()->save($calendario);
+        $calendario->save();
+
+
+
     }
 }

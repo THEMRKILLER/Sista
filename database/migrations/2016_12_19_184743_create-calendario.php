@@ -15,8 +15,8 @@ class CreateCalendario extends Migration
     {
         Schema::create('calendario', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('admin_id')->unsigned()->index();
-            $table->foreign('admin_id')->references('id')->on('admins')->onDelete('cascade');
+            $table->integer('user_id')->unsigned()->index();
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->timestamps();
 
         });

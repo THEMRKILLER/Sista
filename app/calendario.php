@@ -11,6 +11,11 @@ class calendario extends Model
         'usuario',
         ];
         //relaciones
+
+     public function user()
+     {
+        return $this->belongsTo('App\User');
+     }
      public function Admin()
     	{
        return $this->hasOne('App\Admin');

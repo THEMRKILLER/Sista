@@ -13,6 +13,27 @@ use Illuminate\Http\Request;
 |
 */
 
-Route::get('/user', function (Request $request) {
-    return $request->user();
-})->middleware('auth:api');
+
+Route::group(['middleware' => 'cors', 'prefix' => 'v1'], function () {
+   Route::get('/test',function(){
+    return "OK";
+   });
+   Route::post('login','AuthenticateController@authenticate');
+
+   Route::get('/restricted', [
+   'before' => 'jwt-auth',
+   function () {
+       $token = JWTAuth::getToken();
+       $user = JWTAuth::toUser($token);
+
+       return Response::json([
+           'data' => [
+               'email' => $user->email,
+               'registered_at' => $user->created_at->toDateTimeString()
+           ]
+       ]);
+   }
+]);
+
+  
+});
