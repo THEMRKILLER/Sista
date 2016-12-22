@@ -14,7 +14,11 @@ class fecha_inhabil extends Model
      public function horasInhabiles()
     	{
         return $this->hasMany('App\fechahora_inhabil');
-    	}    
+    	}
+      public function calendario()
+      {
+       return $this->belongsTo('App\calendario');
+      }    
 
     	}
     	//metodos de clase

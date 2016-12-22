@@ -10,7 +10,10 @@ class fechahora_inhabil extends Model
      protected $fillable = [
         'fechainhabil_id', 'hora',
     ];
-
+          public function fechaInhabil()
+      {
+       return $this->belongsTo('App\fecha_inhabil');
+      }
     //metodos de clase
           /* 
     * @param Dato variable con la hora que se inhabilitara en el calendario

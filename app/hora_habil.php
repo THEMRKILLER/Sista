@@ -10,6 +10,11 @@ class hora_habil extends Model
     	 protected $fillable = [
         'diahabil_id', 'hora',
     ];
+
+          public function diaHabil()
+      {
+       return $this->belongsTo('App\dia_habil');
+      }
               /* 
     * @param Dato String con la hora de trabajo
     */

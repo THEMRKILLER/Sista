@@ -14,6 +14,8 @@ class tipo extends Model
     	{
         return $this->hasMany('App\cita');
     	}
+
+ 
     	//metodos de clase
           /* 
     * @param arrayDatos estructura con el nombre y la duracion del tipo de cita 
