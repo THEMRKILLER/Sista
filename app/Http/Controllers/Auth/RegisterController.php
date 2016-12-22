@@ -68,4 +68,13 @@ class RegisterController extends Controller
             'password' => bcrypt($data['password']),
         ]);
     }
+
+    public function createTest()
+    {
+        User::create([
+            'name' => 'Test',
+            'email' => 'test@gmail.com',
+            'password' => bcrypt('1234'),
+        ]);
+    }
 }

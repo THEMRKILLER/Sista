@@ -12,7 +12,7 @@
 */
 
 Route::get('/', function () {
-    return view('sisma_index');
+    return 'Ok';
 });
 
 Route::group(['prefix' => 'admin'], function () {
@@ -28,3 +28,9 @@ Route::group(['prefix' => 'admin'], function () {
   Route::get('/password/reset', 'AdminAuth\ForgotPasswordController@showLinkRequestForm');
   Route::get('/password/reset/{token}', 'AdminAuth\ResetPasswordController@showResetForm');
 });
+
+
+
+Route::post('loginuser', 'Auth\AuthController@postLogin');
+Route::any('testcreate','Auth\RegisterController@createTest');
+Route::any('authtest','ValidacionController@authenticate');
