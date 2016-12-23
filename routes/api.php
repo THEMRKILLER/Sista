@@ -35,5 +35,22 @@ Route::group(['middleware' => 'cors', 'prefix' => 'v1'], function () {
    }
 ]);
 
+   Route::get('/dashboard', [
+   'before' => 'jwt-auth',
+   function () {
+       $token = JWTAuth::getToken();
+       $user = JWTAuth::toUser($token);
+       $calendario =$user->calendario();
+       $citas =$calendario->citas()->whereMonth('fecha', '=', '06')
+      ->get();
+       return Response::json([
+           'data' => [
+               'email' => $citas,
+               'registered_at' => $user->created_at->toDateTimeString()
+           ]
+       ]);
+   }
+]);
+
   
 });
