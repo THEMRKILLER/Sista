@@ -11,10 +11,16 @@ class cita extends Model
          'tipo_id','calendario_id','fecha', 'hora', 'cliente_nombre','cliente_telefono','cliente_email',
     ];
     //relaciones
-      public function tipo()
+      public function tipo($id)
     	{
-       return $this->hasOne('App\tipo');
+       return tipo::find($id)->select('nombre')->first()['nombre'];
     	}
+      public function calendario()
+      {
+       return $this->belongsTo('App\calendario');
+      }
+
+
     //metodos de clase
 
     /* 

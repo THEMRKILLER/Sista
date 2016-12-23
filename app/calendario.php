@@ -48,15 +48,15 @@ class calendario extends Model
     	{
       
     	}
-      public function reagendar()
+      public function agregar_cita()
     	{
       
     	}
-      public function asignarTipo()
+      public function asignar_horario()
     	{
       
     	}
-      public function CambiarTipo()
+      public function inhabilitar_fecha()
     	{
       
     	}

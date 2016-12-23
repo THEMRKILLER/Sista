@@ -35,20 +35,25 @@ Route::group(['middleware' => 'cors', 'prefix' => 'v1'], function () {
    }
 ]);
 
-   Route::get('/dashboard', [
-   'before' => 'jwt-auth',
+   Route::get('/dashboard', ['before' => 'jwt-auth',
    function () {
        $token = JWTAuth::getToken();
        $user = JWTAuth::toUser($token);
-       $calendario =$user->calendario();
-       $citas =$calendario->citas()->whereMonth('fecha', '=', '06')
-      ->get();
+       $calendario =$user->calendario;
+       $citas =$calendario->citas()->get();//->whereMonth('fecha', '=', '06')->get();
+       $events=array();
+      foreach ($citas as $cita) {
+        
+        $title=$cita->tipo($cita['tipo_id']);
+        $start=$cita['fecha_inicio'];
+        $end=$cita['fecha_final'];
+        $arr = array('title' => $title, 'start' => $start, 'end' => $end);
+        array_push($events, $arr);
+    }
+    
        return Response::json([
-           'data' => [
-               'email' => $citas,
-               'registered_at' => $user->created_at->toDateTimeString()
-           ]
-       ]);
+           'data' => json_encode($events)
+       ],200);
    }
 ]);
 

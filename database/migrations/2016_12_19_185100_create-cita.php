@@ -19,8 +19,8 @@ class CreateCita extends Migration
             $table->foreign('calendario_id')->references('id')->on('calendario')->onDelete('cascade');
              $table->integer('tipo_id')->unsigned()->index();
             $table->foreign('tipo_id')->references('id')->on('calendario')->onDelete('cascade');
-            $table->date('fecha');
-            $table->integer('hora');
+            $table->datetime('fecha_inicio');
+            $table->datetime('fecha_final');
             $table->string('cliente_nombre');
             $table->string('cliente_telefono');
             $table->string('cliente_email');

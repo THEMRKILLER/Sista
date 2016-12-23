@@ -14,6 +14,7 @@ class tipo extends Model
     	{
         return $this->hasMany('App\cita');
     	}
+      
 
  
     	//metodos de clase
