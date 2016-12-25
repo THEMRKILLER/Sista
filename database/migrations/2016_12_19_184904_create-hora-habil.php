@@ -17,6 +17,7 @@ class CreateHoraHabil extends Migration
             $table->increments('id');
             $table->integer('diahabil_id')->unsigned()->index();
             $table->foreign('diahabil_id')->references('id')->on('dia_habil')->onDelete('cascade');
+            $table->integer('hora');
             $table->timestamps();
         });
     }

@@ -17,6 +17,7 @@ class CreateFechahoraInhabil extends Migration
             $table->increments('id');
             $table->integer('fechainhabil_id')->unsigned()->index();
             $table->foreign('fechainhabil_id')->references('id')->on('fecha_inhabil')->onDelete('cascade');
+            $table->integer('hora');
             $table->timestamps();
         });
     }

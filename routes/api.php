@@ -25,6 +25,8 @@ Route::group(['middleware' => 'cors', 'prefix' => 'v1'], function () {
    function () {
        $token = JWTAuth::getToken();
        $user = JWTAuth::toUser($token);
+      
+
 
        return Response::json([
            'data' => [
