@@ -8,7 +8,7 @@ class cita extends Model
 {
    	 protected $table = 'cita';
      protected $fillable = [
-         'tipo_id','calendario_id','fecha', 'hora', 'cliente_nombre','cliente_telefono','cliente_email',
+         'tipo_id','calendario_id','fecha_inicio', 'fecha_final', 'cliente_nombre','cliente_telefono','cliente_email',
     ];
     //relaciones
       public function tipo($id)
@@ -32,8 +32,8 @@ class cita extends Model
             $NuevaCita = new App\cita;
             $NuevaCita->calendario_id =$calendario_id;
             $NuevaCita->tipo_id =$tipo_id;
-            $NuevaCita->fecha =$arrayDatos->fecha;
-            $NuevaCita->hora =$arrayDatos->hora;
+            $NuevaCita->fecha_inicio =$arrayDatos->fecha_inicio;
+            $NuevaCita->fecha_final =$arrayDatos->fecha_final;
             $NuevaCita->cliente_nombre =$arrayDatos->cliente_nombre;
             $NuevaCita->cliente_telefono =$arrayDatos->cliente_telefono;
             $NuevaCita->cliente_email =$arrayDatos->cliente_email;
@@ -83,8 +83,8 @@ class cita extends Model
         }
         else
           {
-            $Cita->fecha = $arrayDatos->fecha;
-            $Cita->hora =  $arrayDatos->hora;
+            $Cita->fecha_inicio = $arrayDatos->fecha_inicio;
+            $Cita->fecha_final =  $arrayDatos->fecha_final;
             $Cita->save();
           }
        
