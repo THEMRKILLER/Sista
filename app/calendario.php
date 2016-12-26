@@ -52,7 +52,9 @@ class calendario extends Model
     	}
       public function agregar_cita()
     	{
-      
+            $ArrayDatos=array("calendario_id"=>1,"tipo_id"=>1,"fecha_inicio"=>"9/9/16","fecha_final"=>"12,12,16","cliente_nombre"=>"german","cliente_telefono"=>"512341","cliente_email"=>"dudg@gmail.com");
+            $Cita = new cita;
+            $Cita->crear($ArrayDatos);
     	}
 
       public function asignar_horario($dias_habiles)
