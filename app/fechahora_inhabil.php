@@ -38,5 +38,9 @@ class fechahora_inhabil extends Model
                 $HoraInhabil->delete();
                 }
       
-    	}    	
+    	}  
+      public function asignarHoras($horas)
+      {
+        
+      }  	
 }

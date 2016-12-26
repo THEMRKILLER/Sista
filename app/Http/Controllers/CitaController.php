@@ -7,5 +7,7 @@ use Illuminate\Http\Request;
 
 class CitaController extends Controller
 {
-    //
+    
+
+    
 }

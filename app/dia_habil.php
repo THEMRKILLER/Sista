@@ -3,7 +3,7 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
-
+use App\hora_habil;
 class dia_habil extends Model
 {
    	 protected $table = 'dia_habil';
@@ -13,7 +13,7 @@ class dia_habil extends Model
 
          public function horasHabiles()
     	{
-       return $this->hasMany('App\hora_habil');
+       return $this->hasMany('App\hora_habil','diahabil_id');
     	}
     	//metodos de clase
           /* 
@@ -39,5 +39,13 @@ class dia_habil extends Model
                 }
       
     	}
+      public function asignar_horas($horas)
+      {
+        foreach ($horas as $hora) {
+            $hora_habil = hora_habil::firstOrNew(['diahabil_id'=> $this->id, 'hora' => $hora]);
+            $this->horasHabiles()->save($hora_habil);
+        }
+
+      }
 
 }
