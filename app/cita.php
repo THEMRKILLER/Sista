@@ -26,17 +26,17 @@ class cita extends Model
     /* 
     * @param arrayDatos estructura con nombre,telefono,email,fecha y hora de la cita
     */
-      public function crear($arrayDatos,$calendario_id,$tipo_id)
+      public function crear($arrayDatos)
     	{
           
-            $NuevaCita = new App\cita;
-            $NuevaCita->calendario_id =$calendario_id;
-            $NuevaCita->tipo_id =$tipo_id;
-            $NuevaCita->fecha_inicio =$arrayDatos->fecha_inicio;
-            $NuevaCita->fecha_final =$arrayDatos->fecha_final;
-            $NuevaCita->cliente_nombre =$arrayDatos->cliente_nombre;
-            $NuevaCita->cliente_telefono =$arrayDatos->cliente_telefono;
-            $NuevaCita->cliente_email =$arrayDatos->cliente_email;
+            $NuevaCita = new cita;
+            $NuevaCita->calendario_id =$arrayDatos['calendario_id'];
+            $NuevaCita->tipo_id =$arrayDatos['tipo_id'];
+            $NuevaCita->fecha_inicio =$arrayDatos['fecha_inicio'];
+            $NuevaCita->fecha_final =$arrayDatos['fecha_final'];
+            $NuevaCita->cliente_nombre =$arrayDatos['cliente_nombre'];
+            $NuevaCita->cliente_telefono =$arrayDatos['cliente_telefono'];
+            $NuevaCita->cliente_email =$arrayDatos['cliente_email'];
             $NuevaCita->save();
         
     	}

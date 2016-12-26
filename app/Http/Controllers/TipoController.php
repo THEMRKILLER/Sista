@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\cita;
+use App\tipo;
 use Illuminate\Http\Request;
 
-class CitaController extends Controller
+class TipoController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -24,7 +24,8 @@ class CitaController extends Controller
      */
     public function create()
     {
-
+               ///agregar parametros
+        
     }
 
     /**
@@ -35,26 +36,20 @@ class CitaController extends Controller
      */
     public function store(Request $request)
     {
-                  $this->validate($request, [
-        'calendario_id' => 'required|numeric|max:255',
-        'tipo_id' => 'required|numeric',
-        'fecha_inicio' => 'required|date',
-        'fecha_final' => 'required|date',
-        'cliente_nombre' => 'required|',
-        'cliente_telefono' => 'required',
-        'cliente_email' => 'required|email',
+           $this->validate($request, [
+        'nombre' => 'required|unique:posts|max:255',
+        'duracion' => 'required',
     ]);
-                   ///agregar parametros
-        new cita->crear();
+           new tipo->agregar();
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  \App\cita  $cita
+     * @param  \App\tipo  $tipo
      * @return \Illuminate\Http\Response
      */
-    public function show(cita $cita)
+    public function show(tipo $tipo)
     {
         //
     }
@@ -62,10 +57,10 @@ class CitaController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\cita  $cita
+     * @param  \App\tipo  $tipo
      * @return \Illuminate\Http\Response
      */
-    public function edit(cita $cita)
+    public function edit(tipo $tipo)
     {
         //
     }
@@ -74,10 +69,10 @@ class CitaController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\cita  $cita
+     * @param  \App\tipo  $tipo
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, cita $cita)
+    public function update(Request $request, tipo $tipo)
     {
         //
     }
@@ -85,10 +80,10 @@ class CitaController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\cita  $cita
+     * @param  \App\tipo  $tipo
      * @return \Illuminate\Http\Response
      */
-    public function destroy(cita $cita)
+    public function destroy(tipo $tipo)
     {
         //
     }
