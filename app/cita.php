@@ -40,9 +40,9 @@ class cita extends Model
             $NuevaCita->save();
         
     	}
-      public function eliminar($id)
+      public function eliminar($cita)
     	{
-      		$Cita = App\cita::find($id);
+      		$Cita = App\cita::find($cita['id']);
 			if ($Cita === null) 
 				{
    					return "cita no existe,verificar bien la codificacion";
@@ -56,35 +56,35 @@ class cita extends Model
          /* 
     * @param arrayDatos estructura con nombre,telefono,email
     */
-      public function editar($cita_id,$arrayDatos)
+      public function editar($arrayDatos,$cita)
     	{
-              $Cita = App\cita::find($cita_id);
+              $Cita = App\cita::find($cita['id']);
         if ($Cita === null) 
         {
             return "cita no existe,no se pudo realizar la modificacion";
         }
         else
           {
-            $Cita->cliente_nombre = $arrayDatos->cliente_nombre;
-            $Cita->cliente_telefono =  $arrayDatos->cliente_telefono;
-            $Cita->cliente_email =  $arrayDatos->cliente_email;
+            $Cita->cliente_nombre = $arrayDatos['cliente_nombre'];
+            $Cita->cliente_telefono =  $arrayDatos['cliente_telefono'];
+            $Cita->cliente_email =  $arrayDatos['cliente_email'];
             $Cita->save();
           }
     	}
    /* 
     * @param arrayDatos estructura con fecha y hora 
     */
-      public function reagendar($cita_id,$arrayDatos)
+      public function reagendar($arrayDatos)
     	{
-        $Cita = App\cita::find($cita_id);
+        $Cita = App\cita::find($arrayDatos['cita_id']);
         if ($Cita === null) 
         {
             return "cita no existe,no se pudo realizar la modificacion";
         }
         else
           {
-            $Cita->fecha_inicio = $arrayDatos->fecha_inicio;
-            $Cita->fecha_final =  $arrayDatos->fecha_final;
+            $Cita->fecha_inicio = $arrayDatos['fecha_inicio'];
+            $Cita->fecha_final =  $arrayDatos['fecha_final'];
             $Cita->save();
           }
        

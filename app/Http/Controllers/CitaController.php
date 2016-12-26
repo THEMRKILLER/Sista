@@ -16,17 +16,6 @@ class CitaController extends Controller
     {
         //
     }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-
-    }
-
     /**
      * Store a newly created resource in storage.
      *
@@ -36,16 +25,16 @@ class CitaController extends Controller
     public function store(Request $request)
     {
                   $this->validate($request, [
-        'calendario_id' => 'required|numeric|max:255',
+        'calendario_id' => 'required|numeric',
         'tipo_id' => 'required|numeric',
         'fecha_inicio' => 'required|date',
         'fecha_final' => 'required|date',
-        'cliente_nombre' => 'required|',
-        'cliente_telefono' => 'required',
+        'cliente_nombre' => 'required|max:255',
+        'cliente_telefono' => 'required|max:255',
         'cliente_email' => 'required|email',
     ]);
                    ///agregar parametros
-        new cita->crear();
+        new cita->crear($request);
     }
 
     /**
@@ -60,17 +49,6 @@ class CitaController extends Controller
     }
 
     /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\cita  $cita
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(cita $cita)
-    {
-        //
-    }
-
-    /**
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
@@ -79,7 +57,16 @@ class CitaController extends Controller
      */
     public function update(Request $request, cita $cita)
     {
-        //
+                          $this->validate($request, [
+        'calendario_id' => 'required|numeric',
+        'tipo_id' => 'required|numeric',
+        'fecha_inicio' => 'required|date',
+        'fecha_final' => 'required|date',
+        'cliente_nombre' => 'required|max:255',
+        'cliente_telefono' => 'required|max:255',
+        'cliente_email' => 'required|email',
+    ]);
+        new cita->editar($request,$cita);    
     }
 
     /**
@@ -90,6 +77,6 @@ class CitaController extends Controller
      */
     public function destroy(cita $cita)
     {
-        //
+        new cita->eliminar($cita);
     }
 }

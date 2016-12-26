@@ -40,7 +40,7 @@ class TipoController extends Controller
         'nombre' => 'required|unique:posts|max:255',
         'duracion' => 'required',
     ]);
-           new tipo->agregar();
+           new tipo->agregar($request);
     }
 
     /**
@@ -51,20 +51,8 @@ class TipoController extends Controller
      */
     public function show(tipo $tipo)
     {
-        //
+       
     }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\tipo  $tipo
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(tipo $tipo)
-    {
-        //
-    }
-
     /**
      * Update the specified resource in storage.
      *
@@ -74,7 +62,11 @@ class TipoController extends Controller
      */
     public function update(Request $request, tipo $tipo)
     {
-        //
+                   $this->validate($request, [
+        'nombre' => 'required|unique:posts|max:255',
+        'duracion' => 'required',
+    ]);
+        new tipo->editar($request,$tipo);
     }
 
     /**
@@ -85,6 +77,6 @@ class TipoController extends Controller
      */
     public function destroy(tipo $tipo)
     {
-        //
+        new tipo->eliminar($tipo);
     }
 }

@@ -28,9 +28,9 @@ class tipo extends Model
             $NuevaCita->duracion =$arrayDatos['hora'];
             $NuevaCita->save();
     	}
-      public function eliminar($id)
+      public function eliminar($tipo)
     	{
-            $Tipo = App\tipo::find($id);
+            $Tipo = App\tipo::find($tipo['id']);
             if ($Tipo === null) 
               {
               return "cita no existe,verificar bien la codificacion";
@@ -44,17 +44,17 @@ class tipo extends Model
     /* 
     * @param arrayDatos estructura con el nombre y la duracion del tipo de cita 
     */
-      public function editar($arrayDatos,$tipo_id)
+      public function editar($ArrayDatos,$tipo)
     	{
-        $Tipo = App\cita::tipo($tipo_id);
+        $Tipo = App\cita::tipo($tipo['id']);
           if ($Tipo === null) 
             {
             return "cita no existe,no se pudo realizar la modificacion";
             }
           else
             {
-              $Tipo->nombre =   $arrayDatos->nombre;
-              $Tipo->duracion = $arrayDatos->duracion;
+              $Tipo->nombre =   $tipo['nombre'];
+              $Tipo->duracion = $tipo['duracion'];
               $Cita->save();
             }
     	}
