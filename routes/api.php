@@ -13,31 +13,26 @@ use Illuminate\Http\Request;
 |
 */
 
+Route::group(['middleware' => ['cors'], 'prefix' => 'v1'],function(){
 
-Route::group(['middleware' => 'cors', 'prefix' => 'v1'], function () {
-   Route::get('/test',function(){
-    return "OK";
-   });
    Route::post('login','AuthenticateController@authenticate');
 
-   Route::get('/restricted', [
-   'before' => 'jwt-auth',
-   function () {
-       $token = JWTAuth::getToken();
-       $user = JWTAuth::toUser($token);
-      
+});
 
+Route::group(['middleware' => ['cors','jwt.refresh'],'prefix' => 'v1'],function(){
 
-       return Response::json([
-           'data' => [
-               'email' => $user->email,
-               'registered_at' => $user->created_at->toDateTimeString()
-           ]
-       ]);
-   }
-]);
+    Route::get('refresh_token',function(){
+      $oldtoken = JWTAuth::getToken();
+      $token = JWTAuth::refresh($oldtoken);
+      return response()->json(compact('token'));
 
-   Route::get('/dashboard', ['before' => 'jwt-auth',
+    });
+
+});
+
+Route::group(['middleware' => ['cors','jwt.auth'], 'prefix' => 'v1'],
+ function () {
+   Route::get('/dashboard',
    function () {
        $token = JWTAuth::getToken();
        $user = JWTAuth::toUser($token);
@@ -52,12 +47,14 @@ Route::group(['middleware' => 'cors', 'prefix' => 'v1'], function () {
         $arr = array('title' => $title, 'start' => $start, 'end' => $end);
         array_push($events, $arr);
     }
-    
-       return Response::json([
-           'data' => json_encode($events)
-       ],200);
+    array_push($events,['title' => 'Evento 1','start' => '2016-12-07','end' => '2016-12-07']);
+    array_push($events,['title' => 'Evento 2','start' => '2016-12-08','end' => '2016-12-08']);
+    array_push($events,['title' => 'Evento 3','start' => '2016-12-09','end' => '2016-12-09']);
+    array_push($events,['title' => 'Evento 4','start' => '2016-12-10','end' => '2016-12-10']);
+    array_push($events,['title' => 'Evento 5','start' => '2016-12-11','end' => '2016-12-11']);
+    array_push($events,['title' => 'Evento 6','start' => '2016-12-12','end' => '2016-12-12']);
+       return Response::json($events,200);
    }
-]);
+);
 
-  
-});
+ });
