@@ -16,6 +16,8 @@ use Illuminate\Http\Request;
 Route::group(['middleware' => ['cors'], 'prefix' => 'v1'],function(){
 
    Route::post('login','AuthenticateController@authenticate');
+   Route::post('test_login','ValidacionController@authenticate');
+
 
 });
 
@@ -53,6 +55,7 @@ Route::group(['middleware' => ['cors','jwt.auth'], 'prefix' => 'v1'],
     array_push($events,['title' => 'Evento 4','start' => '2016-12-10','end' => '2016-12-10']);
     array_push($events,['title' => 'Evento 5','start' => '2016-12-11','end' => '2016-12-11']);
     array_push($events,['title' => 'Evento 6','start' => '2016-12-12','end' => '2016-12-12']);
+       
        return Response::json($events,200);
    }
 );
