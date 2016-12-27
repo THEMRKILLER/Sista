@@ -58,9 +58,9 @@ class cita extends Model
          /* 
     * @param arrayDatos estructura con nombre,telefono,email
     */
-      public function editar($arrayDatos,$cita)
+      public function editar($arrayDatos,$id)
     	{
-              $Cita = App\cita::find($cita['id']);
+              $Cita = cita::find($id);
         if ($Cita === null) 
         {
             return "cita no existe,no se pudo realizar la modificacion";
@@ -76,9 +76,9 @@ class cita extends Model
    /* 
     * @param arrayDatos estructura con fecha y hora 
     */
-      public function reagendar($arrayDatos)
+      public function reagendar($arrayDatos,$id)
     	{
-        $Cita = cita::find($arrayDatos['id']);
+        $Cita = cita::find($id);
         if ($Cita === null) 
         {
             return "cita no existe,no se pudo realizar la modificacion";

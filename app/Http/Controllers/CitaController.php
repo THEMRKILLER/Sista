@@ -25,21 +25,6 @@ class CitaController extends Controller
      */
     public function store(Request $request)
     {
-<<<<<<< HEAD
-                  $this->validate($request, [
-        'calendario_id' => 'required|numeric',
-        'tipo_id' => 'required|numeric',
-        'fecha_inicio' => 'required|date',
-        'fecha_final' => 'required|date',
-        'cliente_nombre' => 'required|max:255',
-        'cliente_telefono' => 'required|max:255',
-        'cliente_email' => 'required|email',
-    ]);
-                   ///agregar parametros
-        new cita->crear($request);
-=======
-
-
             $rules = array(
             		
         				'calendario_id' => 'required|numeric|max:255',
@@ -68,7 +53,7 @@ class CitaController extends Controller
             }
                 
        cita::crear($request->all());
->>>>>>> e6e21db095a5db9751670285e79750263068b0a2
+
     }
 
     /**
@@ -89,29 +74,55 @@ class CitaController extends Controller
      * @param  \App\cita  $cita
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, cita $cita)
+    public function update(Request $request,$id)
     {
-                          $this->validate($request, [
-        'calendario_id' => 'required|numeric',
-        'tipo_id' => 'required|numeric',
-        'fecha_inicio' => 'required|date',
-        'fecha_final' => 'required|date',
-        'cliente_nombre' => 'required|max:255',
-        'cliente_telefono' => 'required|max:255',
-        'cliente_email' => 'required|email',
-    ]);
-        new cita->editar($request,$cita);    
+                    $rules = array(
+                        'calendario_id' => 'required|numeric|max:255',
+                        'tipo_id' => 'required|numeric',
+                        'fecha_inicio' => 'required|date',
+                        'fecha_final' => 'required|date',
+                        'cliente_nombre' => 'required|',
+                        'cliente_telefono' => 'required',
+                        'cliente_email' => 'required|email',
+                );
+            $validator = Validator::make($request->all(), $rules);
+      if ($validator->fails())
+            {
+                return response()->json(array(
+                                            'success' => false,
+                                            'errors' => $validator->getMessageBag()->toArray()
+                                            ), 
+                                400); // 400 being the HTTP code for an invalid request.
+            }
+    cita::editar($request->all(),$id);    
+    }
+    public function reagendar(Request $request,$id)
+    {
+                    $rules = array(
+
+                        'fecha_inicio' => 'required|date',
+                        'fecha_final' => 'required|date',
+                );
+            $validator = Validator::make($request->all(), $rules);
+      if ($validator->fails())
+            {
+                return response()->json(array(
+                                            'success' => false,
+                                            'errors' => $validator->getMessageBag()->toArray()
+                                            ), 
+                                400); // 400 being the HTTP code for an invalid request.
+            }
+    cita::reagendar($request->all(),$id);    
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\cita  $cita
      * @return \Illuminate\Http\Response
      */
-    public function destroy(cita $cita)
+    public function destroy($id)
     {
-        new cita->eliminar($cita);
+        new cita->eliminar($id);
     }
 
 }
