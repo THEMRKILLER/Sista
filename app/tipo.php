@@ -23,21 +23,21 @@ class tipo extends Model
     */
       public function agregar($arrayDatos)
     	{
-            $NuevoTipo = new App\tipo;
+            $NuevoTipo = new tipo;
             $NuevaCita->nombre =$arrayDatos['fecha'];
             $NuevaCita->duracion =$arrayDatos['hora'];
             $NuevaCita->save();
     	}
       public function eliminar($tipo)
     	{
-            $Tipo = App\tipo::find($tipo['id']);
+            $Tipo = tipo::find($tipo['id']);
             if ($Tipo === null) 
               {
-              return "cita no existe,verificar bien la codificacion";
+              return "tipo no existe,verificar bien la codificacion";
               }
             else
                 {
-                $Tipo->delete();
+                $Tipo->destroy();
                 }
       
     	}
@@ -46,10 +46,10 @@ class tipo extends Model
     */
       public function editar($ArrayDatos,$tipo)
     	{
-        $Tipo = App\cita::tipo($tipo['id']);
+        $Tipo = tipo($tipo['id']);
           if ($Tipo === null) 
             {
-            return "cita no existe,no se pudo realizar la modificacion";
+            return "tipo no existe,no se pudo realizar la modificacion";
             }
           else
             {

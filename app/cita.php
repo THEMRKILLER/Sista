@@ -44,14 +44,14 @@ class cita extends Model
     	}
       public function eliminar($cita)
     	{
-      		$Cita = App\cita::find($cita['id']);
+      		$Cita = cita::find($cita['id']);
 			if ($Cita === null) 
 				{
    					return "cita no existe,verificar bien la codificacion";
 				}
 				else
 					{
-						$Cita->delete();
+						$Cita->destroy();
 					}
 			
     	}
@@ -78,7 +78,7 @@ class cita extends Model
     */
       public function reagendar($arrayDatos)
     	{
-        $Cita = App\cita::find($arrayDatos['cita_id']);
+        $Cita = cita::find($arrayDatos['id']);
         if ($Cita === null) 
         {
             return "cita no existe,no se pudo realizar la modificacion";
@@ -99,16 +99,16 @@ class cita extends Model
          /* 
     * @param Dato variable numerica que hace relacion a un id de la tabla Tipo
     */
-      public function CambiarTipo($cita_id,$Dato)
+      public function CambiarTipo($arrayDatos)
     	{
-        $Cita = App\cita::find($cita_id);
+        $Cita = cita::find($arrayDatos['id']);
         if ($Cita === null) 
         {
             return "cita no existe,no se pudo realizar la modificacion";
         }
         else
           {
-            $Cita->tipo_id = $Dato;
+            $Cita->tipo_id = $arrayDatos['tipo_id'];
             $Cita->save();
           }
     	}    	

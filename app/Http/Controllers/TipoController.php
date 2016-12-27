@@ -17,16 +17,6 @@ class TipoController extends Controller
         //
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-               ///agregar parametros
-        
-    }
 
     /**
      * Store a newly created resource in storage.
@@ -36,11 +26,21 @@ class TipoController extends Controller
      */
     public function store(Request $request)
     {
-           $this->validate($request, [
-        'nombre' => 'required|unique:posts|max:255',
-        'duracion' => 'required',
-    ]);
-           new tipo->agregar($request);
+        $rules = array(
+            'nombre' => 'required|unique:posts|max:255',
+            'duracion' => 'required',
+        );
+        $validator = Validator::make($request->all(), $rules);
+        if ($validator->fails())
+            {
+                return response()->json(array(
+                                            'success' => false,
+                                            'errors' => $validator->getMessageBag()->toArray()
+                                            ), 
+                                400); // 400 being the HTTP code for an invalid request.
+        
+            }
+       tipo::crear($request->all());
     }
 
     /**
@@ -62,11 +62,21 @@ class TipoController extends Controller
      */
     public function update(Request $request, tipo $tipo)
     {
-                   $this->validate($request, [
-        'nombre' => 'required|unique:posts|max:255',
-        'duracion' => 'required',
-    ]);
-        new tipo->editar($request,$tipo);
+                $rules = array(
+            'nombre' => 'required|unique:posts|max:255',
+            'duracion' => 'required',
+        );
+        $validator = Validator::make($request->all(), $rules);
+        if ($validator->fails())
+            {
+                return response()->json(array(
+                                            'success' => false,
+                                            'errors' => $validator->getMessageBag()->toArray()
+                                            ), 
+                                400); // 400 being the HTTP code for an invalid request.
+        
+            }
+       tipo::editar($request->all(),$tipo);
     }
 
     /**
@@ -77,6 +87,6 @@ class TipoController extends Controller
      */
     public function destroy(tipo $tipo)
     {
-        new tipo->eliminar($tipo);
+        tipo::eliminar($tipo);
     }
 }
