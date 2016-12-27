@@ -18,7 +18,6 @@ Route::group(['middleware' => ['cors'], 'prefix' => 'v1'],function(){
    Route::post('login','AuthenticateController@authenticate');
    Route::get('test_login','ValidacionController@authenticate');
 
-
 });
 
 Route::group(['middleware' => ['cors','jwt.refresh'],'prefix' => 'v1'],function(){
@@ -34,6 +33,16 @@ Route::group(['middleware' => ['cors','jwt.refresh'],'prefix' => 'v1'],function(
 
 Route::group(['middleware' => ['cors','jwt.auth'], 'prefix' => 'v1'],
  function () {
-   Route::get('/dashboard','CalendarioController@index');
+   Route::get('dashboard','CalendarioController@index');
+   /*CRUD HORARIO*/
+   Route::get('horario','CalendarioController@asignar_horario');
+
+   /*FIN CRUD HORARIO */
+   Route::get('inhabilitar_fecha','CalendarioController@inhabilitar_fecha');
+
+   /*Crud Citas*/
+
+   Route::post('cita','CitaController@store');
+
 
  });

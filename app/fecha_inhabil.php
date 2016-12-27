@@ -13,14 +13,14 @@ class fecha_inhabil extends Model
 
      public function horasInhabiles()
     	{
-        return $this->hasMany('App\fechahora_inhabil');
+        return $this->hasMany('App\fechahora_inhabil','fechainhabil_id');
     	}
       public function calendario()
       {
        return $this->belongsTo('App\calendario');
       }    
 
-    	}
+    	
     	//metodos de clase
           /* 
     * @param Arraydatos arreglo con los siguientes datoss :fecha(restriccion de agendacion),completo(culminacion del registro)

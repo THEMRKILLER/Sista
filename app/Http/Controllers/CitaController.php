@@ -4,9 +4,10 @@ namespace App\Http\Controllers;
 
 use App\cita;
 use Illuminate\Http\Request;
-
+use Validator;
 class CitaController extends Controller
 {
+
     /**
      * Display a listing of the resource.
      *
@@ -24,6 +25,7 @@ class CitaController extends Controller
      */
     public function store(Request $request)
     {
+<<<<<<< HEAD
                   $this->validate($request, [
         'calendario_id' => 'required|numeric',
         'tipo_id' => 'required|numeric',
@@ -35,6 +37,38 @@ class CitaController extends Controller
     ]);
                    ///agregar parametros
         new cita->crear($request);
+=======
+
+
+            $rules = array(
+            		
+        				'calendario_id' => 'required|numeric|max:255',
+        				'tipo_id' => 'required|numeric',
+        				'fecha_inicio' => 'required|date',
+        				'fecha_final' => 'required|date',
+        				'cliente_nombre' => 'required|',
+        				'cliente_telefono' => 'required',
+        				'cliente_email' => 'required|email',
+    
+            	);
+
+            $validator = Validator::make($request->all(), $rules);
+
+  
+
+      if ($validator->fails())
+            {
+                return response()->json(array(
+                                            'success' => false,
+                                            'errors' => $validator->getMessageBag()->toArray()
+
+                                            ), 
+                                400); // 400 being the HTTP code for an invalid request.
+        
+            }
+                
+       cita::crear($request->all());
+>>>>>>> e6e21db095a5db9751670285e79750263068b0a2
     }
 
     /**
@@ -79,4 +113,5 @@ class CitaController extends Controller
     {
         new cita->eliminar($cita);
     }
+
 }

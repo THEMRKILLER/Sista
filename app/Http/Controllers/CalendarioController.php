@@ -6,6 +6,8 @@ use App\calendario;
 use Illuminate\Http\Request;
 use JWTAuth;
 use json;
+use Validator;
+use Auth;
 class CalendarioController extends Controller
 {
     /**
@@ -105,5 +107,62 @@ class CalendarioController extends Controller
     public function destroy(calendario $calendario)
     {
         //
+    }
+
+    public function asignar_horario(Request $request)
+    {
+        /*
+            "dias_habiles"{
+                {'dia' : 'Lunes',
+                 'horas' : '1,2,3,4,5,6,7,8,9'
+                },
+                {'dia' : 'Martes',
+                 'horas' : '4,5,6,7,8,9
+                }
+            }
+        */
+
+
+         $dias_habiles = [
+                            ['dia' => 1, 'horas'=>[1,2,3,4,5,6,7,8,9,10]],
+                            ['dia' => 2, 'horas'=>[1,2,3,4,5,6,7,8,9,10]],
+                            ['dia' => 3, 'horas'=>[1,2,3,4,5,6,7,8,9,10]],
+                            ['dia' => 4, 'horas'=>[1,2,3,4,5,6,7,8,9,10]],
+                            ['dia' => 5, 'horas'=>[1,2,3,4,5,6,7,8,9,10]],
+                            ['dia' => 6, 'horas'=>[1,2,3,4,5,6,7,8,9,10]]
+
+                        ];
+      // $dias_habiles = $request->get('dias_habiles');
+       $token = JWTAuth::getToken();
+       $user = JWTAuth::toUser($token);
+       $user->calendario->asignar_horario($dias_habiles);
+
+
+
+       
+
+    }
+
+    public function asignar_horario_validate($horario)
+    {
+
+
+    }
+
+    public function inhabilitar_fecha(Request $request)
+    {
+        //$fecha = $request->get('fecha');
+
+                $fechas = [
+                        ['fecha' => '2016-12-28' , 'completo' => false, 'horas' =>[1,2,3,4,5] ],
+                        ['fecha' => '2016-12-29' , 'completo' => false, 'horas' =>[1,2,3,4,5] ],
+                        ['fecha' => '2016-12-30' , 'completo' => false, 'horas' =>[1,2,3,4,5] ],
+                        ['fecha' => '2016-12-31' , 'completo' => false, 'horas' =>[1,2,3,4,5] ],
+                        ['fecha' => '2017-01-01' , 'completo' => true, 'horas' => [] ],
+                ];
+        $token = JWTAuth::getToken();
+        $user = JWTAuth::toUser($token);
+        $user->calendario->inhabilitar_fecha($fechas);
+
     }
 }
