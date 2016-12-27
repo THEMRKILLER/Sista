@@ -42,7 +42,16 @@ Route::group(['middleware' => ['cors','jwt.auth'], 'prefix' => 'v1'],
 
    /*Crud Citas*/
 
-   Route::post('cita','CitaController@store');
-
+   Route::get('/cita','CitaController@index');
+   Route::get('/cita/{id}','CitaController@show');
+   Route::post('/cita','CitaController@store');
+   Route::put('/cita/{id}','CitaController@update');
+   Route::delete('/cita/{id}','CitaController@destroy');
+   //tipo-cita
+   Route::get('/tipo','TipoController@index');
+   Route::get('/tipo/{id}','TipoController@show');
+   Route::post('/tipo','TipoController@store');
+   Route::put('/tipo/{id}','TipoController@update');
+   Route::delete('/tipo/{id}','TipoController@destroy');
 
  });
