@@ -40,5 +40,9 @@ Route::group(['middleware' => ['cors','jwt.auth'], 'prefix' => 'v1'],
    /*FIN CRUD HORARIO */
    Route::get('inhabilitar_fecha','CalendarioController@inhabilitar_fecha');
 
+   /*Crud Citas*/
+
+   Route::post('cita','CitaController@store');
+
 
  });

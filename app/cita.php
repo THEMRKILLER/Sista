@@ -29,15 +29,17 @@ class cita extends Model
       public function crear($arrayDatos)
     	{
           
+            $calendario  = calendario::find($arrayDatos['calendario_id']);
+            
             $NuevaCita = new cita;
-            $NuevaCita->calendario_id =$arrayDatos['calendario_id'];
-            $NuevaCita->tipo_id =$arrayDatos['tipo_id'];
+            $NuevaCita->tipo_id = $arrayDatos['tipo_id'];
             $NuevaCita->fecha_inicio =$arrayDatos['fecha_inicio'];
             $NuevaCita->fecha_final =$arrayDatos['fecha_final'];
             $NuevaCita->cliente_nombre =$arrayDatos['cliente_nombre'];
             $NuevaCita->cliente_telefono =$arrayDatos['cliente_telefono'];
             $NuevaCita->cliente_email =$arrayDatos['cliente_email'];
-            $NuevaCita->save();
+            
+            $calendario->citas()->save($NuevaCita);
         
     	}
       public function eliminar($id)
