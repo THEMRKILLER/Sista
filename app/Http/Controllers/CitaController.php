@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\cita;
 use Illuminate\Http\Request;
 use Validator;
+use Carbon\Carbon;
 class CitaController extends Controller
 {
 
@@ -25,17 +26,20 @@ class CitaController extends Controller
      */
     public function store(Request $request)
     {
+        $val =cita::dateTimeExist($request->all());
+        print_r("variable:".$val);
+        if($val){
             $rules = array(
-            		
-        				'calendario_id' => 'required|numeric|max:255',
-        				'tipo_id' => 'required|numeric',
-        				'fecha_inicio' => 'required|date_format:Y-m-d H:i:s',
-        				'fecha_final' => 'required|date_format:Y-m-d H:i:s',
-        				'cliente_nombre' => 'required|',
-        				'cliente_telefono' => 'required',
-        				'cliente_email' => 'required|email',
+                    
+                        'calendario_id' => 'required|numeric|max:255',
+                        'tipo_id' => 'required|numeric',
+                        'fecha_inicio' => 'required|date_format:Y-m-d H:i:s',
+                        'fecha_final' => 'required|date_format:Y-m-d H:i:s',
+                        'cliente_nombre' => 'required|',
+                        'cliente_telefono' => 'required',
+                        'cliente_email' => 'required|email',
     
-            	);
+                );
 
             $validator = Validator::make($request->all(), $rules);
 
@@ -46,13 +50,20 @@ class CitaController extends Controller
                 return response()->json(array(
                                             'success' => false,
                                             'errors' => $validator->getMessageBag()->toArray()
-
                                             ), 
                                 400); // 400 being the HTTP code for an invalid request.
         
             }
                 
        cita::crear($request->all());
+        } else{
+            return response()->json(array(
+                                            'success' => false,
+                                            'errors' => 'no se puede agendar esa hora'
+                                            ), 
+                                404); 
+        }
+            
 
     }
 

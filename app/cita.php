@@ -5,6 +5,8 @@ namespace App;
 use Illuminate\Database\Eloquent\Model;
 use App\tipo;
 use App\calendario;
+use Carbon\Carbon;
+use DateTime;
 class cita extends Model
 {
    	 protected $table = 'cita';
@@ -100,7 +102,7 @@ class cita extends Model
          /* 
     * @param Dato variable numerica que hace relacion a un id de la tabla Tipo
     */
-      public function CambiarTipo($arrayDatos)
+      public function cambiarTipo($arrayDatos)
     	{
         $Cita = cita::find($arrayDatos['id']);
         if ($Cita === null) 
@@ -112,5 +114,15 @@ class cita extends Model
             $Cita->tipo_id = $arrayDatos['tipo_id'];
             $Cita->save();
           }
-    	}    	
+    	} 
+      public static function dateTimeExist($arrayDatos){
+        $di = new DateTime( $arrayDatos['fecha_inicio']);
+        $dt = new DateTime( $arrayDatos['fecha_final']);
+        $Dates = cita::whereBetween('fecha_inicio', [$di, $dt])->orwhereBetween('fecha_final', [$di, $dt])->first();
+        if($Dates==null){
+              return true;
+        }	else{
+          return false;
+        }
+        }
 }
