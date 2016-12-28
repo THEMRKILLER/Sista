@@ -15,6 +15,8 @@ class CreateTipo extends Migration
     {
         Schema::create('tipo', function (Blueprint $table) {
             $table->increments('id');
+            $table->integer('calendario_id')->unsigned()->index();
+            $table->foreign('calendario_id')->references('id')->on('calendario')->onDelete('cascade');
             $table->string('nombre');
             $table->string('duracion');
             $table->timestamps();

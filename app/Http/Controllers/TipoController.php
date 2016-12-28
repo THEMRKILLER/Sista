@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use App\tipo;
 use Illuminate\Http\Request;
+use JWTAuth;
+use Validator;
+
 
 class TipoController extends Controller
 {
@@ -14,7 +17,12 @@ class TipoController extends Controller
      */
     public function index()
     {
-        //
+          $token = JWTAuth::getToken();
+          $user = JWTAuth::toUser($token);
+          $servicios = $user->calendario->tipos;
+
+          return response()->json($servicios,200);
+
     }
 
 
@@ -27,7 +35,7 @@ class TipoController extends Controller
     public function store(Request $request)
     {
         $rules = array(
-            'nombre' => 'required|unique:posts|max:255',
+            'nombre' => 'required|unique:tipo|max:255',
             'duracion' => 'required',
         );
         $validator = Validator::make($request->all(), $rules);
@@ -40,7 +48,13 @@ class TipoController extends Controller
                                 400); // 400 being the HTTP code for an invalid request.
         
             }
-       tipo::crear($request->all());
+
+        $token = JWTAuth::getToken();
+        $user = JWTAuth::toUser($token);
+
+        $calendario = $user->calendario;
+        
+        tipo::crear($request->all(),$calendario);
     }
 
     /**

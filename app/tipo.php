@@ -14,6 +14,10 @@ class tipo extends Model
     	{
         return $this->hasMany('App\cita');
     	}
+      public function calendario()
+      {
+        return $this->belongsTo('App\tipo');
+      }
       
 
  
@@ -28,6 +32,16 @@ class tipo extends Model
             $NuevaCita->duracion =$arrayDatos['hora'];
             $NuevaCita->save();
     	}
+      public static function crear($datas,calendario $calendario)
+      {
+        $tipo = new tipo();
+        $tipo->nombre = $datas['nombre'];
+        $tipo->duracion = $datas['duracion'];
+        $calendario->tipos()->save($tipo);
+
+
+
+      }
       public function eliminar($tipo)
     	{
             $Tipo = tipo::find($tipo['id']);

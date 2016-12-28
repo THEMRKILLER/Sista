@@ -13,7 +13,10 @@ class calendario extends Model
         'user_id','id'
         ];
         //relaciones
-
+     public function tipos()
+     {
+        return $this->hasMany('App\tipo');
+     }
      public function user()
      {
         return $this->belongsTo('App\User');
