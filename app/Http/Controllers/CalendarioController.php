@@ -25,12 +25,11 @@ class CalendarioController extends Controller
        $events=array();
       foreach ($citas as $cita) {
         
-        $title=$cita->tipo($cita['tipo_id']);
+        $title=$cita->tipo->nombre;
         $start=$cita['fecha_inicio'];
         $end=$cita['fecha_final'];
         $id=$cita->id;
-        $arr = array('id' => $id,'title' => $title, 'start' => $start, 'end' => $end);
-        array_push($events, $arr);
+        array_push($events, ['id' => $id,'title' => $title, 'start' => $start, 'end' => $end]);
     }
     array_push($events,['id' => 501,'title' => 'Evento 1','start' => '2016-12-07','end' => '2016-12-07']);
     array_push($events,['id' => 502,'title' => 'Evento 2','start' => '2016-12-08','end' => '2016-12-08']);
