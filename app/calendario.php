@@ -10,7 +10,7 @@ class calendario extends Model
 {
 	 protected $table = 'calendario';
      protected $fillable = [
-        'usuario',
+        'user_id','id'
         ];
         //relaciones
 

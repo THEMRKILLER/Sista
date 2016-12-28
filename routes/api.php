@@ -42,9 +42,9 @@ Route::group(['middleware' => ['cors','jwt.auth'], 'prefix' => 'v1'],
 
    /*Crud Citas*/
 
-   Route::get('/cita','CitaController@index');
+   Route::get('cita','CitaController@index');
    Route::get('/cita/{id}','CitaController@show');
-   Route::post('/cita','CitaController@store');
+   Route::post('cita','CitaController@store');
    Route::put('/cita/{id}','CitaController@update');
    Route::put('/cita-r/{id}','CitaController@reagendar');
    Route::delete('/cita/{id}','CitaController@destroy');

@@ -3,42 +3,43 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
-
+use App\tipo;
+use App\calendario;
 class cita extends Model
 {
    	 protected $table = 'cita';
      protected $fillable = [
-         'tipo_id','calendario_id','fecha_inicio', 'fecha_final', 'cliente_nombre','cliente_telefono','cliente_email',
+        'id', 'tipo_id','calendario_id','fecha_inicio', 'fecha_final', 'cliente_nombre','cliente_telefono','cliente_email',
     ];
     //relaciones
-      public function tipo($id)
-    	{
-       return tipo::find($id)->select('nombre')->first()['nombre'];
-    	}
+   
       public function calendario()
       {
        return $this->belongsTo('App\calendario');
       }
-
+        public function tipo()
+      {
+        return $this->belongsTo('App\tipo');
+      }
 
     //metodos de clase
 
     /* 
     * @param arrayDatos estructura con nombre,telefono,email,fecha y hora de la cita
     */
-      public function crear($arrayDatos)
+      public static function crear($arrayDatos)
     	{
           
             $calendario  = calendario::find($arrayDatos['calendario_id']);
-            
-            $NuevaCita = new cita;
-            $NuevaCita->tipo_id = $arrayDatos['tipo_id'];
+            $tipo  = tipo::find($arrayDatos['tipo_id']);
+            $NuevaCita = new cita();
             $NuevaCita->fecha_inicio =$arrayDatos['fecha_inicio'];
             $NuevaCita->fecha_final =$arrayDatos['fecha_final'];
             $NuevaCita->cliente_nombre =$arrayDatos['cliente_nombre'];
             $NuevaCita->cliente_telefono =$arrayDatos['cliente_telefono'];
             $NuevaCita->cliente_email =$arrayDatos['cliente_email'];
-            
+            $NuevaCita->tipo()->associate($tipo);
+        //    $tipo->citas()->save($NuevaCita);
             $calendario->citas()->save($NuevaCita);
         
     	}

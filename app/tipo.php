@@ -8,9 +8,9 @@ class tipo extends Model
 {
      protected $table = 'tipo';
      protected $fillable = [
-        'nombre', 'duracion',
+        'nombre', 'duracion','id'
     ];
-         public function Citas()
+         public function citas()
     	{
         return $this->hasMany('App\cita');
     	}

@@ -29,8 +29,8 @@ class CitaController extends Controller
             		
         				'calendario_id' => 'required|numeric|max:255',
         				'tipo_id' => 'required|numeric',
-        				'fecha_inicio' => 'required|date',
-        				'fecha_final' => 'required|date',
+        				'fecha_inicio' => 'required|date_format:Y-m-d H:i:s',
+        				'fecha_final' => 'required|date_format:Y-m-d H:i:s',
         				'cliente_nombre' => 'required|',
         				'cliente_telefono' => 'required',
         				'cliente_email' => 'required|email',
@@ -122,7 +122,7 @@ class CitaController extends Controller
      */
     public function destroy($id)
     {
-        new cita->eliminar($id);
+       // new cita()->eliminar($id);
     }
 
 }
