@@ -6,7 +6,9 @@ use Illuminate\Database\Eloquent\Model;
 use App\tipo;
 use App\calendario;
 use Carbon\Carbon;
+use Carbon\CarbonInterval;
 use DateTime;
+use DatePeriod;
 class cita extends Model
 {
    	 protected $table = 'cita';
@@ -115,6 +117,7 @@ class cita extends Model
             $Cita->save();
           }
     	} 
+      //usar  carbon para mas consistencia
       public static function dateTimeExist($arrayDatos){
         $di = new DateTime( $arrayDatos['fecha_inicio']);
         $dt = new DateTime( $arrayDatos['fecha_final']);
@@ -124,5 +127,62 @@ class cita extends Model
         }	else{
           return false;
         }
+        }
+      public static function freeHours(){
+        $di =Carbon::create(2016, 11, 05, 0, 0, 0);
+       // $di = new Carbon($arrayDatos['fecha_inicio']);
+        $dt=$di->toDateTimeString(); //fecha inicial convertida a string
+        $di = $di->addDay()->toDateTimeString(); //añade 1 dia y convierte a string
+
+        $Dates = cita::where('fecha_inicio', '>=',$dt)->where('fecha_final', '<=',$di)->get();
+        $events=array();
+       foreach ($Dates as $date) {
+          $fecha_inicio=$date->fecha_inicio;
+          $fecha_final=$date->fecha_final;
+          array_push($events, ['fecha_inicio' => $fecha_inicio, 'fecha_final' => $fecha_final]);
+       }
+       return $events;
+        }
+        public static function timeslot($arrayDatos){
+        $schedule = [
+            'start' => '2016-11-05 00:00:00',
+            'end' => '2016-11-05 24:00:00',
+        ];
+        $events= cita::freeHours();
+
+        $start = Carbon::instance(new DateTime($schedule['start']));
+        $end = Carbon::instance(new DateTime($schedule['end']));
+        $minSlotHours = 2;
+        $minSlotMinutes = 0;
+        $minInterval = CarbonInterval::hour($minSlotHours)->minutes($minSlotMinutes);
+
+        $reqSlotHours = 2;
+        $reqSlotMinutes =0;
+        $reqInterval = CarbonInterval::hour($reqSlotHours)->minutes($reqSlotMinutes);
+
+        function slotAvailable($from, $to, $events){
+            foreach($events as $event){
+                $eventStart = Carbon::instance(new DateTime($event['fecha_inicio']));
+                $eventEnd = Carbon::instance(new DateTime($event['fecha_final']));
+                if($from->between($eventStart, $eventEnd) && $to->between($eventStart, $eventEnd)){
+                    return false;
+                }
+            }
+            return true;
+        }
+         $disponible=array();
+        foreach(new DatePeriod($start, $minInterval, $end) as $slot){
+            $to = $slot->copy()->add($reqInterval);
+              //parte comentada, de inicio a final del horario disponible
+            //echo $slot->toDateTimeString() . ' to ' . $to->toDateTimeString();
+
+            if(slotAvailable($slot, $to, $events)){
+             //echo $slot->toDateTimeString(). ' is available';
+              array_push($disponible, ['text' => Carbon::parse($slot)->toTimeString(), 'value' => $slot->toDateTimeString()]);
+            }
+
+          /// echo '<br />';
+        }
+        return $disponible;
         }
 }

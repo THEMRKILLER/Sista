@@ -19,7 +19,7 @@ class CitaController extends Controller
         //
     }
     /**
-     * Store a newly created resource in storage.
+     * Store a newly crea6ted resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
@@ -27,7 +27,6 @@ class CitaController extends Controller
     public function store(Request $request)
     {
         $val =cita::dateTimeExist($request->all());
-        print_r("variable:".$val);
         if($val){
             $rules = array(
                     
@@ -135,5 +134,13 @@ class CitaController extends Controller
     {
        // new cita()->eliminar($id);
     }
+    
+    public function horasDisponibles(Request $request)
+    {
+       $horasDisponibles= cita::timeslot($request->all());
+         return \Response::json($horasDisponibles,200);
+    }
+
+
 
 }

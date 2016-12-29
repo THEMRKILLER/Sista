@@ -18,6 +18,7 @@ Route::group(['middleware' => ['cors'], 'prefix' => 'v1'],function(){
    Route::post('login','AuthenticateController@authenticate');
    Route::get('test_login','ValidacionController@authenticate');
    Route::get('registro_test','Auth\RegisterController@createTest');
+   Route::get('servicio-disponible','CitaController@horasDisponibles');
 
 });
 
