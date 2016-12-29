@@ -20,6 +20,10 @@ Route::group(['middleware' => ['cors'], 'prefix' => 'v1'],function(){
    Route::get('registro_test','Auth\RegisterController@createTest');
    Route::get('servicio-disponible','CitaController@horasDisponibles');
 
+   Route::get('images/{image_name}','ArticuloController@getImage');
+   Route::get('articulo/{id}','ArticuloController@getArticulo');
+
+
 });
 
 Route::group(['middleware' => ['cors','jwt.refresh'],'prefix' => 'v1'],function(){
@@ -56,5 +60,11 @@ Route::group(['middleware' => ['cors','jwt.auth'], 'prefix' => 'v1'],
    Route::post('/tipo','TipoController@store');
    Route::put('/tipo/{id}','TipoController@update');
    Route::delete('/tipo/{id}','TipoController@destroy');
+
+
+   //Articulos 
+
+   Route::post('articulo','ArticuloController@store');
+   Route::get('articulos','ArticuloController@getArticulos');
 
  });

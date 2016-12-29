@@ -21,24 +21,25 @@ class CalendarioController extends Controller
        $token = JWTAuth::getToken();
        $user = JWTAuth::toUser($token);
        $calendario =$user->calendario;
+       $servicios = $calendario->tipos;
        $citas =$calendario->citas()->get();//->whereMonth('fecha', '=', '06')->get();
+       
        $events=array();
+
       foreach ($citas as $cita) {
         
         $title=$cita->tipo->nombre;
         $start=$cita['fecha_inicio'];
         $end=$cita['fecha_final'];
         $id=$cita->id;
-        array_push($events, ['id' => $id,'title' => $title, 'start' => $start, 'end' => $end]);
+        $cliente_nombre = $cita->cliente_nombre;
+        $cliente_telefono = $cita->cliente_telefono;
+        $cliente_email = $cita->cliente_email;
+        $cita_tipo      = $cita->tipo->nombre;
+        array_push($events, ['id' => $id,'title' => $title, 'start' => $start, 'end' => $end,'cliente_nombre' => $cliente_nombre , 'cliente_telefono' => $cliente_telefono,'cliente_email' => $cliente_email , 'servicio' => $cita_tipo ]);
     }
-    array_push($events,['id' => 501,'title' => 'Evento 1','start' => '2016-12-07','end' => '2016-12-07']);
-    array_push($events,['id' => 502,'title' => 'Evento 2','start' => '2016-12-08','end' => '2016-12-08']);
-    array_push($events,['id' => 503,'title' => 'Evento 3','start' => '2016-12-09','end' => '2016-12-09']);
-    array_push($events,['id' => 504,'title' => 'Evento 4','start' => '2016-12-10','end' => '2016-12-10']);
-    array_push($events,['id' => 505,'title' => 'Evento 5','start' => '2016-12-11','end' => '2016-12-11']);
-    array_push($events,['id' => 506,'title' => 'Evento 6','start' => '2016-12-12','end' => '2016-12-12']);
-       
-       return \Response::json($events,200);
+ 
+       return \Response::json(['citas' => $events, 'servicios' => $servicios],200);
    
     }
 
