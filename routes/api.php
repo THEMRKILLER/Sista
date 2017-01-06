@@ -19,9 +19,11 @@ Route::group(['middleware' => ['cors'], 'prefix' => 'v1'],function(){
    Route::get('test_login','ValidacionController@authenticate');
    Route::get('registro_test','Auth\RegisterController@createTest');
    Route::get('servicio-disponible','CitaController@horasDisponibles');
+   Route::get('prueba','CitaController@prueba');
 
    Route::get('images/{image_name}','ArticuloController@getImage');
    Route::get('articulo/{id}','ArticuloController@getArticulo');
+   Route::get('testurl','CalendarioController@url');
 
 
 });

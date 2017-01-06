@@ -140,7 +140,11 @@ class CitaController extends Controller
        $horasDisponibles= cita::timeslot($request->all());
          return \Response::json($horasDisponibles,200);
     }
-
+        public function prueba()
+    {
+       $horasDisponibles= cita::prueba();
+       return \Response::json($horasDisponibles,200);
+    }
 
 
 }
