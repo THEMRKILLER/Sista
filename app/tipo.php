@@ -37,40 +37,27 @@ class tipo extends Model
         $tipo = new tipo();
         $tipo->nombre = $datas['nombre'];
         $tipo->duracion = $datas['duracion'];
+        $tipo->costo  = $datas['costo'];
+        $tipo->denominacion = $datas['denominacion'];
         $calendario->tipos()->save($tipo);
 
 
 
       }
-      public function eliminar($tipo)
+      public function eliminar()
     	{
-            $Tipo = tipo::find($tipo['id']);
-            if ($Tipo === null) 
-              {
-              return "tipo no existe,verificar bien la codificacion";
-              }
-            else
-                {
-                $Tipo->destroy();
-                }
-      
+        $this->delete();
     	}
     /* 
     * @param arrayDatos estructura con el nombre y la duracion del tipo de cita 
     */
-      public function editar($ArrayDatos,$tipo)
+      public function editar($ArrayDatos)
     	{
-        $Tipo = tipo($tipo['id']);
-          if ($Tipo === null) 
-            {
-            return "tipo no existe,no se pudo realizar la modificacion";
-            }
-          else
-            {
-              $Tipo->nombre =   $tipo['nombre'];
-              $Tipo->duracion = $tipo['duracion'];
-              $Cita->save();
-            }
+          $this->nombre = $ArrayDatos['nombre'];
+          $this->duracion = $ArrayDatos['duracion'];
+          $this->costo = $ArrayDatos['costo'];
+          $this->denominacion = $ArrayDatos['denominacion'];
+          $this->save();
     	}
 
 }

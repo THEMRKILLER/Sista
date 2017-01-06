@@ -74,11 +74,13 @@ class TipoController extends Controller
      * @param  \App\tipo  $tipo
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, tipo $tipo)
+    public function update(Request $request)
     {
                 $rules = array(
-            'nombre' => 'required|unique:posts|max:255',
+            'nombre' => 'required|max:255',
             'duracion' => 'required',
+            'costo'     => 'required|min:0',
+            'denominacion' => 'required|string|max:255'
         );
         $validator = Validator::make($request->all(), $rules);
         if ($validator->fails())
@@ -90,7 +92,14 @@ class TipoController extends Controller
                                 400); // 400 being the HTTP code for an invalid request.
         
             }
-       tipo::editar($request->all(),$tipo);
+
+
+        $token = JWTAuth::getToken();
+        $user = JWTAuth::toUser($token);
+
+        $id  = $request->get('id');
+        $tipo = $user->calendario->tipos()->where('id',$id)->first();
+        $tipo->editar($request->all());
     }
 
     /**
@@ -99,8 +108,15 @@ class TipoController extends Controller
      * @param  \App\tipo  $tipo
      * @return \Illuminate\Http\Response
      */
-    public function destroy(tipo $tipo)
+    public function destroy(Request $request)
     {
-        tipo::eliminar($tipo);
+        $token = JWTAuth::getToken();
+        $user = JWTAuth::toUser($token);
+        $id = $request->get('id');
+        
+        $tipo = $user->calendario->tipos()->where('id',$id)->first();
+        //dd($tipo);
+        $tipo->delete();
+
     }
 }

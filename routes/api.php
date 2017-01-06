@@ -23,7 +23,11 @@ Route::group(['middleware' => ['cors'], 'prefix' => 'v1'],function(){
 
    Route::get('images/{image_name}','ArticuloController@getImage');
    Route::get('articulo/{id}','ArticuloController@getArticulo');
+
    Route::get('testurl','CalendarioController@url');
+
+   Route::get('dias_habiles','CalendarioController@getDiasHabiles');
+
 
 
 });
@@ -60,13 +64,18 @@ Route::group(['middleware' => ['cors','jwt.auth'], 'prefix' => 'v1'],
    Route::get('/tipo','TipoController@index');
    Route::get('/tipo/{id}','TipoController@show');
    Route::post('/tipo','TipoController@store');
-   Route::put('/tipo/{id}','TipoController@update');
-   Route::delete('/tipo/{id}','TipoController@destroy');
+   Route::put('/tipo','TipoController@update');
+   Route::delete('/tipo','TipoController@destroy');
 
 
    //Articulos 
 
    Route::post('articulo','ArticuloController@store');
    Route::get('articulos','ArticuloController@getArticulos');
+
+
+   //dias habiles
+   Route::post('dias_habiles','CalendarioController@setDiasHabiles');
+
 
  });

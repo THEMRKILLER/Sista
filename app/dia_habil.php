@@ -41,6 +41,17 @@ class dia_habil extends Model
     	}
       public function asignar_horas($horas)
       {
+        if($horas == null) 
+        {
+          if($this->horasHabiles()->count() > 0 )
+          {
+            $this->horasHabiles()->delete();
+          }
+          return;
+
+        }
+
+        $this->horasHabiles()->whereNotIn('hora',$horas)->delete();
         foreach ($horas as $hora) {
             $hora_habil = hora_habil::firstOrNew(['diahabil_id'=> $this->id, 'hora' => $hora]);
             $this->horasHabiles()->save($hora_habil);
