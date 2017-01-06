@@ -17,6 +17,8 @@ class CreateCalendario extends Migration
             $table->increments('id');
             $table->integer('user_id')->unsigned()->index();
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+            $table->integer('hora_inicio')->default(0);
+            $table->integer('hora_final')->default(0);
             $table->timestamps();
 
         });
