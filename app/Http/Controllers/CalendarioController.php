@@ -143,6 +143,12 @@ class CalendarioController extends Controller
 
     }
 
+    public function url(Request $request)
+    {
+       $url =  $request->getHttpHost();
+       echo $url;
+    }
+
     public function asignar_horario_validate($horario)
     {
 
@@ -151,18 +157,77 @@ class CalendarioController extends Controller
 
     public function inhabilitar_fecha(Request $request)
     {
-        //$fecha = $request->get('fecha');
-
-                $fechas = [
-                        ['fecha' => '2016-12-28' , 'completo' => false, 'horas' =>[1,2,3,4,5] ],
-                        ['fecha' => '2016-12-29' , 'completo' => false, 'horas' =>[1,2,3,4,5] ],
-                        ['fecha' => '2016-12-30' , 'completo' => false, 'horas' =>[1,2,3,4,5] ],
-                        ['fecha' => '2016-12-31' , 'completo' => false, 'horas' =>[1,2,3,4,5] ],
-                        ['fecha' => '2017-01-01' , 'completo' => true, 'horas' => [] ],
-                ];
+     
         $token = JWTAuth::getToken();
         $user = JWTAuth::toUser($token);
         $user->calendario->inhabilitar_fecha($fechas);
+
+    }
+
+    /**
+     * Obtiene los días habiles así como también las horas de servicio de cada día habil
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return JSON
+     */
+
+    public function getDiasHabiles(Request $request)
+    {
+        $calendario_id = $request->get('calendario');
+
+        $calendario = calendario::find($calendario_id);
+        $dias_habiles = array();
+        $c_dias_habiles = $calendario->diasHabiles;
+        $horas_dia_habil = array(); //declaracion global
+        foreach ($c_dias_habiles as $dia_habil) 
+            {
+                $horas_dia_habil = array(); // se limpia el array
+                //se recorre las horas de los días habiles para darle un formato que el
+                //cliente pueda interpretar
+                foreach ($dia_habil->horasHabiles as $hora_model) array_push($horas_dia_habil, $hora_model->hora);
+                array_push($dias_habiles,['dia' => $dia_habil->dia,'horas' => $horas_dia_habil]);
+            }
+
+        if(count($dias_habiles) > 0 )return response()->json(['horario' => $dias_habiles, 'hora_inicio' => $calendario->hora_inicio,'hora_final' => $calendario->hora_final],200);
+        else return response()->json(null,404);
+
+    }
+
+    public function setDiasHabiles(Request $request){
+
+        $dias_habiles_request = $request->get('dias');
+        $hora_inicio = $request->get('hora_inicio');
+        $hora_final = $request->get('hora_final');
+
+        $token = JWTAuth::getToken();
+        $user = JWTAuth::toUser($token);
+
+        $dias_habiles = array();
+
+        foreach ($dias_habiles_request as $dia_habil) 
+        {
+            $horas = array();
+
+            foreach ($dia_habil['horas'] as $hora) 
+            {
+                 if($hora['disponible'])
+                    array_push($horas, $hora['hora']);
+                else {
+
+                }
+
+            }
+               
+            array_push($dias_habiles,['dia' => $dia_habil['dia'] , 'horas' => $horas , 'laboral' => $dia_habil['laboral'] ]);
+
+        }
+
+        $user->calendario->hora_inicio = $hora_inicio;
+        $user->calendario->hora_final = $hora_final;
+        $user->push();
+        $user->calendario->asignar_horario($dias_habiles);
+
+
 
     }
 }

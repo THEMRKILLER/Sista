@@ -65,13 +65,15 @@ class calendario extends Model
          
         foreach ($dias_habiles as $dia_habil) {
                 
-                $dia_habil_model = dia_habil::firstOrNew(['dia' => $dia_habil['dia']]);
+                $dia_habil_model = dia_habil::firstOrNew(['dia' => $dia_habil['dia'],'calendario_id' => $this->id]);
                 $this->diasHabiles()->save($dia_habil_model);
                 $dia_habil_model->save();
-                $dia_habil_model->asignar_horas($dia_habil['horas']);
+                if($dia_habil['laboral'])$dia_habil_model->asignar_horas($dia_habil['horas']);
+                else $dia_habil_model->asignar_horas(null);
         }
       
     	}
+
       public function inhabilitar_fecha($fechas)
     	{
             
@@ -92,4 +94,6 @@ class calendario extends Model
                     }
             }
     	}
+
+
 }
