@@ -108,8 +108,15 @@ class TipoController extends Controller
      * @param  \App\tipo  $tipo
      * @return \Illuminate\Http\Response
      */
-    public function destroy(tipo $tipo)
+    public function destroy(Request $request)
     {
-        tipo::eliminar($tipo);
+        $token = JWTAuth::getToken();
+        $user = JWTAuth::toUser($token);
+        $id = $request->get('id');
+        
+        $tipo = $user->calendario->tipos()->where('id',$id)->first();
+        //dd($tipo);
+        $tipo->delete();
+
     }
 }

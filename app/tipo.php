@@ -44,18 +44,9 @@ class tipo extends Model
 
 
       }
-      public function eliminar($tipo)
+      public function eliminar()
     	{
-            $Tipo = tipo::find($tipo['id']);
-            if ($Tipo === null) 
-              {
-              return "tipo no existe,verificar bien la codificacion";
-              }
-            else
-                {
-                $Tipo->destroy();
-                }
-      
+        $this->delete();
     	}
     /* 
     * @param arrayDatos estructura con el nombre y la duracion del tipo de cita 

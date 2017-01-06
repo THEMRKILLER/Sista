@@ -60,7 +60,7 @@ Route::group(['middleware' => ['cors','jwt.auth'], 'prefix' => 'v1'],
    Route::get('/tipo/{id}','TipoController@show');
    Route::post('/tipo','TipoController@store');
    Route::put('/tipo','TipoController@update');
-   Route::delete('/tipo/{id}','TipoController@destroy');
+   Route::delete('/tipo','TipoController@destroy');
 
 
    //Articulos 
