@@ -109,19 +109,33 @@ class CitaController extends Controller
     public function reagendar(Request $request,$id)
     {
                     $rules = array(
-
+                        'id_servicio' => 'required',
                         'fecha_inicio' => 'required|date',
                         'fecha_final' => 'required|date',
                 );
             $validator = Validator::make($request->all(), $rules);
-      if ($validator->fails())
+            if(cita::dateTimeExist($request->all)){
+                                    return response()->json(array(
+                                            'success' => false,
+                                            'errors' => 'no se puede agendar esa fecha'
+                                            ), 
+                                404); 
+            }else{
+                   if ($validator->fails())
             {
                 return response()->json(array(
                                             'success' => false,
                                             'errors' => $validator->getMessageBag()->toArray()
                                             ), 
                                 400); // 400 being the HTTP code for an invalid request.
+            }else{
+                cita::reagendar($request->all());
             }
+
+
+            }
+
+   
     cita::reagendar($request->all(),$id);    
     }
 
