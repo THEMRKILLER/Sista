@@ -9,9 +9,10 @@ use Carbon\Carbon;
 use Carbon\CarbonInterval;
 use DateTime;
 use DatePeriod;
+use DB;
 
-class cita extends Model {
-
+class cita extends Model
+{
     protected $table = 'cita';
     protected $fillable = [
         'id', 'tipo_id', 'calendario_id', 'fecha_inicio', 'fecha_final', 'cliente_nombre', 'cliente_telefono', 'cliente_email',
@@ -19,11 +20,13 @@ class cita extends Model {
 
     //relaciones
 
-    public function calendario() {
+    public function calendario()
+    {
         return $this->belongsTo('App\calendario');
     }
 
-    public function tipo() {
+    public function tipo()
+    {
         return $this->belongsTo('App\tipo');
     }
 
@@ -32,8 +35,8 @@ class cita extends Model {
     /*
      * @param arrayDatos estructura con nombre,telefono,email,fecha y hora de la cita
      */
-    public static function crear($arrayDatos) {
-
+    public static function crear($arrayDatos)
+    {
         $calendario = calendario::find($arrayDatos['calendario_id']);
         $tipo = tipo::find($arrayDatos['tipo_id']);
         $NuevaCita = new cita();
@@ -47,7 +50,8 @@ class cita extends Model {
         $calendario->citas()->save($NuevaCita);
     }
 
-    public function eliminar($cita) {
+    public function eliminar($cita)
+    {
         $Cita = cita::find($cita['id']);
         if ($Cita === null) {
             return "cita no existe,verificar bien la codificacion";
@@ -60,7 +64,8 @@ class cita extends Model {
      * @param arrayDatos estructura con nombre,telefono,email
      */
 
-    public function editar($arrayDatos, $id) {
+    public function editar($arrayDatos, $id)
+    {
         $Cita = cita::find($id);
         if ($Cita === null) {
             return "cita no existe,no se pudo realizar la modificacion";
@@ -73,14 +78,15 @@ class cita extends Model {
     }
 
     /*
-     * @param arrayDatos estructura con fecha y hora 
+     * @param arrayDatos estructura con fecha y hora
      */
 
-    public function reagendar($arrayDatos) {
+    public function reagendar($arrayDatos)
+    {
         $Cita = cita::find($id);
-       $tipo=$Cita->tipo()->duracion;
+        $tipo=$Cita->tipo()->duracion;
        
-       $fecha_final = carbon::parse($arrayDatos['fecha_final'])->addMinutes($tipo);
+        $fecha_final = carbon::parse($arrayDatos['fecha_final'])->addMinutes($tipo);
         if ($Cita === null) {
             return "cita no existe,no se pudo realizar la modificacion";
         } else {
@@ -91,15 +97,16 @@ class cita extends Model {
         }
     }
 
-    public function asignarTipo() {
-        
+    public function asignarTipo()
+    {
     }
 
     /*
      * @param Dato variable numerica que hace relacion a un id de la tabla Tipo
      */
 
-    public function cambiarTipo($arrayDatos) {
+    public function cambiarTipo($arrayDatos)
+    {
         $Cita = cita::find($arrayDatos['id']);
 
         if ($Cita === null) {
@@ -111,7 +118,8 @@ class cita extends Model {
     }
 
     //usar  carbon para mas consistencia
-    public static function dateTimeExist($arrayDatos) {
+    public static function dateTimeExist($arrayDatos)
+    {
         $di = new DateTime($arrayDatos['fecha_inicio']);
         $dt = new DateTime($arrayDatos['fecha_final']);
         $Dates = cita::whereBetween('fecha_inicio', [$di, $dt])->orwhereBetween('fecha_final', [$di, $dt])->first();
@@ -122,7 +130,8 @@ class cita extends Model {
         }
     }
 
-    public static function citasdeldia($dt, $di) {
+    public static function citasdeldia($dt, $di)
+    {
         $Dates = cita::where('fecha_inicio', '>=', $dt)->where('fecha_final', '<=', $di)->get();
         $events = array();
         foreach ($Dates as $date) {
@@ -133,10 +142,11 @@ class cita extends Model {
         return $events;
     }
 
-    public static function timeslota($arrayDatos) {
+    public static function timeslota($arrayDatos)
+    {
         // var_dump($arrayDatos);
         //$DuracionMins = tipo::find($arrayDatos['tipo_id'])->duracion;
-        //$di =new carbon($arrayDatos['dia']);  
+        //$di =new carbon($arrayDatos['dia']);
         //$dt=$di->toDateTimeString(); //fecha inicial convertida a string
         //$di = $di->addDay()->toDateTimeString(); //añade 1 dia y convierte a string
         //$schedule = [
@@ -160,7 +170,8 @@ class cita extends Model {
         $reqSlotMinutes = 0;
         $reqInterval = CarbonInterval::hour($reqSlotHours)->minutes($reqSlotMinutes);
 
-        function slotAvailable($from, $to, $events) {
+        function slotAvailable($from, $to, $events)
+        {
             foreach ($events as $event) {
                 $eventStart = Carbon::instance(new DateTime($event['fecha_inicio']));
                 $eventEnd = Carbon::instance(new DateTime($event['fecha_final']));
@@ -187,15 +198,44 @@ class cita extends Model {
         //var_dump($disponible);
         return $disponible;
     }
+public static function HorasLibres($rango, $horas)
+        {
+            $inicial = carbon::parse($rango['inicial']);
+            $final = carbon::parse($rango['final'])->subsecond();
+            for ($i=0; $i <count($horas) ; $i++) {
+                $hora_habil1 =carbon::parse($horas[$i]);
+                $hora_habil2 =carbon::parse($horas[$i])->addMinutes(59)->addSeconds(59);
+                if ($inicial->between($hora_habil1, $hora_habil2) and $final->between($hora_habil1, $hora_habil2)) {
+                    return true;
+                } else {
+                }
+            }
+           
+            // print_r($inicial." esta entre ".$hora_habil1." y ".$hora_habil2."    ");
+            return false;
+        }
 
-    public static function timeslot() {
+        ///filtro de citas
+       public  static function notInCitas($rango)
+        {
+            $di = new DateTime($rango['inicial']);
+            $dt = new DateTime($rango['final']);
+            $Dates = cita::whereBetween('fecha_inicio', [$di, $dt])->orwhereBetween('fecha_final', [$di, $dt])->get();
+            if (count($Dates) <= 0) {
+                return 1;
+            } else {
+                return $Dates->first()['fecha_final'];
+            }
+        }
+    public static function timeslot($fecha, $tipo_id)
+    {
 
         /*
           |--------------------------------------------------------------------------
           | real
           |--------------------------------------------------------------------------
           $fecha=$arrayDatos['dia'];
-          $duracion_servicio= tipo::find($arrayDatos['tipo_id'])->duracion;
+          
           |
          */
 
@@ -206,8 +246,9 @@ class cita extends Model {
           |
 
          */
-        $fecha = '2016-11-05 0:00:00';
-        $duracion_servicio = 30;
+       // $fecha = '2016-11-05 0:00:00';
+       // $duracion_servicio = 30;
+          $duracion_servicio= tipo::find($tipo_id)->duracion;
         $disponible = array();
 
         $fechaf = carbon::parse($fecha)->addDay()->toDateTimeString();
@@ -216,39 +257,7 @@ class cita extends Model {
         $horas_habiles = [ 11,13];
 
         ///filtro de horas disponibles
-        function inTime($rango, $horas) {
-            $inicial = carbon::parse($rango['inicial']);
-            $final = carbon::parse($rango['final'])->subsecond();
-            for ($i=0; $i <count($horas) ; $i++) { 
-               $hora_habil1 =carbon::parse($horas[$i]);
-                $hora_habil2 =carbon::parse($horas[$i])->addMinutes(59)->addSeconds(59);
-                            if ($inicial->between($hora_habil1, $hora_habil2) and $final->between($hora_habil1, $hora_habil2)) {
-                   
-                  return true;
-               
-             }else{
-
-
-             }
-             
-            }
-           
-            // print_r($inicial." esta entre ".$hora_habil1." y ".$hora_habil2."    ");
-            return false;
-        }
-
-        ///filtro de citas 
-        function notInCitas($rango) {
-            $di = new DateTime($rango['inicial']);
-            $dt = new DateTime($rango['final']);
-            $Dates = cita::whereBetween('fecha_inicio', [$di, $dt])->orwhereBetween('fecha_final', [$di, $dt])->get();
-            if (count($Dates) <= 0) {
-                return 1;
-            } else {
-
-                return $Dates->first()['fecha_final'];
-            }
-        }
+        
 
         $datehours = array();
         foreach ($horas_habiles as $hora) {
@@ -260,7 +269,7 @@ class cita extends Model {
         }
         $hora_disponible_inicial = $datehours[0];
         $horas_disponibles = array();
-         $fin_dia= carbon::parse(end($datehours))->addHour();
+        $fin_dia= carbon::parse(end($datehours))->addHour();
         while ($hora_disponible_inicial <$fin_dia) {
             $hora_propuesta_inicial = $hora_disponible_inicial;
             $hora_propuesta_final = carbon::parse($hora_disponible_inicial)->addMinutes($duracion_servicio)->toDateTimeString();
@@ -268,27 +277,25 @@ class cita extends Model {
             $rango['final'] = $hora_propuesta_final;
 
             $hora_disponible_inicial = carbon::parse($hora_disponible_inicial)->addMinutes($duracion_servicio)->toDateTimeString();
-            if(inTime($rango,$datehours)){
-                          $val = notInCitas($rango);
-            if ($val == 1) {
-
-                array_push($horas_disponibles, $hora_propuesta_inicial);
-                array_push($disponible, ['text' => Carbon::parse($hora_propuesta_inicial)->toTimeString(), 'value' => $hora_propuesta_inicial]);
-            } else {
-                ///ver si hay una cita a la hora final de la cita pasada
+            if (cita::HorasLibres($rango, $datehours)) {
+                $val = cita::notInCitas($rango);
+                if ($val == 1) {
+                    array_push($horas_disponibles, $hora_propuesta_inicial);
+                    array_push($disponible, ['text' => Carbon::parse($hora_propuesta_inicial)->toTimeString(), 'value' => $hora_propuesta_inicial]);
+                } else {
+                    ///ver si hay una cita a la hora final de la cita pasada
 
                 $n_rango['inicial'] = carbon::parse($val)->toDateTimeString();
-                $n_rango['final'] = carbon::parse($val)->addMinutes($duracion_servicio)->toDateTimeString();
-                $val2 = notInCitas($n_rango);
-                if ($val2 == 1) {
+                    $n_rango['final'] = carbon::parse($val)->addMinutes($duracion_servicio)->toDateTimeString();
+                    $val2 = cita::notInCitas($n_rango);
+                    if ($val2 == 1) {
 
 
                     //  array_push($horas_disponibles, $val2);
                     $hora_disponible_inicial = $n_rango['inicial'];
+                    }
                 }
-            }
-            }else{
-               
+            } else {
             }
  
 
@@ -296,25 +303,42 @@ class cita extends Model {
             //  dd(notInCitas($rango));
             // dd($hora_disponible_inicial,$hora_propuesta_final);
         }
-        dd($disponible);
+        
         return $disponible;
     }
-    public static function prueba() {
-            $inicial = carbon::parse('2016-11-05 11:00:00');
-            $final = carbon::parse('2016-11-05 11:30:00');                
-                $hora_habil1 =carbon::parse('2016-11-05 11:00:00');
-                $hora_habil2 =carbon::parse('2016-11-05 11:00:00')->addMinutes(59)->addSeconds(59);
-            if ($inicial->between($hora_habil1, $hora_habil2) and $final->between($hora_habil1, $hora_habil2)) {
-                   
-                  return true;
-               
-             }else{
-
-
-             }
+    public static function disponibilidadCal($tipo_id)
+    {
+        $disponibilidad=0;
+        $inicial = carbon::now();
+        
+        $Citas=cita::distinct()->select(DB::raw('DATE_FORMAT(fecha_inicio, \'%Y-%m-%d\') AS fecha_inicio'))
+            ->where('fecha_inicio', '>=', $inicial->toDateTimeString())
+            ->get();
+        $ocupado=array();
+        foreach ($Citas as $fecha) {
+           $espacios= cita::timeslot($fecha['fecha_inicio'], $tipo_id);
+           //disponibilidad baja
+         if(count($espacios)>0 and count($espacios)<=2){
+            $disponibilidad=3;
+         }
+            //disponibilidad media
+         if(count($espacios)>2 and count($espacios)<=5){
+            $disponibilidad=2;
+         }
+         //disponibilidad alta
+         if(count($espacios)>5){
+            $disponibilidad=1;
+         }
+        
+        array_push($ocupado,['fecha' => $fecha['fecha_inicio'], 'disponibilidad' => $disponibilidad] );
             
-            // print_r($inicial." esta entre ".$hora_habil1." y ".$hora_habil2."    ");
-            return false;
         }
+              //
+            
+              
+               //
+            
 
+        return $ocupado;
+    }
 }
