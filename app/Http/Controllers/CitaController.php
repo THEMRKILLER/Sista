@@ -146,10 +146,10 @@ class CitaController extends Controller
     {
         //$request[dia]
        //request[duracion]
-       $dia =$request['dia'];//'2016-11-11';
+       $dia =$request['dia'];//'2016-01-15';
         $tipo=$request['tipo_id'];//30;
-
-        $horasDisponibles= cita::timeslot($dia,$tipo);
+         $calendario_id=$request['calendario_id'];
+        $horasDisponibles= cita::timeslot($dia,$tipo,$calendario_id);
         //dd($horasDisponibles);
        return \Response::json($horasDisponibles, 200);
     }
@@ -158,5 +158,13 @@ class CitaController extends Controller
         $tipo=intval($request['tipo_id']);
         $horasDisponibles= cita::disponibilidadCal($tipo);
         return \Response::json($horasDisponibles, 200);
+    }
+    public function filtrarHoras(Request $request)
+    {
+                //$request[dia]
+       //request[duracion]
+       $dia ='2017-01-10';
+        $calendario_id=1;
+        cita::filtrarHoras($dia,$calendario_id);
     }
 }

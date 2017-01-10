@@ -25,7 +25,7 @@ Route::group(['middleware' => ['cors'], 'prefix' => 'v1'],function(){
    Route::get('articulo/{id}','ArticuloController@getArticulo');
 
    Route::get('testurl','CalendarioController@url');
-
+Route::get('obtener_horas','CitaController@filtrarHoras');
    Route::get('dias_habiles','CalendarioController@getDiasHabiles');
 
 
