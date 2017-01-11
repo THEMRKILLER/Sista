@@ -28,6 +28,8 @@ Route::group(['middleware' => ['cors'], 'prefix' => 'v1'],function(){
 Route::get('obtener_horas','CitaController@filtrarHoras');
    Route::get('dias_habiles','CalendarioController@getDiasHabiles');
 
+   Route::get('fecha_inhabil','CalendarioController@getDiasHorasInhabiles');
+
 
 
 });
@@ -76,6 +78,8 @@ Route::group(['middleware' => ['cors','jwt.auth'], 'prefix' => 'v1'],
 
    //dias habiles
    Route::post('dias_habiles','CalendarioController@setDiasHabiles');
+
+   Route::post('fecha_inhabil','CalendarioController@setDiasHorasInhabiles');
 
 
  });

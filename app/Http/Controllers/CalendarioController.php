@@ -8,6 +8,8 @@ use JWTAuth;
 use json;
 use Validator;
 use Auth;
+use App\fecha_inhabil;
+use App\fechahora_inhabil;
 class CalendarioController extends Controller
 {
     /**
@@ -229,5 +231,56 @@ class CalendarioController extends Controller
 
 
 
+    }
+    public function getDiasHorasInhabiles(Request $request)
+    {
+        $calendario_id = $request->get('calendario_id');
+        $calendario = calendario::find($calendario_id);
+        $dias_inhabiles  = $calendario->fechasInhabiles;
+ //       dd($dias_inhabiles);
+        $dias_inhabiles_arr = array();
+
+        foreach ($dias_inhabiles as $dia_inhabil) {
+                array_push($dias_inhabiles_arr,['dia' => $dia_inhabil->dia,'completo' => $dia_inhabil->completo,'horas' => $dia_inhabil->horasInhabiles]);
+        }
+
+
+        return response()->json($dias_inhabiles_arr,200);
+
+    }
+    public function setDiasHorasInhabiles(Request $request)
+    {
+        $token = JWTAuth::getToken();
+        $user = JWTAuth::toUser($token);
+
+        $dia_inhabil_r = $request->get('fecha');
+        $completo = $request->get('completo');
+        $horas = $request->get('horas');
+
+        $calendario = $user->calendario;
+
+        if($calendario->fechasInhabiles()->where('fecha',$dia_inhabil_r)->first()) return response()->json(null,400);
+        
+
+       // dd(get_class_methods($user->calendario->fechasInhabiles->horasInhabiles) );
+        $dia_inhabil = new fecha_inhabil();
+        $dia_inhabil->fecha = $dia_inhabil_r;
+        $dia_inhabil->completo = $completo;
+
+        $calendario->fechasInhabiles()->save($dia_inhabil);
+
+        $dia_inhabil->horasInhabiles()->whereNotIn('hora',$horas)->delete();
+
+        if(!$completo)
+        {
+
+            foreach ($horas as $hora) 
+            {
+                $hora_inhabil = fechahora_inhabil::firstOrNew(['fechainhabil_id'=> $dia_inhabil->id, 'hora' => $hora]);
+                $dia_inhabil->horasInhabiles()->save($hora_inhabil);
+            }
+        }
+
+        
     }
 }
