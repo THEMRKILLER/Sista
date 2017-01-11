@@ -24,6 +24,9 @@ Route::group(['middleware' => ['cors'], 'prefix' => 'v1'],function(){
    Route::get('images/{image_name}','ArticuloController@getImage');
    Route::get('articulo/{id}','ArticuloController@getArticulo');
 
+      Route::get('/tipo','TipoController@index');
+
+
    Route::get('testurl','CalendarioController@url');
 Route::get('obtener_horas','CitaController@filtrarHoras');
    Route::get('dias_habiles','CalendarioController@getDiasHabiles');
@@ -63,7 +66,6 @@ Route::group(['middleware' => ['cors','jwt.auth'], 'prefix' => 'v1'],
    Route::put('/cita-r/{id}','CitaController@reagendar');
    Route::delete('/cita/{id}','CitaController@destroy');
    //tipo-cita
-   Route::get('/tipo','TipoController@index');
    Route::get('/tipo/{id}','TipoController@show');
    Route::post('/tipo','TipoController@store');
    Route::put('/tipo','TipoController@update');

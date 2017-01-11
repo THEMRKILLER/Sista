@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\tipo;
+use App\calendario;
 use Illuminate\Http\Request;
 use JWTAuth;
 use Validator;
@@ -15,15 +16,16 @@ class TipoController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
-    {
-          $token = JWTAuth::getToken();
-          $user = JWTAuth::toUser($token);
-          $servicios = $user->calendario->tipos;
+    public function index(Request $request)
+    {   
+        $calendario_id = $request->get('calendario_id');
+        $calendario = calendario::find($calendario_id);
+        $servicios = $calendario->tipos;
 
           return response()->json($servicios,200);
 
     }
+
 
 
     /**
