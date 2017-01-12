@@ -287,7 +287,7 @@ class CalendarioController extends Controller
     {
      
         $horas_propuestas = array();
-        $duracion_servicio = 100/100;
+        $duracion_servicio = 30/100;
         $hora_inicial = reset($this->horas_filtrado);
         $hora_final_dia = end($this->horas_filtrado);
         $horas_propuestas = $this->rellenarHoras($duracion_servicio,$hora_inicial,$horas_propuestas,$hora_final_dia);
@@ -297,11 +297,7 @@ class CalendarioController extends Controller
     public function consultarCita($hora_inicial,$hora_final)
     {
         $hora_final = $hora_final - 0.01;
-        echo "  Hora inicial : ".$hora_inicial;
-        echo "  Hora final: ".$hora_final;
-        echo "--------------------------";
-        echo "\n";
-
+        
         $citas = [
 
             ['hora_inicial' => 8 , 'hora_final' => 8.99  ],
@@ -317,15 +313,15 @@ class CalendarioController extends Controller
 
         foreach ($citas as $cita) {
 
-               
 
                 if( 
-                    $hora_inicial <= $cita['hora_inicial'] && $hora_final >= $cita['hora_inicial']
+                    floatval($hora_inicial )<= floatval($cita['hora_inicial'])  && floatval($hora_final) >= floatval($cita['hora_inicial'])
                                                     ||
-                    $cita['hora_inicial'] <= $hora_inicial && $cita['hora_final'] >= $hora_final
+                   floatval($cita['hora_inicial'] ) <= floatval($hora_inicial)  && floatval($cita['hora_final'] ) >= floatval($hora_final) 
                     )
                     return $cita;
         }
+
 
         return false;
     }
@@ -343,36 +339,53 @@ class CalendarioController extends Controller
         $cita = $this->consultarCita($hora_inicial,$hora_final);
 
 
-    if($cita)
+    if($cita != false)
     {
-        return $this->rellenarHoras($d_s,$cita['hora_final']+0.01,$h_p,$h_f_d );
+        return $this->rellenarHoras($d_s,$cita['hora_final']+0.01,$horas_propuestas,$hora_final_dia );
     }
     else{
 
-        $hora_inicial_next = $this->nextDisponible($hora_inicial);
-        if($hora_inicial == false) return $horas_propuestas;
+        $hora_inicial_next = $this->nextDisponible($hora_inicial);        
 
-        if($hora_inicial_next == $hora_inicial) array_push($horas_propuestas,$hora_inicial);
-        else return $this->rellenarHoras($d_s,$hora_inicial_next,$horas_propuestas,$h_f_d );
+        if($hora_inicial_next == $hora_inicial ) {
+            array_push($horas_propuestas,$hora_inicial);
+            $hora_final_tmp = floatval($hora_inicial_next + $duracion_servicio);
+            echo "\n";
+            echo "Next devolvio : ".$hora_inicial_next;
+            echo "\n";
+            echo "Se hizo push de : ".$hora_inicial;
+            echo "Se calcula ahora : ".$hora_final_tmp;
+            echo "\n";
+            return $this->rellenarHoras($duracion_servicio,$hora_final_tmp,$horas_propuestas,$hora_final_dia );
+
+
+        }
+        else 
+            {
+                return $this->rellenarHoras($d_s,$hora_inicial_next,$horas_propuestas,$h_f_d );
+            }
 
         
-        return $this->rellenarHoras($d_s,$hora_final,$horas_propuestas,$h_f_d );
     }
 
 
     }
+
 
     function nextDisponible($hora)
     {
+
             $_h = intval($hora);
             if(end($this->horas_filtrado) < $_h) return $hora; 
-            
+            $flag = false;
             foreach($this->horas_filtrado as $h_f)
             {
-                if($h_f == $_h) return $h_f;
+                if($h_f == $_h) {
+                    $flag = true;
+                    return $hora;
+                }
             }
-
-            return $this->nextDisponible($_h+1);
+           if($flag == false) return $this->nextDisponible($hora+1);
     }
 
 
