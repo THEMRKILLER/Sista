@@ -33,6 +33,8 @@ Route::get('obtener_horas','CitaController@filtrarHoras');
 
    Route::get('fecha_inhabil','CalendarioController@getDiasHorasInhabiles');
 
+   Route::get('algoritmo','CalendarioController@algoritmo');
+
 
 
 });

@@ -241,10 +241,8 @@ class CalendarioController extends Controller
         $dias_inhabiles_arr = array();
 
         foreach ($dias_inhabiles as $dia_inhabil) {
-                array_push($dias_inhabiles_arr,['dia' => $dia_inhabil->dia,'completo' => $dia_inhabil->completo,'horas' => $dia_inhabil->horasInhabiles]);
+                array_push($dias_inhabiles_arr,['dia' => $dia_inhabil->fecha,'completo' => $dia_inhabil->completo,'horas' => $dia_inhabil->horasInhabiles]);
         }
-
-
         return response()->json($dias_inhabiles_arr,200);
 
     }
@@ -258,7 +256,6 @@ class CalendarioController extends Controller
         $horas = $request->get('horas');
 
         $calendario = $user->calendario;
-
         if($calendario->fechasInhabiles()->where('fecha',$dia_inhabil_r)->first()) return response()->json(null,400);
         
 
@@ -283,4 +280,101 @@ class CalendarioController extends Controller
 
         
     }
+
+    private $horas_filtrado = [8,9,10,11,12,13,15,16,17,18,19];
+
+    public function algoritmo()
+    {
+     
+        $horas_propuestas = array();
+        $duracion_servicio = 100/100;
+        $hora_inicial = reset($this->horas_filtrado);
+        $hora_final_dia = end($this->horas_filtrado);
+        $horas_propuestas = $this->rellenarHoras($duracion_servicio,$hora_inicial,$horas_propuestas,$hora_final_dia);
+        return $horas_propuestas;
+    }
+
+    public function consultarCita($hora_inicial,$hora_final)
+    {
+        $hora_final = $hora_final - 0.01;
+        echo "  Hora inicial : ".$hora_inicial;
+        echo "  Hora final: ".$hora_final;
+        echo "--------------------------";
+        echo "\n";
+
+        $citas = [
+
+            ['hora_inicial' => 8 , 'hora_final' => 8.99  ],
+
+            ['hora_inicial' => 10 , 'hora_final' => 11.99  ],
+
+            ['hora_inicial' => 12 , 'hora_final' => 12.99  ],
+
+            ['hora_inicial' => 15 , 'hora_final' => 16.99  ],
+        ];
+
+
+
+        foreach ($citas as $cita) {
+
+               
+
+                if( 
+                    $hora_inicial <= $cita['hora_inicial'] && $hora_final >= $cita['hora_inicial']
+                                                    ||
+                    $cita['hora_inicial'] <= $hora_inicial && $cita['hora_final'] >= $hora_final
+                    )
+                    return $cita;
+        }
+
+        return false;
+    }
+
+    public function rellenarHoras($duracion_servicio,$hora_inicial,$horas_propuestas,$hora_final_dia)
+    {
+        $h_p = $horas_propuestas; 
+        if($hora_inicial >= $hora_final_dia) return $h_p;
+
+        $d_s = $duracion_servicio;
+        $h_f_d  = $hora_final_dia;
+
+        $hora_final = floatval($hora_inicial + $duracion_servicio);
+        
+        $cita = $this->consultarCita($hora_inicial,$hora_final);
+
+
+    if($cita)
+    {
+        return $this->rellenarHoras($d_s,$cita['hora_final']+0.01,$h_p,$h_f_d );
+    }
+    else{
+
+        $hora_inicial_next = $this->nextDisponible($hora_inicial);
+        if($hora_inicial == false) return $horas_propuestas;
+
+        if($hora_inicial_next == $hora_inicial) array_push($horas_propuestas,$hora_inicial);
+        else return $this->rellenarHoras($d_s,$hora_inicial_next,$horas_propuestas,$h_f_d );
+
+        
+        return $this->rellenarHoras($d_s,$hora_final,$horas_propuestas,$h_f_d );
+    }
+
+
+    }
+
+    function nextDisponible($hora)
+    {
+            $_h = intval($hora);
+            if(end($this->horas_filtrado) < $_h) return $hora; 
+            
+            foreach($this->horas_filtrado as $h_f)
+            {
+                if($h_f == $_h) return $h_f;
+            }
+
+            return $this->nextDisponible($_h+1);
+    }
+
+
+
 }
