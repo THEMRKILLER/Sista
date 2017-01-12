@@ -156,7 +156,8 @@ class CitaController extends Controller
     public function disponibilidadCalendario(Request $request)
     {
         $tipo=intval($request['tipo_id']);
-        $horasDisponibles= cita::disponibilidadCal($tipo);
+        $calendario_id=$request['calendario_id'];
+        $horasDisponibles= cita::disponibilidadCal($tipo,$calendario_id);
         return \Response::json($horasDisponibles, 200);
     }
     public function filtrarHoras(Request $request)
@@ -167,4 +168,16 @@ class CitaController extends Controller
         $calendario_id=1;
         cita::filtrarHoras($dia,$calendario_id);
     }
+
+        public function inhabil(Request $request)
+    {
+                //$request[dia]
+       //request[duracion]
+       $dia ='2017-01-14';
+        $calendario_id=1;
+        $valor=cita::filtroHorasInhabiles($dia,$calendario_id);
+        dd($valor);
+    }
+
+
 }

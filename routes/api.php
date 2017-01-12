@@ -20,6 +20,9 @@ Route::group(['middleware' => ['cors'], 'prefix' => 'v1'],function(){
    Route::get('registro_test','Auth\RegisterController@createTest');
    Route::get('servicio-disponible','CitaController@horasDisponibles');
    Route::get('disponibilidad','CitaController@disponibilidadCalendario');
+   Route::get('prueba','CitaController@inhabil');
+
+
 
    Route::get('images/{image_name}','ArticuloController@getImage');
    Route::get('articulo/{id}','ArticuloController@getArticulo');
