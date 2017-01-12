@@ -102,8 +102,10 @@ class CitaController extends Controller
         }
         cita::editar($request->all(), $id);
     }
-    public function reagendar(Request $request, $id)
+    public function reagendar(Request $request)
     {
+      
+        
         $rules = array(
                         'id_servicio' => 'required',
                         'fecha_inicio' => 'required|date',

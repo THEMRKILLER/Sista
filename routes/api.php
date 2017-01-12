@@ -68,7 +68,7 @@ Route::group(['middleware' => ['cors','jwt.auth'], 'prefix' => 'v1'],
    Route::get('/cita/{id}','CitaController@show');
    Route::post('cita','CitaController@store');
    Route::put('/cita/{id}','CitaController@update');
-   Route::put('/cita-r/{id}','CitaController@reagendar');
+   Route::put('cita-r','CitaController@reagendar');
    Route::delete('/cita/{id}','CitaController@destroy');
    //tipo-cita
    Route::get('/tipo/{id}','TipoController@show');

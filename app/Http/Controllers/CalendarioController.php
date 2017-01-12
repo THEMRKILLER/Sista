@@ -266,7 +266,7 @@ class CalendarioController extends Controller
     public function algoritmo()
     {
         $horas_propuestas = array();
-        $duracion_servicio = 30/100;
+        $duracion_servicio = 50/100;
         $hora_inicial = reset($this->horas_filtrado);
         $hora_final_dia = end($this->horas_filtrado);
         $horas_propuestas = $this->rellenarHoras($duracion_servicio, $hora_inicial, $horas_propuestas, $hora_final_dia);
