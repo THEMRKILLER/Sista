@@ -146,13 +146,12 @@ class CitaController extends Controller
     
     public function horasDisponibles(Request $request)
     {
-        //$request[dia]
-       //request[duracion]
-       $dia =$request['dia'];//'2016-01-15';
-        $tipo=$request['tipo_id'];//30;
+
+       $dia =$request['dia'];
+        $tipo=$request['tipo_id'];
          $calendario_id=$request['calendario_id'];
         $horasDisponibles= cita::timeslot($dia,$tipo,$calendario_id);
-        //dd($horasDisponibles);
+    
        return \Response::json($horasDisponibles, 200);
     }
     public function disponibilidadCalendario(Request $request)
@@ -173,8 +172,6 @@ class CitaController extends Controller
 
         public function inhabil(Request $request)
     {
-                //$request[dia]
-       //request[duracion]
        $dia ='2017-01-14';
         $calendario_id=1;
         $valor=cita::filtroHorasInhabiles($dia,$calendario_id);
