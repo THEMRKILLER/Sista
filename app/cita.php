@@ -122,7 +122,7 @@ class cita extends Model
  */
     public static function dateTimeExist($arrayDatos)
     {
-         $finalt=carbon::parse($arrayDatos['fecha_final'])->subMinute()->toDateTimeString();
+        $finalt=carbon::parse($arrayDatos['fecha_final'])->subMinute()->toDateTimeString();
         $di = new DateTime($arrayDatos['fecha_inicio']);
         $dt = new DateTime($finalt);
         $Dates = cita::whereBetween('fecha_inicio', [$di, $dt])->orwhereBetween('fecha_final', [$di, $dt])->first();
@@ -187,7 +187,7 @@ class cita extends Model
  */
        public static function notInCitas($inicial, $final)
        {
-            $finalt=carbon::parse($final)->subMinute()->toDateTimeString();
+           $finalt=carbon::parse($final)->subMinute()->toDateTimeString();
            $di = new DateTime($inicial);
            $dt = new DateTime($finalt);
            $Dates = cita::whereBetween('fecha_inicio', [$di, $dt])->orwhereBetween('fecha_final', [$di, $dt])->get();
@@ -210,7 +210,7 @@ class cita extends Model
         foreach ($Citas as $fecha) {
             $espacios= cita::timeslot($fecha['fecha_inicio'], $tipo_id, $calendario_id);
            //disponibilidad baja
-         if (count($espacios)>0 and count($espacios)<=2) {
+         if (count($espacios)>=0 and count($espacios)<=2) {
              $disponibilidad=3;
          }
             //disponibilidad media
@@ -264,7 +264,10 @@ class cita extends Model
     public static function rellenarHoras($fecha, $horas_filtrado, $duracion_servicio, $hora_inicial, $horas_propuestas, $hora_final_dia)
     {
         $h_p = $horas_propuestas;
-
+        //validacion extra
+        //$lastMinute=carbon::parse($hora_final_dia)->addHour()->subSecond()->toDateTimeString();
+        //$hfd=carbon::parse($hora_inicial)->addMinutes($duracion_servicio)->toDateTimeString();
+        // && $hfd>=$lastMinute
         if ($hora_inicial >= $hora_final_dia) {
             return $h_p;
         }
@@ -315,9 +318,9 @@ class cita extends Model
     public static function nextDisponible($hora, $horas_filtrado)
     {
         $temp_h=carbon::parse($hora);
-        $y=$temp_h->year;                                        
-        $m=$temp_h->month;                                      
-        $d=$temp_h->day;                                          
+        $y=$temp_h->year;
+        $m=$temp_h->month;
+        $d=$temp_h->day;
         $h=$temp_h->hour;
         $_h = Carbon::create($y, $m, $d, $h, 0, 0);
         if (end($horas_filtrado) < $_h) {
@@ -341,7 +344,7 @@ class cita extends Model
         //se declara arreglo para llenarlo mas adelante
         $horas_propuestas = array();
         $duracion_servicio= tipo::find($tipo_id)->duracion;
-
+        
         $horas_habiles = cita::filtrarHoras($fecha, $calendario_id);
         $horas_inhabiles = cita::filtroHorasInhabiles($fecha, $calendario_id);
         //el producto final, despues de haber pasado por todos los filtros
@@ -358,11 +361,29 @@ class cita extends Model
             return cita::ConversionArray($horas_propuestas);
         }
     }
-    public static function ConversionArray($array){
+    public static function ConversionArray($array)
+    {
         $arreglo=array();
-        foreach ($array as $key ) {
-             array_push($arreglo, ['text' => Carbon::parse($key)->toTimeString(), 'value' => $key]);
+        foreach ($array as $key) {
+            array_push($arreglo, ['text' => Carbon::parse($key)->toTimeString(), 'value' => $key]);
         }
         return $arreglo;
+    }
+    public static function diasNoHabiles($calendario_id)
+    {
+        $calendario = calendario::find($calendario_id);
+        $diasHabiles=$calendario->diasHabiles()->get();
+        $diasNohabiles= array();
+        $dias_semana= [1,2,3,4,5,6,7];
+               // dd($diasHabiles);
+                foreach ($diasHabiles as $dia) {
+                    $dia_id= $dia->horasHabiles()->distinct()->select('diahabil_id')->get(); 
+                    if ( count($dia_id)>0) {                
+                    array_push($diasNohabiles, $dia_id->first()->diahabil_id);
+                    }
+                }
+            
+       return array_values( array_diff($dias_semana, $diasNohabiles));
+      
     }
 }
