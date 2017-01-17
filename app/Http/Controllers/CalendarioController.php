@@ -1,7 +1,5 @@
 <?php
-
 namespace App\Http\Controllers;
-
 use App\calendario;
 use Illuminate\Http\Request;
 use JWTAuth;
@@ -10,7 +8,7 @@ use Validator;
 use Auth;
 use App\fecha_inhabil;
 use App\fechahora_inhabil;
-use App\User;
+
 class CalendarioController extends Controller
 {
     /**
@@ -29,6 +27,7 @@ class CalendarioController extends Controller
        
        $events=array();
 
+
       foreach ($citas as $cita) {
         
         $title=$cita->tipo->nombre;
@@ -45,7 +44,6 @@ class CalendarioController extends Controller
        return \Response::json(['citas' => $events, 'servicios' => $servicios],200);
    
     }
-
     /**
      * Show the form for creating a new resource.
      *
@@ -55,7 +53,6 @@ class CalendarioController extends Controller
     {
         //
     }
-
     /**
      * Store a newly created resource in storage.
      *
@@ -66,7 +63,6 @@ class CalendarioController extends Controller
     {
         //
     }
-
     /**
      * Display the specified resource.
      *
@@ -77,7 +73,6 @@ class CalendarioController extends Controller
     {
         //
     }
-
     /**
      * Show the form for editing the specified resource.
      *
@@ -88,7 +83,6 @@ class CalendarioController extends Controller
     {
         //
     }
-
     /**
      * Update the specified resource in storage.
      *
@@ -100,7 +94,6 @@ class CalendarioController extends Controller
     {
         //
     }
-
     /**
      * Remove the specified resource from storage.
      *
@@ -111,7 +104,6 @@ class CalendarioController extends Controller
     {
         //
     }
-
     public function asignar_horario(Request $request)
     {
         /*
@@ -124,8 +116,6 @@ class CalendarioController extends Controller
                 }
             }
         */
-
-
          $dias_habiles = [
                             ['dia' => 1, 'horas'=>[1,2,3,4,5,6,7,8,9,10]],
                             ['dia' => 2, 'horas'=>[1,2,3,4,5,6,7,8,9,10]],
@@ -133,31 +123,25 @@ class CalendarioController extends Controller
                             ['dia' => 4, 'horas'=>[1,2,3,4,5,6,7,8,9,10]],
                             ['dia' => 5, 'horas'=>[1,2,3,4,5,6,7,8,9,10]],
                             ['dia' => 6, 'horas'=>[1,2,3,4,5,6,7,8,9,10]]
-
                         ];
       // $dias_habiles = $request->get('dias_habiles');
        $token = JWTAuth::getToken();
        $user = JWTAuth::toUser($token);
        $user->calendario->asignar_horario($dias_habiles);
 
-
-
        
 
     }
-
     public function url(Request $request)
     {
        $url =  $request->getHttpHost();
        echo $url;
     }
-
     public function asignar_horario_validate($horario)
     {
 
 
     }
-
     public function inhabilitar_fecha(Request $request)
     {
      
@@ -166,18 +150,15 @@ class CalendarioController extends Controller
         $user->calendario->inhabilitar_fecha($fechas);
 
     }
-
     /**
      * Obtiene los días habiles así como también las horas de servicio de cada día habil
      *
      * @param  \Illuminate\Http\Request  $request
      * @return JSON
      */
-
     public function getDiasHabiles(Request $request)
     {
         $calendario_id = $request->get('calendario');
-
         $calendario = calendario::find($calendario_id);
         $dias_habiles = array();
         $c_dias_habiles = $calendario->diasHabiles;
@@ -191,22 +172,25 @@ class CalendarioController extends Controller
                 array_push($dias_habiles,['dia' => $dia_habil->dia,'horas' => $horas_dia_habil]);
             }
 
+
         if(count($dias_habiles) > 0 )return response()->json(['horario' => $dias_habiles, 'hora_inicio' => $calendario->hora_inicio,'hora_final' => $calendario->hora_final],200);
         else return response()->json(null,404);
 
     }
 
-    public function setDiasHabiles(Request $request){
+  
+    public function setDiasHabiles(Request $request)
+    {
 
         $dias_habiles_request = $request->get('dias');
         $hora_inicio = $request->get('hora_inicio');
         $hora_final = $request->get('hora_final');
-
         $token = JWTAuth::getToken();
         $user = JWTAuth::toUser($token);
-
         $dias_habiles = array();
 
+
+    
         foreach ($dias_habiles_request as $dia_habil) 
         {
             $horas = array();
@@ -224,7 +208,6 @@ class CalendarioController extends Controller
             array_push($dias_habiles,['dia' => $dia_habil['dia'] , 'horas' => $horas , 'laboral' => $dia_habil['laboral'] ]);
 
         }
-
         $user->calendario->hora_inicio = $hora_inicio;
         $user->calendario->hora_final = $hora_final;
         $user->push();
@@ -240,35 +223,30 @@ class CalendarioController extends Controller
         $dias_inhabiles  = $calendario->fechasInhabiles;
  //       dd($dias_inhabiles);
         $dias_inhabiles_arr = array();
-
         foreach ($dias_inhabiles as $dia_inhabil) {
                 array_push($dias_inhabiles_arr,['dia' => $dia_inhabil->fecha,'completo' => $dia_inhabil->completo,'horas' => $dia_inhabil->horasInhabiles]);
         }
         return response()->json($dias_inhabiles_arr,200);
+
 
     }
     public function setDiasHorasInhabiles(Request $request)
     {
         $token = JWTAuth::getToken();
         $user = JWTAuth::toUser($token);
-
         $dia_inhabil_r = $request->get('fecha');
         $completo = $request->get('completo');
         $horas = $request->get('horas');
-
         $calendario = $user->calendario;
         if($calendario->fechasInhabiles()->where('fecha',$dia_inhabil_r)->first()) return response()->json(null,400);
         
-
        // dd(get_class_methods($user->calendario->fechasInhabiles->horasInhabiles) );
         $dia_inhabil = new fecha_inhabil();
         $dia_inhabil->fecha = $dia_inhabil_r;
         $dia_inhabil->completo = $completo;
-
         $calendario->fechasInhabiles()->save($dia_inhabil);
 
         $dia_inhabil->horasInhabiles()->whereNotIn('hora',$horas)->delete();
-
         if(!$completo)
         {
 
@@ -281,9 +259,7 @@ class CalendarioController extends Controller
 
         
     }
-
     private $horas_filtrado = [8,9,10,11,12,13,15,16,17,18,19];
-
     public function algoritmo()
     {
      
@@ -291,8 +267,8 @@ class CalendarioController extends Controller
         $duracion_servicio = 132/100;
         $hora_inicial = reset($this->horas_filtrado);
         $hora_final_dia = end($this->horas_filtrado);
-        $horas_propuestas = $this->rellenarHoras($duracion_servicio,$hora_inicial,$horas_propuestas,$hora_final_dia);
-        return $horas_propuestas;
+
+
     }
 
     public function consultarCita($hora_inicial,$hora_final)
@@ -300,18 +276,11 @@ class CalendarioController extends Controller
         $hora_final = $hora_final - 0.01;
         
         $citas = [
-
             ['hora_inicial' => 8 , 'hora_final' => 8.99  ],
-
             ['hora_inicial' => 10 , 'hora_final' => 11.99  ],
-
             ['hora_inicial' => 12 , 'hora_final' => 12.99  ],
-
             ['hora_inicial' => 15 , 'hora_final' => 16.99  ],
         ];
-
-
-
         foreach ($citas as $cita) {
 
 
@@ -322,10 +291,9 @@ class CalendarioController extends Controller
                     )
                     return $cita;
         }
-
-
         return false;
     }
+
 
     public function rellenarHoras($duracion_servicio,$hora_inicial,$horas_propuestas,$hora_final_dia)
     {
@@ -334,20 +302,16 @@ class CalendarioController extends Controller
 
         $d_s = $duracion_servicio;
         $h_f_d  = $hora_final_dia;
-
         $hora_final = floatval($hora_inicial + $duracion_servicio);
         
         $cita = $this->consultarCita($hora_inicial,$hora_final);
-
 
     if($cita != false)
     {
         return $this->rellenarHoras($d_s,$cita['hora_final']+0.01,$horas_propuestas,$hora_final_dia );
     }
     else{
-
         $hora_inicial_next = $this->nextDisponible($hora_inicial);        
-
         if($hora_inicial_next == $hora_inicial ) {
             array_push($horas_propuestas,$hora_inicial);
             $hora_final_tmp = floatval($hora_inicial_next + $duracion_servicio);
@@ -358,24 +322,16 @@ class CalendarioController extends Controller
             echo "Se calcula ahora : ".$hora_final_tmp;
             echo "\n";
             return $this->rellenarHoras($duracion_servicio,$hora_final_tmp,$horas_propuestas,$hora_final_dia );
-
-
         }
         else 
             {
                 return $this->rellenarHoras($d_s,$hora_inicial_next,$horas_propuestas,$h_f_d );
             }
-
         
     }
-
-
     }
-
-
     function nextDisponible($hora)
     {
-
             $_h = intval($hora);
             if(end($this->horas_filtrado) < $_h) return $hora; 
             $flag = false;
@@ -389,7 +345,3 @@ class CalendarioController extends Controller
            if($flag == false) return $this->nextDisponible($hora+1);
     }
 
-   
-
-
-}

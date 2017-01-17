@@ -146,36 +146,43 @@ class CitaController extends Controller
     
     public function horasDisponibles(Request $request)
     {
-        //$request[dia]
-       //request[duracion]
-       $dia =$request['dia'];//'2016-01-15';
-        $tipo=$request['tipo_id'];//30;
+
+       $dia =$request['dia'];
+        $tipo=$request['tipo_id'];
          $calendario_id=$request['calendario_id'];
+        
         $horasDisponibles= cita::timeslot($dia,$tipo,$calendario_id);
-        //dd($horasDisponibles);
+        
+       
+         //dd($compress);
        return \Response::json($horasDisponibles, 200);
     }
     public function disponibilidadCalendario(Request $request)
     {
+
         $tipo=intval($request['tipo_id']);
         $calendario_id=$request['calendario_id'];
-        $horasDisponibles= cita::disponibilidadCal($tipo,$calendario_id);
-        return \Response::json($horasDisponibles, 200);
+
+        //dias que no hay ninguna horahabil
+        $diasNoHabiles= cita::diasNoHabiles($calendario_id);
+        //disponibilidad del dia en base al numero de huecos vacios
+        $disponibilidad= cita::disponibilidadCal($tipo,$calendario_id);
+         $compress=array();
+          array_push($compress, ['disponibilidades' => $disponibilidad, 'no_laborales' => $diasNoHabiles]);
+        return \Response::json($compress, 200);
     }
     public function filtrarHoras(Request $request)
     {
                 //$request[dia]
        //request[duracion]
-       $dia ='2017-01-10';
+       $dia ='2017-01-05';
         $calendario_id=1;
         cita::filtrarHoras($dia,$calendario_id);
     }
 
         public function inhabil(Request $request)
     {
-                //$request[dia]
-       //request[duracion]
-       $dia ='2017-01-14';
+       $dia ='2017-01-17';
         $calendario_id=1;
         $valor=cita::filtroHorasInhabiles($dia,$calendario_id);
         dd($valor);
