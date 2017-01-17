@@ -46,6 +46,8 @@ class Kernel extends HttpKernel
      * @var array
      */
     protected $routeMiddleware = [
+        'sysadmin' => \App\Http\Middleware\RedirectIfNotSysadmin::class,
+        'sysadmin.guest' => \App\Http\Middleware\RedirectIfSysadmin::class,
         'admin' => \App\Http\Middleware\RedirectIfNotAdmin::class,
         'admin.guest' => \App\Http\Middleware\RedirectIfAdmin::class,
         'auth' => \Illuminate\Auth\Middleware\Authenticate::class,

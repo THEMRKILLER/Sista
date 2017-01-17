@@ -36,6 +36,11 @@ return [
     */
 
     'guards' => [
+        'sysadmin' => [
+            'driver' => 'session',
+            'provider' => 'sysadmins',
+        ],
+
         'admin' => [
             'driver' => 'session',
             'provider' => 'admins',
@@ -70,6 +75,11 @@ return [
     */
 
     'providers' => [
+        'sysadmins' => [
+            'driver' => 'eloquent',
+            'model' => App\Sysadmin::class,
+        ],
+
         'admins' => [
             'driver' => 'eloquent',
             'model' => App\Admin::class,
@@ -102,6 +112,12 @@ return [
     */
 
     'passwords' => [
+        'sysadmins' => [
+            'provider' => 'sysadmins',
+            'table' => 'password_resets',
+            'expire' => 60,
+        ],
+
         'admins' => [
             'provider' => 'admins',
             'table' => 'password_resets',

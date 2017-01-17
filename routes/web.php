@@ -11,10 +11,7 @@
 |
 */
 
-Route::get('/', function () {
-    return 'Ok';
-});
-
+Auth::routes();
 Route::group(['prefix' => 'admin'], function () {
   Route::get('/login', 'AdminAuth\LoginController@showLoginForm');
   Route::post('/login', 'AdminAuth\LoginController@login');
@@ -34,3 +31,23 @@ Route::group(['prefix' => 'admin'], function () {
 Route::post('loginuser', 'Auth\AuthController@postLogin');
 Route::any('testcreate','Auth\RegisterController@createTest');
 Route::any('authtest','ValidacionController@authenticate');
+
+  Route::group(['prefix' => 'sysadmin'], function () {
+  Route::get('/',function(){
+     return redirect('sysadmin/home');
+  });
+  Route::get('/login', 'SysadminAuth\LoginController@showLoginForm');
+  Route::post('/login', 'SysadminAuth\LoginController@login');
+  Route::post('/logout', 'SysadminAuth\LoginController@logout');
+
+  Route::get('/register', 'SysadminAuth\RegisterController@showRegistrationForm');
+  Route::post('/register', 'SysadminAuth\RegisterController@register');
+
+  Route::post('/password/email', 'SysadminAuth\ForgotPasswordController@sendResetLinkEmail');
+  Route::post('/password/reset', 'SysadminAuth\ResetPasswordController@reset');
+  Route::get('/password/reset', 'SysadminAuth\ForgotPasswordController@showLinkRequestForm');
+  Route::get('/password/reset/{token}', 'SysadminAuth\ResetPasswordController@showResetForm');
+  Route::get('/home','UsuarioController@getUsers')->name('home');
+  Route::get('/alta_usuario','UsuarioController@showform');
+  Route::post('/register_user','UsuarioController@registrar');
+});
