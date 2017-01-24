@@ -3,6 +3,7 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Notifications\Notifiable;
 use App\tipo;
 use App\calendario;
 use Carbon\Carbon;
@@ -13,6 +14,7 @@ use DB;
 
 class cita extends Model
 {
+    use Notifiable;
     protected $table = 'cita';
     protected $fillable = [
         'id', 'tipo_id', 'calendario_id', 'fecha_inicio', 'fecha_final', 'cliente_nombre', 'cliente_telefono', 'cliente_email',
@@ -383,5 +385,11 @@ class cita extends Model
             
        return array_values( array_diff($dias_semana, $diasNohabiles));
       
+    }
+    public static function enviarcorreo(cita $cita)
+    {
+        
+          
+                $cita->notify($cita);
     }
 }

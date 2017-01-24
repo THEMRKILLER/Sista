@@ -1,4 +1,4 @@
-<?php
+ <?php
 
 use Illuminate\Http\Request;
 
@@ -20,7 +20,8 @@ Route::group(['middleware' => ['cors'], 'prefix' => 'v1'],function(){
    Route::get('registro_test','Auth\RegisterController@createTest');
    Route::get('servicio-disponible','CitaController@horasDisponibles');
    Route::get('disponibilidad','CitaController@disponibilidadCalendario');
-   Route::get('prueba','CitaController@inhabil');
+   Route::get('sms','CitaController@sms');
+   Route::get('email','CitaController@mail');
 
 
 
