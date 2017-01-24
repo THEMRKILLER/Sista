@@ -6,9 +6,10 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Contracts\Queue\ShouldQueue;
-
+use App\cita;
 class NotificacionNCita extends Mailable
 {
+    public $cita;
     use Queueable, SerializesModels;
 
     /**
@@ -16,9 +17,9 @@ class NotificacionNCita extends Mailable
      *
      * @return void
      */
-    public function __construct()
+    public function __construct(cita $cita) 
     {
-        //
+        $this->cita=$cita;
     }
 
     /**

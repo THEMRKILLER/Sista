@@ -83,16 +83,21 @@ class cita extends Model
      * @param arrayDatos estructura con fecha y hora
      */
 
-    public function reagendar($arrayDatos)
+    public static function reagendar($arrayDatos)
     {
-        $Cita = cita::find($id);
-        if ($Cita === null) return response()->json(['error'=>true,'message' = > 'La cita no existe'],404);
+
+        $Cita = cita::find($arrayDatos['id_cita']);
+        if ($Cita === null) 
+            return response()->json([
+                'error' => true,
+                'message' => 'La cita no existe'
+                ],404);
         
-        $tipo= $Cita->tipo()->duracion;
-        $fecha_final = carbon::parse($arrayDatos['fecha_inicial'])->addMinutes($tipo);
+        $tipo= tipo::find($arrayDatos['servicio_id'])->duracion;
+        $fecha_final = carbon::parse($arrayDatos['fecha_inicio'])->addMinutes($tipo);
         $Cita->fecha_inicio = $arrayDatos['fecha_inicio'];
         $Cita->fecha_final = $fecha_final;
-        $Cita->tipo_id = $arrayDatos['id_servicio'];
+        $Cita->tipo_id = $arrayDatos['servicio_id'];
         $Cita->save();
         
     }
@@ -122,13 +127,19 @@ class cita extends Model
  */
     public static function dateTimeExist($arrayDatos)
     {
-        $finalt=carbon::parse($arrayDatos['fecha_final'])->subMinute()->toDateTimeString();
+
+        $tipo= tipo::find(intval($arrayDatos['servicio_id']))->duracion;
+        $finalt=carbon::parse($arrayDatos['fecha_inicio'])->addMinutes($tipo)->subMinute()->toDateTimeString();
         $di = new DateTime($arrayDatos['fecha_inicio']);
         $dt = new DateTime($finalt);
+                   
+         
         $Dates = cita::whereBetween('fecha_inicio', [$di, $dt])->orwhereBetween('fecha_final', [$di, $dt])->first();
-        if ($Dates == null) {
+         print_r(count($Dates));
+        if (count($Dates)>0) {
             return true;
         } else {
+
             return false;
         }
     }

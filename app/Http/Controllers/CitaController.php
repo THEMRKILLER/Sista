@@ -8,6 +8,7 @@ use Validator;
 use Carbon\Carbon;
 use Nexmo\Client;
 use App\Mail\NotificacionNCita;
+
 class CitaController extends Controller
 {
 
@@ -106,12 +107,12 @@ class CitaController extends Controller
     public function reagendar(Request $request)
     {
         $rules = array(
-                        'id_servicio' => 'required',
+                        'servicio_id' => 'required',
                         'fecha_inicio' => 'required|date',
-                        'fecha_final' => 'required|date',
+                        
                 );
         $validator = Validator::make($request->all(), $rules);
-        if (cita::dateTimeExist($request->all)) {
+        if (cita::dateTimeExist($request->all())) {
             return response()->json(array(
                                             'success' => false,
                                             'errors' => 'no se puede agendar esa fecha'
@@ -128,9 +129,6 @@ class CitaController extends Controller
                 cita::reagendar($request->all());
             }
         }
-
-   
-        cita::reagendar($request->all(), $id);
     }
 
     /**
@@ -188,13 +186,15 @@ class CitaController extends Controller
     {
         $nexmo = app('Nexmo\Client');
         $nexmo->message()->send([
-    'to' => '529612280890',
+    'to' => '529612973079',
     'from' => '16105552344',
-    'text' => 'Using the instance to send a message.'
+    'text' => 'Congratulations BITCH'
 ]);
     }
     public function mail()
     {
-       \Mail::to('nyhedgg@gmail.com')->send(new NotificacionNCita);
+        $cita=cita::find(154);
+        
+        \Mail::to('nyhedgg@gmail.com')->send(new NotificacionNCita($cita));
     }
 }
