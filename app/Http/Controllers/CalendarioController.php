@@ -220,11 +220,11 @@ class CalendarioController extends Controller
     {
         $calendario_id = $request->get('calendario_id');
         $calendario = calendario::find($calendario_id);
-        $dias_inhabiles  = $calendario->fechasInhabiles;
+        $dias_inhabiles  = $calendario->fechasInhabiles()->orderBy('fecha', 'asc')->get();
  //       dd($dias_inhabiles);
         $dias_inhabiles_arr = array();
         foreach ($dias_inhabiles as $dia_inhabil) {
-                array_push($dias_inhabiles_arr,['dia' => $dia_inhabil->fecha,'completo' => $dia_inhabil->completo,'horas' => $dia_inhabil->horasInhabiles]);
+                array_push($dias_inhabiles_arr,['dia' => $dia_inhabil->fecha,'id'=> $dia_inhabil->id,'completo' => $dia_inhabil->completo,'horas' => $dia_inhabil->horasInhabiles]);
         }
         return response()->json($dias_inhabiles_arr,200);
 
@@ -239,13 +239,11 @@ class CalendarioController extends Controller
         $horas = $request->get('horas');
         $calendario = $user->calendario;
         if($calendario->fechasInhabiles()->where('fecha',$dia_inhabil_r)->first()) return response()->json(null,400);
-        
-       // dd(get_class_methods($user->calendario->fechasInhabiles->horasInhabiles) );
+     
         $dia_inhabil = new fecha_inhabil();
         $dia_inhabil->fecha = $dia_inhabil_r;
         $dia_inhabil->completo = $completo;
         $calendario->fechasInhabiles()->save($dia_inhabil);
-
         $dia_inhabil->horasInhabiles()->whereNotIn('hora',$horas)->delete();
         if(!$completo)
         {
@@ -258,6 +256,23 @@ class CalendarioController extends Controller
         }
 
         
+    }
+
+    public function deleteDiasHorasInhabiles(Request $request)
+    {
+        $token = JWTAuth::getToken();
+        $user = JWTAuth::toUser($token);
+        $fecha_inhabil_id = $request->get('fecha_inhabil_id');
+
+        $fecha_inhabil = fecha_inhabil::find($fecha_inhabil_id);
+        if($fecha_inhabil)
+        {
+          $fecha_inhabil->delete();
+          return response()->json(null,200);
+        }
+        else return response()->json(['error' => true,'message' => 'Fecha inhabil no encontrada'],404);
+
+
     }
     private $horas_filtrado = [8,9,10,11,12,13,15,16,17,18,19];
     public function algoritmo()
@@ -297,22 +312,21 @@ class CalendarioController extends Controller
 
     public function rellenarHoras($duracion_servicio,$hora_inicial,$horas_propuestas,$hora_final_dia)
     {
-        $h_p = $horas_propuestas; 
-        if($hora_inicial >= $hora_final_dia) return $h_p;
+      $h_p = $horas_propuestas; 
+      if($hora_inicial >= $hora_final_dia) return $h_p;
 
-        $d_s = $duracion_servicio;
-        $h_f_d  = $hora_final_dia;
-        $hora_final = floatval($hora_inicial + $duracion_servicio);
-        
-        $cita = $this->consultarCita($hora_inicial,$hora_final);
+      $d_s = $duracion_servicio;
+      $h_f_d  = $hora_final_dia;
+      $hora_final = floatval($hora_inicial + $duracion_servicio);
+      $cita = $this->consultarCita($hora_inicial,$hora_final);
 
-    if($cita != false)
-    {
-        return $this->rellenarHoras($d_s,$cita['hora_final']+0.01,$horas_propuestas,$hora_final_dia );
-    }
-    else{
-        $hora_inicial_next = $this->nextDisponible($hora_inicial);        
-        if($hora_inicial_next == $hora_inicial ) {
+      if($cita != false)return $this->rellenarHoras($d_s,$cita['hora_final']+0.01,$horas_propuestas,$hora_final_dia );
+   
+      else
+      {
+          $hora_inicial_next = $this->nextDisponible($hora_inicial);        
+          if($hora_inicial_next == $hora_inicial ) 
+          {
             array_push($horas_propuestas,$hora_inicial);
             $hora_final_tmp = floatval($hora_inicial_next + $duracion_servicio);
             echo "\n";
@@ -322,13 +336,12 @@ class CalendarioController extends Controller
             echo "Se calcula ahora : ".$hora_final_tmp;
             echo "\n";
             return $this->rellenarHoras($duracion_servicio,$hora_final_tmp,$horas_propuestas,$hora_final_dia );
-        }
-        else 
-            {
-                return $this->rellenarHoras($d_s,$hora_inicial_next,$horas_propuestas,$h_f_d );
-            }
+          }
+
+        else  return $this->rellenarHoras($d_s,$hora_inicial_next,$horas_propuestas,$h_f_d );
+           
         
-    }
+      }
     }
     function nextDisponible($hora)
     {
@@ -345,3 +358,4 @@ class CalendarioController extends Controller
            if($flag == false) return $this->nextDisponible($hora+1);
     }
 
+}

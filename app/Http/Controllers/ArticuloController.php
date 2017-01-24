@@ -48,6 +48,7 @@ class ArticuloController extends Controller
        $articulo->contenido = $request->get('contenido');
 
        $user->articulos()->save($articulo);
+       return response()->json(['id' => $articulo->id],200);
 
     }
 

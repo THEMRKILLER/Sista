@@ -84,17 +84,15 @@ class cita extends Model
     public function reagendar($arrayDatos)
     {
         $Cita = cita::find($id);
-        $tipo=$Cita->tipo()->duracion;
-       
-        $fecha_final = carbon::parse($arrayDatos['fecha_final'])->addMinutes($tipo);
-        if ($Cita === null) {
-            return "cita no existe,no se pudo realizar la modificacion";
-        } else {
-            $Cita->fecha_inicio = $arrayDatos['fecha_inicio'];
-            $Cita->fecha_final = $fecha_final;
-            $Cita->tipo_id = $arrayDatos['id_servicio'];
-            $Cita->save();
-        }
+        if ($Cita === null) return response()->json(['error'=>true,'message' = > 'La cita no existe'],404);
+        
+        $tipo= $Cita->tipo()->duracion;
+        $fecha_final = carbon::parse($arrayDatos['fecha_inicial'])->addMinutes($tipo);
+        $Cita->fecha_inicio = $arrayDatos['fecha_inicio'];
+        $Cita->fecha_final = $fecha_final;
+        $Cita->tipo_id = $arrayDatos['id_servicio'];
+        $Cita->save();
+        
     }
     public function asignarTipo()
     {

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\User;
 use Validator;
+use JWTAuth;
 class UsuarioController extends Controller
 {
 	 public function getUsers()
@@ -19,7 +20,7 @@ class UsuarioController extends Controller
     public function registrar(Request $request)
     {
     	$validator = $this->validar($request->all());
-    	if()
+    	if($validator->fails())
     	{
     		return redirect('sysadmin/alta_usuario')
                         ->withErrors($validator)
@@ -35,4 +36,19 @@ class UsuarioController extends Controller
             'password' => 'required|min:6|confirmed',
         ]);
     }
+
+    public function getPerfilInfo(Request $request)
+    {
+        $user_id = $request->get('user_id');
+
+        return User::userInfo($user_id);
+
+    }
+    public function logout2()
+    {
+
+        JWTAuth::invalidate(JWTAuth::getToken());
+
+    }
+
 }

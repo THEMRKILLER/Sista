@@ -38,6 +38,8 @@ Route::get('obtener_horas','CitaController@filtrarHoras');
 
    Route::get('algoritmo','CalendarioController@algoritmo');
 
+   Route::get('user_info','UsuarioController@getPerfilInfo');
+
 
 
 });
@@ -87,5 +89,7 @@ Route::group(['middleware' => ['cors','jwt.auth'], 'prefix' => 'v1'],
 
    Route::post('fecha_inhabil','CalendarioController@setDiasHorasInhabiles');
 
+   Route::delete('fecha_inhabil','CalendarioController@deleteDiasHorasInhabiles');
 
+   Route::post('logout','UsuarioController@logout2');
  });

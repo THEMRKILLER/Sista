@@ -40,4 +40,20 @@ class User extends Authenticatable
     }
 
 
+    public static function userInfo($user_id)
+    {
+        
+        $user = User::find($user_id);
+        if($user)
+        { 
+            return response()->json([
+            'nombre' => $user->name, 
+            'correo_electronico' => $user->email,
+            'cedula_profesional' => 1234,
+            'avatar' => 'https://dermamedical.co.uk/wp-content/uploads/2015/06/Doctor.jpg' 
+            ],200);
+        }
+        else return response()->json(null,404);
+    }
+
 }
