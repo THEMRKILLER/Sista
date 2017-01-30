@@ -6,6 +6,8 @@ use App\cita;
 use Illuminate\Http\Request;
 use Validator;
 use Carbon\Carbon;
+use Nexmo\Client;
+use App\Mail\NotificacionNCita;
 
 class CitaController extends Controller
 {
@@ -104,17 +106,23 @@ class CitaController extends Controller
     }
     public function reagendar(Request $request)
     {
-      
-        
         $rules = array(
-                        'id_servicio' => 'required',
+                        'servicio_id' => 'required',
                         'fecha_inicio' => 'required|date',
-                        'fecha_final' => 'required|date',
+                        
                 );
 
         $validator = Validator::make($request->all(), $rules);
-        //verifica si hubieron fallos en la validiacion de los datos
-        if ($validator->fails()) {
+
+        if (cita::dateTimeExist($request->all())) {
+            return response()->json(array(
+                                            'success' => false,
+                                            'errors' => 'no se puede agendar esa fecha'
+                                            ),
+                                404);
+        } else {
+            if ($validator->fails()) {
+
                 return response()->json(array(
                                             'success' => false,
                                             'errors' => $validator->getMessageBag()->toArray()
@@ -122,17 +130,7 @@ class CitaController extends Controller
                                 400); // 400 being the HTTP code for an invalid request.
             }
 
-        //verifica si ya existe una cita agendada para este dia y hora 
-        if (cita::dateTimeExist($request->all)) {
-            return response()->json(array(
-                                            'success' => false,
-                                            'errors' => 'no se puede agendar esa fecha'
-                                            ),
-                                404);
-        } 
-        
-   
-        cita::reagendar($request->all(), $id);
+        }
     }
 
     /**
@@ -147,12 +145,11 @@ class CitaController extends Controller
     
     public function horasDisponibles(Request $request)
     {
-
-       $dia =$request['dia'];
+        $dia =$request['dia'];
         $tipo=$request['tipo_id'];
-         $calendario_id=$request['calendario_id'];
+        $calendario_id=$request['calendario_id'];
         
-        $horasDisponibles= cita::timeslot($dia,$tipo,$calendario_id);
+        $horasDisponibles= cita::timeslot($dia, $tipo, $calendario_id);
         
        
          //dd($compress);
@@ -160,34 +157,46 @@ class CitaController extends Controller
     }
     public function disponibilidadCalendario(Request $request)
     {
-
         $tipo=intval($request['tipo_id']);
         $calendario_id=$request['calendario_id'];
 
         //dias que no hay ninguna horahabil
         $diasNoHabiles= cita::diasNoHabiles($calendario_id);
         //disponibilidad del dia en base al numero de huecos vacios
-        $disponibilidad= cita::disponibilidadCal($tipo,$calendario_id);
-         $compress=array();
-          array_push($compress, ['disponibilidades' => $disponibilidad, 'no_laborales' => $diasNoHabiles]);
+        $disponibilidad= cita::disponibilidadCal($tipo, $calendario_id);
+        $compress=array();
+        array_push($compress, ['disponibilidades' => $disponibilidad, 'no_laborales' => $diasNoHabiles]);
         return \Response::json($compress, 200);
     }
     public function filtrarHoras(Request $request)
     {
-                //$request[dia]
+        //$request[dia]
        //request[duracion]
        $dia ='2017-01-05';
         $calendario_id=1;
-        cita::filtrarHoras($dia,$calendario_id);
+        cita::filtrarHoras($dia, $calendario_id);
     }
 
-        public function inhabil(Request $request)
+    public function inhabil(Request $request)
     {
-       $dia ='2017-01-17';
+        $dia ='2017-01-17';
         $calendario_id=1;
-        $valor=cita::filtroHorasInhabiles($dia,$calendario_id);
+        $valor=cita::filtroHorasInhabiles($dia, $calendario_id);
         dd($valor);
     }
-
-
+    public function sms()
+    {
+        $nexmo = app('Nexmo\Client');
+        $nexmo->message()->send([
+    'to' => '529612973079',
+    'from' => '16105552344',
+    'text' => 'Congratulations BITCH'
+]);
+    }
+    public function mail()
+    {
+        $cita=cita::find(154);
+        
+        \Mail::to('nyhedgg@gmail.com')->send(new NotificacionNCita($cita));
+    }
 }

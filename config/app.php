@@ -165,6 +165,7 @@ return [
         Hesto\MultiAuth\MultiAuthServiceProvider::class,
         Tymon\JWTAuth\Providers\JWTAuthServiceProvider::class,
         Barryvdh\Cors\ServiceProvider::class,
+        Nexmo\Laravel\NexmoServiceProvider::class,
         /*
          * Package Service Providers...
          */
@@ -180,6 +181,7 @@ return [
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
        // Laracasts\Generators\GeneratorsServiceProvider::class,
+
     ],
 
     /*
@@ -229,6 +231,7 @@ return [
         'View' => Illuminate\Support\Facades\View::class,
         'JWTAuth' => 'Tymon\JWTAuth\Facades\JWTAuth',
         'JWTFactory' => Tymon\JWTAuth\Facades\JWTFactory::class,
+        'Nexmo' => \Nexmo\Laravel\Facade\Nexmo::class,
 
         ]
         ];

@@ -1,4 +1,4 @@
-<?php
+ <?php
 
 use Illuminate\Http\Request;
 
@@ -20,7 +20,9 @@ Route::group(['middleware' => ['cors'], 'prefix' => 'v1'],function(){
    Route::get('registro_test','Auth\RegisterController@createTest');
    Route::get('servicio-disponible','CitaController@horasDisponibles');
    Route::get('disponibilidad','CitaController@disponibilidadCalendario');
-   Route::get('prueba','CitaController@inhabil');
+   Route::get('sms','CitaController@sms');
+   Route::get('email','CitaController@mail');
+   Route::put('cita-r','CitaController@reagendar');
 
 
 
@@ -71,7 +73,7 @@ Route::group(['middleware' => ['cors','jwt.auth'], 'prefix' => 'v1'],
    Route::get('cita','CitaController@index');
    Route::post('cita','CitaController@store');
    Route::put('/cita/{id}','CitaController@update');
-   Route::put('cita-r','CitaController@reagendar');
+   
    Route::delete('/cita/{id}','CitaController@destroy');
    //tipo-cita
    Route::get('/tipo/{id}','TipoController@show');
