@@ -40,6 +40,8 @@ Route::get('obtener_horas','CitaController@filtrarHoras');
 
    Route::get('user_info','UsuarioController@getPerfilInfo');
 
+   Route::get('foto_perfil/{image_name}','UsuarioController@getProfilePicture');
+
 
 
 });
@@ -92,4 +94,12 @@ Route::group(['middleware' => ['cors','jwt.auth'], 'prefix' => 'v1'],
    Route::delete('fecha_inhabil','CalendarioController@deleteDiasHorasInhabiles');
 
    Route::post('logout','UsuarioController@logout2');
+
+   Route::put('avatar','UsuarioController@updateAvatar');
+
+   //cupones 
+
+   Route::post('cupon','CuponController@create');
+   Route::get('cupon','CuponController@index');
+   
  });

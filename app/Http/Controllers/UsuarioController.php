@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\User;
 use Validator;
 use JWTAuth;
+use URL;
 class UsuarioController extends Controller
 {
 	 public function getUsers()
@@ -48,6 +49,49 @@ class UsuarioController extends Controller
     {
 
         JWTAuth::invalidate(JWTAuth::getToken());
+
+    }
+
+    public function updateAvatar(Request $request)
+    {
+        $data = $request->get('avatar');
+
+        list($type, $data) = explode(';', $data);
+        list(, $data)      = explode(',', $data);
+        $data = base64_decode($data);
+
+        $folderName =  storage_path('app').'/profile_images/';
+        $safeName = str_random(10). uniqid().time()  .'.'.'png';
+
+        file_put_contents($folderName.$safeName, $data);
+
+        $token = JWTAuth::getToken();
+        $user = JWTAuth::toUser($token);
+        if($user->avatar != null)
+        {
+        $file_name_actual = explode('/', $user->avatar);
+        try{
+        if(file_exists($folderName.$file_name_actual[count($file_name_actual)-1]))
+            unlink($folderName.$file_name_actual[count($file_name_actual)-1]);
+        }
+        catch(\Exception $e){}
+        }
+        $url = URL::asset('api/v1/foto_perfil/'.$safeName);
+        $user->avatar = $url;
+        $user->save();
+        
+
+        return response()->json(['success' => true,'avatar' => $user->avatar ],200);
+
+
+    }
+    public function getProfilePicture($image_name)
+    {
+
+    $pathToFile = storage_path('app/profile_images/'.$image_name);;
+    if(file_exists($pathToFile))return response()->file($pathToFile);
+
+    else response()->json(['message' => 'Foto de perfil no encontrado'],404);
 
     }
 

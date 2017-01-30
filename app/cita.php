@@ -84,10 +84,10 @@ class cita extends Model
     public function reagendar($arrayDatos)
     {
         $Cita = cita::find($id);
-        if ($Cita === null) return response()->json(['error'=>true,'message' = > 'La cita no existe'],404);
+        if ($Cita == null) return response()->json(['error'=>true,'message' => 'La cita no existe'],404);
         
-        $tipo= $Cita->tipo()->duracion;
-        $fecha_final = carbon::parse($arrayDatos['fecha_inicial'])->addMinutes($tipo);
+        $tipo = $Cita->tipo()->duracion;
+        $fecha_final = carbon::parse($arrayDatos['fecha_inicio'])->addMinutes($tipo);
         $Cita->fecha_inicio = $arrayDatos['fecha_inicio'];
         $Cita->fecha_final = $fecha_final;
         $Cita->tipo_id = $arrayDatos['id_servicio'];
