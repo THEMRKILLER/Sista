@@ -40,6 +40,10 @@ class calendario extends Model
     	{
         return $this->hasMany('App\dia_habil');
     	}
+      public function cupones()
+      {
+        return $this->hasManyThrough('App\Cupon', 'App\tipo','calendario_id','servicio_id','id');
+      }
     	//metodos de clase
       public function crear()
     	{

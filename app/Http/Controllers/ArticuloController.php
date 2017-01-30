@@ -67,19 +67,26 @@ class ArticuloController extends Controller
 
     	if($articulo == null) return response()->json(['error' => true],404);
 
-    	$autor = $articulo->user()->get(['name'])->first();
+    	$autor = $articulo->user()->get(['name','avatar'])->first();
 
     	return response()->json(['articulo' => $articulo , 'autor' => $autor],200);
     }
     public function getArticulos()
     {
-    	 $token = JWTAuth::getToken();
+    	   $token = JWTAuth::getToken();
        	 $user = JWTAuth::toUser($token);
        	 $articulos = $user->articulos;
+         $articulos_arr = array();
+         foreach ($articulos as $articulo)
+         {
+          $articulo->caratula =  url('api/v1/'.$articulo->caratula);
+          array_push($articulos_arr,['caratula' => $articulo->caratula ,'id' => $articulo->id, 'resumen' => $articulo->resumen,
+                                     'titulo' => $articulo->titulo, 'autor' => $articulo->user->name,
+                                     'fecha' => $articulo->updated_at
+                                    ]);
+         }
 
-         foreach ($articulos as $articulo) $articulo->caratula =  url('api/v1/'.$articulo->caratula);
-
-       	 return response()->json($articulos,200);
+       	 return response()->json($articulos_arr,200);
 
     }
 }

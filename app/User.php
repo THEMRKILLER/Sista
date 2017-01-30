@@ -49,8 +49,8 @@ class User extends Authenticatable
             return response()->json([
             'nombre' => $user->name, 
             'correo_electronico' => $user->email,
-            'cedula_profesional' => 1234,
-            'avatar' => 'https://dermamedical.co.uk/wp-content/uploads/2015/06/Doctor.jpg' 
+            'cedula_profesional' => $user->cedula_profesional,
+            'avatar' => $user->avatar
             ],200);
         }
         else return response()->json(null,404);

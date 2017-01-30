@@ -111,10 +111,13 @@ class cita extends Model
     {
         $Cita = cita::find($datosCita['id_cita']);
         if ($Cita === null) {
-            return response()->json([
+            $Cita = cita::find($arrayDatos['id_cita']);
+            if ($Cita === null) {
+                return response()->json([
                 'error' => true,
                 'message' => 'La cita no existe'
                 ], 404);
+            }
         }
         $tipo= tipo::find($datosCita['tipo_id'])->duracion;
         $fecha_final = carbon::parse($datosCita['fecha_inicio'])->addMinutes($tipo);
@@ -428,7 +431,6 @@ class cita extends Model
    */
     public static function sms($cita, $medico, $opcionMensaje)
     {
- 
         $Codigo_Area ='52';
         $telefono=$Codigo_Area.'9612973079';//$cita->cliente_telefono;
         $from='16105552344';
@@ -447,9 +449,9 @@ class cita extends Model
    * @param (String)($medico) nombre del medico
    * @param (String)($opcionMensaje)
    */
-    public static function mail($cita, $medico,$opcionMensaje)
+    public static function mail($cita, $medico, $opcionMensaje)
     {
         $destinatario=$cita->cliente_email;
-        \Mail::to($destinatario)->send(new NotificacionNCita($cita, $medico,$opcionMensaje));
+        \Mail::to($destinatario)->send(new NotificacionNCita($cita, $medico, $opcionMensaje));
     }
 }

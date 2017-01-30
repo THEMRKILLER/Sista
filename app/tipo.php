@@ -14,6 +14,10 @@ class tipo extends Model
     	{
         return $this->hasMany('App\cita');
     	}
+      public function cupones()
+      {
+        return $this->hasMany('App\Cupon','servicio_id');
+      }
       public function calendario()
       {
         return $this->belongsTo('App\tipo');
