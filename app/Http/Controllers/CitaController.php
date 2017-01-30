@@ -29,7 +29,7 @@ class CitaController extends Controller
      */
     public function store(Request $request)
     {
-        $val =cita::dateTimeExist($request->all());
+        $val =cita::fechaDisponible($request->all());
         if ($val) {
             $rules = array(
                     
@@ -107,12 +107,12 @@ class CitaController extends Controller
     public function reagendar(Request $request)
     {
         $rules = array(
-                        'servicio_id' => 'required',
+                        'tipo_id' => 'required',
                         'fecha_inicio' => 'required|date',
                         
                 );
         $validator = Validator::make($request->all(), $rules);
-        if (cita::dateTimeExist($request->all())) {
+        if (cita::fechaDisponible($request->all())) {
             return response()->json(array(
                                             'success' => false,
                                             'errors' => 'no se puede agendar esa fecha'
@@ -181,20 +181,5 @@ class CitaController extends Controller
         $calendario_id=1;
         $valor=cita::filtroHorasInhabiles($dia, $calendario_id);
         dd($valor);
-    }
-    public function sms()
-    {
-        $nexmo = app('Nexmo\Client');
-        $nexmo->message()->send([
-    'to' => '529612973079',
-    'from' => '16105552344',
-    'text' => 'Congratulations BITCH'
-]);
-    }
-    public function mail()
-    {
-        $cita=cita::find(154);
-        
-        \Mail::to('nyhedgg@gmail.com')->send(new NotificacionNCita($cita));
     }
 }
