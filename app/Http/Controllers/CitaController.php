@@ -11,7 +11,6 @@ use App\Mail\NotificacionNCita;
 
 class CitaController extends Controller
 {
-
     /**
      * Display a listing of the resource.
      *
@@ -29,10 +28,9 @@ class CitaController extends Controller
      */
     public function store(Request $request)
     {
-        $val =cita::dateTimeExist($request->all());
+        $val =cita::fechaDisponible($request->all());
         if ($val) {
             $rules = array(
-                    
                         'calendario_id' => 'required|numeric|max:255',
                         'tipo_id' => 'required|numeric',
                         'fecha_inicio' => 'required|date_format:Y-m-d H:i:s',
@@ -40,13 +38,8 @@ class CitaController extends Controller
                         'cliente_nombre' => 'required|',
                         'cliente_telefono' => 'required',
                         'cliente_email' => 'required|email',
-    
-                );
-
+            );
             $validator = Validator::make($request->all(), $rules);
-
-  
-
             if ($validator->fails()) {
                 return response()->json(array(
                                             'success' => false,
@@ -54,20 +47,16 @@ class CitaController extends Controller
                                             ),
                                 400); // 400 being the HTTP code for an invalid request.
             }
-                
             cita::crear($request->all());
         } else {
             return response()->json(array(
                                             'success' => false,
                                             'errors' => 'no se puede agendar esa hora'
-                                            ),
-                                404);
+                                            ), 404);
         }
     }
-
     /**
      * Display the specified resource.
-     *
      * @param  \App\cita  $cita
      * @return \Illuminate\Http\Response
      */
@@ -75,7 +64,6 @@ class CitaController extends Controller
     {
         //
     }
-
     /**
      * Update the specified resource in storage.
      *
@@ -107,33 +95,31 @@ class CitaController extends Controller
     public function reagendar(Request $request)
     {
         $rules = array(
-                        'servicio_id' => 'required',
+                        'tipo_id' => 'required',
                         'fecha_inicio' => 'required|date',
                         
                 );
-
         $validator = Validator::make($request->all(), $rules);
 
-        if (cita::dateTimeExist($request->all())) {
+        if ($validator->fails()) {
             return response()->json(array(
-                                            'success' => false,
-                                            'errors' => 'no se puede agendar esa fecha'
-                                            ),
-                                404);
-        } else {
-            if ($validator->fails()) {
-
-
-                return response()->json(array(
                                             'success' => false,
                                             'errors' => $validator->getMessageBag()->toArray()
                                             ),
                                 400); // 400 being the HTTP code for an invalid request.
-            }
+        } else {
 
+            if (!cita::fechaDisponible($request->all())) {
+                return response()->json(array(
+                                            'success' => false,
+                                            'errors' => 'no se puede agendar esa fecha'
+                                            ),
+                                404);
+            } else {
+                cita::reagendar($request->all());
+            }
         }
     }
-
     /**
      * Remove the specified resource from storage.
      *
@@ -141,7 +127,7 @@ class CitaController extends Controller
      */
     public function destroy($id)
     {
-        // new cita()->eliminar($id);
+        //cita::eliminar($id);
     }
     
     public function horasDisponibles(Request $request)
@@ -149,18 +135,13 @@ class CitaController extends Controller
         $dia =$request['dia'];
         $tipo=$request['tipo_id'];
         $calendario_id=$request['calendario_id'];
-        
         $horasDisponibles= cita::timeslot($dia, $tipo, $calendario_id);
-        
-       
-         //dd($compress);
-       return \Response::json($horasDisponibles, 200);
+        return \Response::json($horasDisponibles, 200);
     }
     public function disponibilidadCalendario(Request $request)
     {
         $tipo=intval($request['tipo_id']);
         $calendario_id=$request['calendario_id'];
-
         //dias que no hay ninguna horahabil
         $diasNoHabiles= cita::diasNoHabiles($calendario_id);
         //disponibilidad del dia en base al numero de huecos vacios
@@ -169,6 +150,7 @@ class CitaController extends Controller
         array_push($compress, ['disponibilidades' => $disponibilidad, 'no_laborales' => $diasNoHabiles]);
         return \Response::json($compress, 200);
     }
+    //ruta de prueba, eliminar
     public function filtrarHoras(Request $request)
     {
         //$request[dia]
@@ -177,27 +159,12 @@ class CitaController extends Controller
         $calendario_id=1;
         cita::filtrarHoras($dia, $calendario_id);
     }
-
+    //ruta de prueba, eliminar
     public function inhabil(Request $request)
     {
         $dia ='2017-01-17';
         $calendario_id=1;
         $valor=cita::filtroHorasInhabiles($dia, $calendario_id);
         dd($valor);
-    }
-    public function sms()
-    {
-        $nexmo = app('Nexmo\Client');
-        $nexmo->message()->send([
-    'to' => '529612973079',
-    'from' => '16105552344',
-    'text' => 'Congratulations BITCH'
-]);
-    }
-    public function mail()
-    {
-        $cita=cita::find(154);
-        
-        \Mail::to('nyhedgg@gmail.com')->send(new NotificacionNCita($cita));
     }
 }

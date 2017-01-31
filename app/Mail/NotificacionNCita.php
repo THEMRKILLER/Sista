@@ -10,6 +10,8 @@ use App\cita;
 class NotificacionNCita extends Mailable
 {
     public $cita;
+    public $medico;
+    public $opcionMensaje;
     use Queueable, SerializesModels;
 
     /**
@@ -17,9 +19,11 @@ class NotificacionNCita extends Mailable
      *
      * @return void
      */
-    public function __construct(cita $cita) 
+    public function __construct(cita $cita,$medico,$opcionMensaje) 
     {
-        $this->cita=$cita;
+         $this->cita=$cita;
+         $this->medico=$medico;
+         $this->opcionMensaje=$opcionMensaje;
     }
 
     /**

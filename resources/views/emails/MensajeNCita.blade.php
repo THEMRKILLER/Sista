@@ -4,7 +4,12 @@
     <title></title>
 </head>
 <body>
-Una nueva cita ah sido agendada por usted :)
+El medico
+{{$medico}}
+le indica a usted
+{{$cita->cliente_nombre}}
+que su cita del ah sido {{$opcionMensaje}} el
 {{$cita->fecha_inicio}}
+. gracias por su preferencia
 </body>
 </html>

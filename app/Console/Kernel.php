@@ -25,7 +25,7 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        $Time = Carbon::now()->toDateTimeString;
+        $Time = Carbon::now()->toDateTimeString();
         $schedule->call(function () {
             DB::table('fecha_inhabil')->where('fecha','<',$Time)->delete();
         })->dailyAt('24:00');;
