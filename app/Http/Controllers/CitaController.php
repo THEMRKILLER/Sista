@@ -123,6 +123,7 @@ class CitaController extends Controller
         } else {
             if ($validator->fails()) {
 
+
                 return response()->json(array(
                                             'success' => false,
                                             'errors' => $validator->getMessageBag()->toArray()

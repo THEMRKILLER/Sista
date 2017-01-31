@@ -55,7 +55,6 @@ class ArticuloController extends Controller
     public function getImage($image_name)
     {
     	$pathToFile = storage_path('app/images/'.$image_name);
-
     	return response()->file($pathToFile);
 
     }

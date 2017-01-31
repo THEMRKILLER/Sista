@@ -49,6 +49,8 @@ class CuponController extends Controller
             $cupon->fecha_final = $request->get('fecha_final');
             $servicio->cupones()->save($cupon);
 
+            return response()->json(['codigo' => $cupon->codigo],200);
+
     }
 
     public function index(Request $request)
