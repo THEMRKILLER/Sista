@@ -1,4 +1,4 @@
- <?php
+<?php
 
 use Illuminate\Http\Request;
 
@@ -24,7 +24,17 @@ Route::group(['middleware' => ['cors'], 'prefix' => 'v1'], function () {
     Route::put('cita-r', 'CitaController@reagendar');
 
 
+    Route::get('imagest',function(){
+      try{
 
+        $path = public_path('img/xd.png');
+      return response()->file($path);
+      }
+      catch(\Exception $e){
+        echo $e;
+      }
+
+    });
     Route::get('images/{image_name}', 'ArticuloController@getImage');
     Route::get('articulo/{id}', 'ArticuloController@getArticulo');
 

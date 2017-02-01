@@ -40,7 +40,7 @@ class cita extends Model
      *notifica al usuario por sms y email
      * @param datosCita estructura con nombre,telefono,email,fecha y hora de la cita
      */
-    public static function crear($datosCita)
+    public static function crear($datosCita,$codigo)
     {
         $calendario = calendario::find($datosCita['calendario_id']);
         $tipo = tipo::find($datosCita['tipo_id']);
@@ -50,7 +50,8 @@ class cita extends Model
         $nuevaCita->cliente_nombre = $datosCita['cliente_nombre'];
         $nuevaCita->cliente_telefono = $datosCita['cliente_telefono'];
         $nuevaCita->cliente_email = $datosCita['cliente_email'];
-        $nuevaCita->tipo()->associate($tipo);
+        $nuevaCita->codigo = $codigo;
+        $nuevaCita->tipo()->associate($tipo); 
         $citaGuardada=$calendario->citas()->save($nuevaCita);
         //si la cita es guardada correctamente se manda una notificacion al usuario
         //en caso de que no se manda un codigo de error al cliente

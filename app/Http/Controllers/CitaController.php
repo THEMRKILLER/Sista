@@ -47,7 +47,7 @@ class CitaController extends Controller
                                             ),
                                 400); // 400 being the HTTP code for an invalid request.
             }
-            cita::crear($request->all());
+            cita::crear($request->all(),$this->generarCodigoCita());
         } else {
             return response()->json(array(
                                             'success' => false,
@@ -166,5 +166,19 @@ class CitaController extends Controller
         $calendario_id=1;
         $valor=cita::filtroHorasInhabiles($dia, $calendario_id);
         dd($valor);
+    }
+
+    public function generarCodigoCita()
+    {
+        $flag = true;
+        $codigo = '';
+        do{
+            $codigo = substr(str_shuffle(str_repeat("0123456789abcdefghijklmnopqrstuvwxyz", 5)), 0, 5);
+            $flag = cita::where('codigo',$codigo)->count() > 0  ? true : false;
+
+        }
+        while ($flag);
+
+        return $codigo;
     }
 }

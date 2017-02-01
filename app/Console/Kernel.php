@@ -28,7 +28,7 @@ class Kernel extends ConsoleKernel
         $Time = Carbon::now()->toDateTimeString();
         $schedule->call(function () {
             DB::table('fecha_inhabil')->where('fecha','<',$Time)->delete();
-        })->dailyAt('24:00');;
+        })->dailyAt('24:00');
         // $schedule->command('inspire')
         //          ->hourly();
     }

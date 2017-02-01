@@ -166,6 +166,7 @@ return [
         Tymon\JWTAuth\Providers\JWTAuthServiceProvider::class,
         Barryvdh\Cors\ServiceProvider::class,
         Nexmo\Laravel\NexmoServiceProvider::class,
+        Intervention\Image\ImageServiceProvider::class,   
         /*
          * Package Service Providers...
          */
@@ -232,6 +233,6 @@ return [
         'JWTAuth' => 'Tymon\JWTAuth\Facades\JWTAuth',
         'JWTFactory' => Tymon\JWTAuth\Facades\JWTFactory::class,
         'Nexmo' => \Nexmo\Laravel\Facade\Nexmo::class,
-
+        'Image' => Intervention\Image\Facades\Image::class,
         ]
         ];

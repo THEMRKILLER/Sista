@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "938620dc6126e50b3601f9a20aa4eeb7",
+    "content-hash": "1bf0a658d8aff5847f18746e5555bfea",
     "packages": [
         {
             "name": "barryvdh/laravel-cors",
@@ -57,11 +57,7 @@
                 "crossdomain",
                 "laravel"
             ],
-<<<<<<< HEAD
-            "time": "2017-01-25 12:53:12"
-=======
             "time": "2017-01-25T12:53:12+00:00"
->>>>>>> origin/master
         },
         {
             "name": "classpreloader/classpreloader",
@@ -530,11 +526,122 @@
                 "laravel",
                 "multi"
             ],
-<<<<<<< HEAD
-            "time": "2017-01-26 12:06:38"
-=======
             "time": "2017-01-26T12:06:38+00:00"
->>>>>>> origin/master
+        },
+        {
+            "name": "intervention/image",
+            "version": "2.3.10",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Intervention/image.git",
+                "reference": "88911910dcbb7bf617f1370602ba1706489c8505"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Intervention/image/zipball/88911910dcbb7bf617f1370602ba1706489c8505",
+                "reference": "88911910dcbb7bf617f1370602ba1706489c8505",
+                "shasum": ""
+            },
+            "require": {
+                "ext-fileinfo": "*",
+                "guzzlehttp/psr7": "~1.1",
+                "php": ">=5.4.0"
+            },
+            "require-dev": {
+                "mockery/mockery": "~0.9.2",
+                "phpunit/phpunit": "3.*"
+            },
+            "suggest": {
+                "ext-gd": "to use GD library based image processing.",
+                "ext-imagick": "to use Imagick based image processing.",
+                "intervention/imagecache": "Caching extension for the Intervention Image library"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "2.3-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Intervention\\Image\\": "src/Intervention/Image"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Oliver Vogel",
+                    "email": "oliver@olivervogel.net",
+                    "homepage": "http://olivervogel.net/"
+                }
+            ],
+            "description": "Image handling and manipulation library with support for Laravel integration",
+            "homepage": "http://image.intervention.io/",
+            "keywords": [
+                "gd",
+                "image",
+                "imagick",
+                "laravel",
+                "thumbnail",
+                "watermark"
+            ],
+            "time": "2017-01-25T18:52:04+00:00"
+        },
+        {
+            "name": "intervention/imagecache",
+            "version": "2.3.3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Intervention/imagecache.git",
+                "reference": "7936b90e695daee1aafbd25221815352ef97bcbc"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Intervention/imagecache/zipball/7936b90e695daee1aafbd25221815352ef97bcbc",
+                "reference": "7936b90e695daee1aafbd25221815352ef97bcbc",
+                "shasum": ""
+            },
+            "require": {
+                "illuminate/cache": "~4|~5",
+                "illuminate/filesystem": "~4|~5",
+                "intervention/image": "dev-master|~2,>=2.2.0",
+                "jeremeamia/superclosure": "~1|~2",
+                "php": ">=5.3.0"
+            },
+            "require-dev": {
+                "mockery/mockery": "~0.9.2",
+                "phpunit/phpunit": "3.*"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Intervention\\Image\\": "src/Intervention/Image"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Oliver Vogel",
+                    "email": "oliver@olivervogel.net",
+                    "homepage": "http://olivervogel.net/"
+                }
+            ],
+            "description": "Caching extension for the Intervention Image Class",
+            "homepage": "http://image.intervention.io",
+            "keywords": [
+                "cache",
+                "gd",
+                "image",
+                "imagick",
+                "laravel"
+            ],
+            "time": "2015-09-22T15:22:47+00:00"
         },
         {
             "name": "jakub-onderka/php-console-color",
@@ -851,11 +958,7 @@
                 "framework",
                 "laravel"
             ],
-<<<<<<< HEAD
-            "time": "2017-01-26 14:29:55"
-=======
             "time": "2017-01-26T14:29:55+00:00"
->>>>>>> origin/master
         },
         {
             "name": "lcobucci/jwt",
@@ -996,11 +1099,7 @@
                 "sftp",
                 "storage"
             ],
-<<<<<<< HEAD
-            "time": "2017-01-30 17:41:17"
-=======
             "time": "2017-01-30T17:41:17+00:00"
->>>>>>> origin/master
         },
         {
             "name": "monolog/monolog",
@@ -1122,11 +1221,7 @@
                 "cron",
                 "schedule"
             ],
-<<<<<<< HEAD
-            "time": "2017-01-23 04:29:33"
-=======
             "time": "2017-01-23T04:29:33+00:00"
->>>>>>> origin/master
         },
         {
             "name": "nesbot/carbon",
@@ -2005,11 +2100,7 @@
             ],
             "description": "Symfony Debug Component",
             "homepage": "https://symfony.com",
-<<<<<<< HEAD
-            "time": "2017-01-28 00:04:57"
-=======
             "time": "2017-01-28T00:04:57+00:00"
->>>>>>> origin/master
         },
         {
             "name": "symfony/event-dispatcher",
@@ -2302,11 +2393,7 @@
             ],
             "description": "Symfony HttpKernel Component",
             "homepage": "https://symfony.com",
-<<<<<<< HEAD
-            "time": "2017-01-28 02:53:17"
-=======
             "time": "2017-01-28T02:53:17+00:00"
->>>>>>> origin/master
         },
         {
             "name": "symfony/polyfill-mbstring",
@@ -2580,11 +2667,7 @@
             ],
             "description": "Symfony Process Component",
             "homepage": "https://symfony.com",
-<<<<<<< HEAD
-            "time": "2017-01-21 17:13:55"
-=======
             "time": "2017-01-21T17:13:55+00:00"
->>>>>>> origin/master
         },
         {
             "name": "symfony/routing",
@@ -2659,11 +2742,7 @@
                 "uri",
                 "url"
             ],
-<<<<<<< HEAD
-            "time": "2017-01-28 00:04:57"
-=======
             "time": "2017-01-28T00:04:57+00:00"
->>>>>>> origin/master
         },
         {
             "name": "symfony/stopwatch",
@@ -2776,11 +2855,7 @@
             ],
             "description": "Symfony Translation Component",
             "homepage": "https://symfony.com",
-<<<<<<< HEAD
-            "time": "2017-01-21 17:01:39"
-=======
             "time": "2017-01-21T17:01:39+00:00"
->>>>>>> origin/master
         },
         {
             "name": "symfony/var-dumper",
@@ -2843,11 +2918,7 @@
                 "debug",
                 "dump"
             ],
-<<<<<<< HEAD
-            "time": "2017-01-24 13:02:38"
-=======
             "time": "2017-01-24T13:02:38+00:00"
->>>>>>> origin/master
         },
         {
             "name": "vlucas/phpdotenv",
@@ -2947,11 +3018,7 @@
                 "psr",
                 "psr-7"
             ],
-<<<<<<< HEAD
-            "time": "2017-01-23 04:53:24"
-=======
             "time": "2017-01-23T04:53:24+00:00"
->>>>>>> origin/master
         }
     ],
     "packages-dev": [
@@ -3259,11 +3326,7 @@
                 "object",
                 "object graph"
             ],
-<<<<<<< HEAD
-            "time": "2017-01-26 22:05:40"
-=======
             "time": "2017-01-26T22:05:40+00:00"
->>>>>>> origin/master
         },
         {
             "name": "namshi/jose",
@@ -3683,11 +3746,7 @@
                 "testing",
                 "xunit"
             ],
-<<<<<<< HEAD
-            "time": "2017-01-20 15:06:43"
-=======
             "time": "2017-01-20T15:06:43+00:00"
->>>>>>> origin/master
         },
         {
             "name": "phpunit/php-file-iterator",
@@ -3950,11 +4009,7 @@
                 "testing",
                 "xunit"
             ],
-<<<<<<< HEAD
-            "time": "2017-01-28 06:14:33"
-=======
             "time": "2017-01-28T06:14:33+00:00"
->>>>>>> origin/master
         },
         {
             "name": "phpunit/phpunit-mock-objects",
@@ -4122,11 +4177,7 @@
                 "compare",
                 "equality"
             ],
-<<<<<<< HEAD
-            "time": "2017-01-29 09:50:25"
-=======
             "time": "2017-01-29T09:50:25+00:00"
->>>>>>> origin/master
         },
         {
             "name": "sebastian/environment",
@@ -4587,11 +4638,7 @@
             ],
             "description": "Symfony DomCrawler Component",
             "homepage": "https://symfony.com",
-<<<<<<< HEAD
-            "time": "2017-01-21 17:13:55"
-=======
             "time": "2017-01-21T17:13:55+00:00"
->>>>>>> origin/master
         },
         {
             "name": "symfony/yaml",
@@ -4709,11 +4756,7 @@
                 "laravel",
                 "tymon"
             ],
-<<<<<<< HEAD
-            "time": "2017-01-24 22:20:55"
-=======
             "time": "2017-01-24T22:20:55+00:00"
->>>>>>> origin/master
         },
         {
             "name": "webmozart/assert",
