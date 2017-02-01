@@ -61,6 +61,8 @@ class cita extends Model
             cita::sms($nuevaCita,$medico);
             cita::mail($nuevaCita, $medico);
             */
+             $medico= $calendario->user->name;
+              cita::mail($nuevaCita, $medico,"agendada");
         } else {
             return response()->json([
                     'error' => true,
