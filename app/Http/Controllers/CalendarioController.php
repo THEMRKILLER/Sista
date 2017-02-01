@@ -38,7 +38,7 @@ class CalendarioController extends Controller
         $cliente_telefono = $cita->cliente_telefono;
         $cliente_email = $cita->cliente_email;
         $cita_tipo      = $cita->tipo->nombre;
-        array_push($events, ['id' => $id,'title' => $title, 'start' => $start, 'end' => $end,'cliente_nombre' => $cliente_nombre , 'cliente_telefono' => $cliente_telefono,'cliente_email' => $cliente_email , 'servicio' => $cita_tipo ]);
+        array_push($events, ['id' => $id,'codigo' => $cita->codigo,'title' => $title, 'start' => $start, 'end' => $end,'cliente_nombre' => $cliente_nombre , 'cliente_telefono' => $cliente_telefono,'cliente_email' => $cliente_email , 'servicio' => $cita_tipo ]);
     }
  
        return \Response::json(['citas' => $events, 'servicios' => $servicios],200);
