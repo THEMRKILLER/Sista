@@ -40,7 +40,7 @@ class cita extends Model
      *notifica al usuario por sms y email
      * @param datosCita estructura con nombre,telefono,email,fecha y hora de la cita
      */
-    public static function crear($datosCita,$codigo)
+    public static function crear($datosCita, $codigo)
     {
         $calendario = calendario::find($datosCita['calendario_id']);
         $tipo = tipo::find($datosCita['tipo_id']);
@@ -51,7 +51,7 @@ class cita extends Model
         $nuevaCita->cliente_telefono = $datosCita['cliente_telefono'];
         $nuevaCita->cliente_email = $datosCita['cliente_email'];
         $nuevaCita->codigo = $codigo;
-        $nuevaCita->tipo()->associate($tipo); 
+        $nuevaCita->tipo()->associate($tipo);
         $citaGuardada=$calendario->citas()->save($nuevaCita);
         //si la cita es guardada correctamente se manda una notificacion al usuario
         //en caso de que no se manda un codigo de error al cliente
@@ -62,7 +62,8 @@ class cita extends Model
             cita::mail($nuevaCita, $medico);
             */
              $medico= $calendario->user->name;
-             // cita::mail($nuevaCita, $medico,"agendada");
+
+            cita::mail($nuevaCita, $medico, "agendada");
         } else {
             return response()->json([
                     'error' => true,
@@ -259,7 +260,8 @@ class cita extends Model
         if ($diaInhabil!=null) {
             if ($diaInhabil->completo==1) {
                 //todo el dia es inhabil
-            return array();
+                
+            return range (0,23);
             } else {
                 //regresa un arreglo con las horas inhabiles del dia
           $horas=$diaInhabil->horasInhabiles()->get(['hora'])->toArray();
@@ -383,6 +385,7 @@ class cita extends Model
         $duracion_servicio= tipo::find($tipo_id)->duracion;
         $horas_habiles = cita::horasDelDia($fecha, $calendario_id);
         $horas_inhabiles = cita::filtroHorasInhabiles($fecha, $calendario_id);
+
         //el producto final, despues de haber pasado por todos los filtros
         $horas_filtrado=array_diff($horas_habiles, $horas_inhabiles);
         if ($horas_filtrado==null) {
@@ -422,15 +425,50 @@ class cita extends Model
         $diasHabiles=$calendario->diasHabiles()->get();
         $diasNohabiles= array();
         $dias_semana= [1,2,3,4,5,6,7];
-               // dd($diasHabiles);
-                foreach ($diasHabiles as $dia) {
-                    $dia_id= $dia->horasHabiles()->distinct()->select('diahabil_id')->get();
-                    if (count($dia_id)>0) {
-                        array_push($diasNohabiles, $dia_id->first()->diahabil_id);
-                    }
-                }
+               
+        foreach ($diasHabiles as $dia) {
+            $dia_id= $dia->horasHabiles()->distinct()->select('diahabil_id')->get();
+            if (count($dia_id)>0) {
+                array_push($diasNohabiles, $dia_id->first()->diahabil_id);
+            }
+        }
             
         return array_values(array_diff($dias_semana, $diasNohabiles));
+    }
+
+
+      /**
+   * Function filtroHorasInhabiles
+   * obtiene las horas inhabiles del dia
+   * @param (Datetime)($fecha)
+   * @param (int)($calendario_id)
+   * @return arreglo con todas las horas habiles del dia
+   */
+    public static function revisarDiasInhabiles($datosCita)
+    {
+        $calendario = calendario::find($datosCita['calendario_id']);
+        $diasInhabiles=$calendario->fechasInhabiles()->pluck('fecha')->toArray();
+        $fechaAgendar = $fecha= carbon::parse($datosCita['fecha_inicio']);
+        //se hace una consulta que regresa la cita que esten en el rango de horas propuesto
+        //saco el numero de elementos
+        $longitud = count($diasInhabiles);
+        
+        //Recorro todos los elementos
+        if ($longitud>0) {
+            for ($i=0; $i<$longitud; $i++) {
+                $inicioDiaInhabil=carbon::parse($diasInhabiles[$i]);
+                $finDiaInhabil=carbon::parse($diasInhabiles[$i])->addDay()->subSecond();
+                $disponibilidad= $fechaAgendar->between($inicioDiaInhabil, $finDiaInhabil);
+                if ($disponibilidad) {
+                    return false;
+                }
+            }
+        } else{
+            return true;
+        }
+        return true;
+       
+        
     }
   /**
    * Function sms

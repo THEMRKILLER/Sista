@@ -29,8 +29,8 @@ class CitaController extends Controller
 
     public function store(Request $request)
     {
-        $val =cita::fechaDisponible($request->all());
-        if ($val) {
+       
+
             $rules = array(
                         'calendario_id' => 'required|numeric|max:255',
                         'tipo_id' => 'required|numeric',
@@ -48,11 +48,16 @@ class CitaController extends Controller
                                             ),
                                 400); // 400 being the HTTP code for an invalid request.
             }
+
+            
+                    $val=cita::fechaDisponible($request->all())&&cita::revisarDiasInhabiles($request->all() );
+                    var_dump(cita::revisarDiasInhabiles($request->all()));
+        if ( $val) {
             cita::crear($request->all(),$this->generarCodigoCita());
         } else {
             return response()->json(array(
                                             'success' => false,
-                                            'errors' => 'no se puede agendar esa hora'
+                                            'errors' => 'no se puede agendar esa fecha'
                                             ), 404);
         }
     }
@@ -95,13 +100,13 @@ class CitaController extends Controller
     }
     public function reagendar(Request $request)
     {
+
         $rules = array(
+
                         'tipo_id' => 'required',
                         'fecha_inicio' => 'required|date',
-                        
                 );
         $validator = Validator::make($request->all(), $rules);
-
         if ($validator->fails()) {
             return response()->json(array(
                                             'success' => false,
@@ -110,14 +115,15 @@ class CitaController extends Controller
                                 400); // 400 being the HTTP code for an invalid request.
         } else {
 
-            if (!cita::fechaDisponible($request->all())) {
-                return response()->json(array(
+            if (cita::fechaDisponible($request->all() )&&cita::revisarDiasInhabiles($request->all() ) ) {
+                cita::reagendar($request->all());
+            } else {
+                
+                                return response()->json(array(
                                             'success' => false,
                                             'errors' => 'no se puede agendar esa fecha'
                                             ),
                                 404);
-            } else {
-                cita::reagendar($request->all());
             }
         }
     }
@@ -162,10 +168,11 @@ class CitaController extends Controller
     //ruta de prueba, eliminar
     public function inhabil(Request $request)
     {
-        $dia ='2017-01-17';
+        $dia ='2017-02-14';
         $calendario_id=1;
-        $valor=cita::filtroHorasInhabiles($dia, $calendario_id);
-        dd($valor);
+        $valor=cita::revisarDiasInhabiles($dia,$calendario_id);
+
+        
     }
 
     public function generarCodigoCita()
