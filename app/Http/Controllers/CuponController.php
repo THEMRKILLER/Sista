@@ -16,7 +16,7 @@ class CuponController extends Controller
                         'porcentaje' => 'required|numeric|max:100|min:0',
                         'fecha_inicial' => 'required|date_format:Y-m-d|before_or_equal:fecha_final',
                         'fecha_final' => 'required|date_format:Y-m-d|after_or_equal:fecha_inicial',
-                    
+                        
                 );
 
             $validator = Validator::make($request->all(), $rules);
@@ -33,16 +33,21 @@ class CuponController extends Controller
 
 
             $servicio = tipo::find($request->get('servicio_id'));
-            if(!$servicio) return response()->json(null,404);
-            $cupon = new Cupon();
-            $codigo  = null;
-            $repeated = true;
+            $codigo = '';
+            if(!$servicio) return response()->json(['errors' => 'El servicio no existe'],404);
 
-            do{
-                $codigo = uniqid();
-                $repeated = Cupon::where('codigo',$codigo)->count() > 0;
+            if($request->get('word_key') == null || $request->get('word_key') == '' || $request->get('word_key') == '')
+            {
+                $codigo = $this->generarCodigo(null);
+
             }
-            while($repeated);
+            else {
+                $exist = Cupon::where('codigo',$request->get('word_key'))->count() > 0 ? true : false ;
+                if($exist) return response()->json(['errors' => ['Ya existe un cupon con el mismo código, escoja otro código']],404);
+                $codigo = $request->get('word_key');
+
+            }
+            $cupon = new Cupon();
             $cupon->codigo = $codigo;
             $cupon->porcentaje = $request->get('porcentaje');
             $cupon->fecha_inicial = $request->get('fecha_inicial');
@@ -62,5 +67,28 @@ class CuponController extends Controller
 
         return response()->json(['cupones' => $cupones,'servicios' => $servicios],200);  
 
+    }
+
+    public function generarCodigo($key)
+    {
+            $codigo  = null;
+            $repeated = true;
+            $numero = 3; 
+            $count = 0;        
+            do{
+                $count++;
+                if($count > 100) {
+                   $numero = $numero + 1;
+                   $count = 0;    
+
+                }
+                if($key == '' || $key == null || $key == ' ' || $key == 'undefined') $codigo = uniqid();
+                else $codigo = $key.rand(0, 10).substr(str_shuffle(str_repeat("0123456789abcdefghijklmnopqrstuvwxyz", $numero)), 0, $numero);          
+            
+                $repeated = Cupon::where('codigo',$codigo)->count() > 0;
+            }
+            while($repeated);   
+
+            return $codigo;    
     }
 }

@@ -62,7 +62,7 @@ class cita extends Model
             cita::mail($nuevaCita, $medico);
             */
              $medico= $calendario->user->name;
-              cita::mail($nuevaCita, $medico,"agendada");
+             // cita::mail($nuevaCita, $medico,"agendada");
         } else {
             return response()->json([
                     'error' => true,
@@ -73,16 +73,23 @@ class cita extends Model
     /*
     *  busca y elimina la cita por id, si no se encuentra se manda un error
     */
-    public function eliminar($datosCita)
+    static function eliminar($datas)
     {
-        $Cita = cita::find($datosCita['id']);
+        $Cita = cita::where('codigo',$datas['codigo'])
+                     ->where(function($query) use ($datas) {
+                            /** @var $query Illuminate\Database\Query\Builder  */
+                            return $query->where('cliente_telefono',$datas['numeromail'])
+                                ->orWhere('cliente_email',$datas['numeromail']);
+                        })
+                      ->first();
         if ($Cita === null) {
             return response()->json([
-                    'error' => true,
-                    'message' => 'No se encuentra una cita con el identificador que selecciono'
+                    'errors' => ['Los datos de entrada son incorrectos o la cita ya no existe']
                 ], 404);
         } else {
-            $Cita->destroy();
+
+            $Cita->delete();
+            return response()->json(['success' => true,'codigo' => $datas['codigo']],200);
         }
     }
 

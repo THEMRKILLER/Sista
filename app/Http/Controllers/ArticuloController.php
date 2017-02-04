@@ -65,12 +65,17 @@ class ArticuloController extends Controller
     {
     	$articulo = Articulo::find($id);
 
-
     	if($articulo == null) return response()->json(['error' => true],404);
+
 
     	$autor = $articulo->user()->get(['name','avatar'])->first();
 
-    	return response()->json(['articulo' => $articulo , 'autor' => $autor],200);
+
+      $articulos_models = $articulo->user->articulos()->get(['id']);
+      $articulos_arr = array();
+      foreach ($articulos_models as $articulo_m) array_push($articulos_arr, $articulo_m->id);
+
+    	return response()->json(['articulo' => $articulo ,'articulos' => $articulos_arr ,'autor' => $autor],200);
     }
     public function getArticulos()
     {

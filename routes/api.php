@@ -21,20 +21,13 @@ Route::group(['middleware' => ['cors'], 'prefix' => 'v1'], function () {
     Route::get('disponibilidad', 'CitaController@disponibilidadCalendario');
     Route::get('sms', 'CitaController@sms');
     Route::get('email', 'CitaController@mail');
+    
     Route::put('cita-r', 'CitaController@reagendar');
+    Route::get('verificar_cita','CitaController@comprobar');
 
 
-    Route::get('imagest',function(){
-      try{
 
-        $path = public_path('img/xd.png');
-      return response()->file($path);
-      }
-      catch(\Exception $e){
-        echo $e;
-      }
 
-    });
     Route::get('images/{image_name}', 'ArticuloController@getImage');
     Route::get('articulo/{id}', 'ArticuloController@getArticulo');
 
@@ -52,6 +45,10 @@ Route::group(['middleware' => ['cors'], 'prefix' => 'v1'], function () {
     Route::get('user_info', 'UsuarioController@getPerfilInfo');
 
     Route::get('foto_perfil/{image_name}', 'UsuarioController@getProfilePicture');
+
+    Route::post('cita', 'CitaController@store');
+    Route::put('/cita/{id}', 'CitaController@update'); 
+    Route::delete('cita', 'CitaController@destroy');
 });
 
 Route::group(['middleware' => ['cors','jwt.refresh'],'prefix' => 'v1'], function () {
@@ -73,12 +70,10 @@ Route::group(['middleware' => ['cors','jwt.auth'], 'prefix' => 'v1'],
 
    /*Crud Citas*/
 
-   Route::get('cita', 'CitaController@index');
-     Route::post('cita', 'CitaController@store');
-     Route::put('/cita/{id}', 'CitaController@update');
-   
-     Route::delete('/cita/{id}', 'CitaController@destroy');
-   //tipo-cita
+  Route::get('cita', 'CitaController@index');
+
+  
+   //tipo-cita (servicios)
    Route::get('/tipo/{id}', 'TipoController@show');
      Route::post('/tipo', 'TipoController@store');
      Route::put('/tipo', 'TipoController@update');
@@ -106,4 +101,9 @@ Route::group(['middleware' => ['cors','jwt.auth'], 'prefix' => 'v1'],
 
    Route::post('cupon', 'CuponController@create');
      Route::get('cupon', 'CuponController@index');
+
+  //Codigo cupones
+      Route::get('codigo_cupon/{key}','CuponController@generarCodigo'); 
+  
+
  });

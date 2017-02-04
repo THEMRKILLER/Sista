@@ -26,6 +26,7 @@ class CitaController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
+
     public function store(Request $request)
     {
         $val =cita::fechaDisponible($request->all());
@@ -125,9 +126,9 @@ class CitaController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Request $request)
     {
-        //cita::eliminar($id);
+        return cita::eliminar($request->all());
     }
     
     public function horasDisponibles(Request $request)
@@ -146,9 +147,8 @@ class CitaController extends Controller
         $diasNoHabiles= cita::diasNoHabiles($calendario_id);
         //disponibilidad del dia en base al numero de huecos vacios
         $disponibilidad= cita::disponibilidadCal($tipo, $calendario_id);
-        $compress=array();
-        array_push($compress, ['disponibilidades' => $disponibilidad, 'no_laborales' => $diasNoHabiles]);
-        return \Response::json($compress, 200);
+      
+        return response()->json(['disponibilidades' => $disponibilidad, 'no_laborales' => $diasNoHabiles], 200);
     }
     //ruta de prueba, eliminar
     public function filtrarHoras(Request $request)
@@ -174,11 +174,45 @@ class CitaController extends Controller
         $codigo = '';
         do{
             $codigo = substr(str_shuffle(str_repeat("0123456789abcdefghijklmnopqrstuvwxyz", 5)), 0, 5);
-            $flag = cita::where('codigo',$codigo)->count() > 0  ? true : false;
+            $flag = cita::where('codigo',$codigo)->count() > 0;
 
         }
         while ($flag);
 
         return $codigo;
+    }
+
+    public function comprobar(Request $request)
+    {   
+        $cita =  cita::where('codigo',$request->get('codigo'))
+                     ->where(function($query) use ($request) {
+                            /** @var $query Illuminate\Database\Query\Builder  */
+                            return $query->where('cliente_telefono',$request->get('numeromail'))
+                                ->orWhere('cliente_email',$request->get('numeromail'));
+                        })->first();
+        $existe_cita = $cita != null ? true : false;
+            
+            /*
+                    vm.cita_codigo_seleccionado = response.data.cita.codigo;
+                    vm.cita_cliente_nombre = response.data.cita.cliente_nombre; 
+                    vm.cita_cliente_servicio = response.data.servicio;
+                    vm.cita_cliente_fecha = response.data.fecha; 
+                                                
+            */
+        
+
+
+        if($existe_cita)
+        {
+            $cita_arr = [
+                        'codigo' => $cita->codigo, 
+                        'cliente_nombre' => $cita->cliente_nombre,
+                        'servicioid' => $cita->tipo->id,
+                        'fecha' => $cita->fecha_inicio
+                        ];
+
+            return response()->json(['success' => true, 'cita' => $cita_arr], 200);
+        } 
+        else return response()->json(['success' => false, 'errors' => ['No existe una cita agendada con estos datos']],404);    
     }
 }
