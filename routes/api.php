@@ -84,7 +84,9 @@ Route::group(['middleware' => ['cors','jwt.auth'], 'prefix' => 'v1'],
    //Articulos
 
    Route::post('articulo', 'ArticuloController@store');
-     Route::get('articulos', 'ArticuloController@getArticulos');
+   Route::put('articulo', 'ArticuloController@update');
+   Route::get('articulos', 'ArticuloController@getArticulos');
+   Route::delete('articulo','ArticuloController@delete');
 
 
    //dias habiles

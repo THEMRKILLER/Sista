@@ -63,7 +63,7 @@ class cita extends Model
             */
              $medico= $calendario->user->name;
 
-            cita::mail($nuevaCita, $medico, "agendada");
+         //   cita::mail($nuevaCita, $medico, "agendada");
         } else {
             return response()->json([
                     'error' => true,
@@ -144,6 +144,21 @@ class cita extends Model
             cita::sms($nuevaCita,$medico);
             cita::mail($nuevaCita, $medico);
             */
+            /*
+            DATOS QUE NECESITA EL CLIENTE : 
+            {'id_user' : vm.$store.state.calendario_id,
+           'codigo' : response.data.codigo,
+           'cliente_nombre' : response.data.cliente_nombre,
+           'fecha' : moment(vm.nueva_fecha).format('LLLL'),
+           'servicio' : response.data.servicio
+            */
+
+          return response()->json([
+                                  'codigo' => $Cita->codigo,
+                                  'cliente_nombre' => $Cita->cliente_nombre,
+                                  'fecha' => $Cita->fecha_inicio,
+                                  'servicio' => $Cita->tipo->nombre ],
+                                  200);
         } else {
             return response()->json([
                     'error' => true,

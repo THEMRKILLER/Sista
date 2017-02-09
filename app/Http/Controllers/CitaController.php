@@ -38,7 +38,7 @@ class CitaController extends Controller
                         'fecha_final' => 'required|date_format:Y-m-d H:i:s',
                         'cliente_nombre' => 'required|',
                         'cliente_telefono' => 'required',
-                        'cliente_email' => 'required|email',
+                        'cliente_email' => 'email',
             );
             $validator = Validator::make($request->all(), $rules);
             if ($validator->fails()) {
@@ -98,6 +98,7 @@ class CitaController extends Controller
         }
         cita::editar($request->all(), $id);
     }
+
     public function reagendar(Request $request)
     {
 
@@ -116,7 +117,7 @@ class CitaController extends Controller
         } else {
 
             if (cita::fechaDisponible($request->all() )&&cita::revisarDiasInhabiles($request->all() ) ) {
-                cita::reagendar($request->all());
+               return cita::reagendar($request->all());
             } else {
                 
                                 return response()->json(array(
@@ -215,7 +216,8 @@ class CitaController extends Controller
                         'codigo' => $cita->codigo, 
                         'cliente_nombre' => $cita->cliente_nombre,
                         'servicioid' => $cita->tipo->id,
-                        'fecha' => $cita->fecha_inicio
+                        'fecha' => $cita->fecha_inicio,
+                        'id' => $cita->id
                         ];
 
             return response()->json(['success' => true, 'cita' => $cita_arr], 200);

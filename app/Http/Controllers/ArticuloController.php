@@ -7,6 +7,7 @@ use Validator;
 use JWTAuth;
 use App\Articulo;
 use Image;
+use Json;
 class ArticuloController extends Controller
 {
     public function store(Request $request)
@@ -53,6 +54,63 @@ class ArticuloController extends Controller
 
     }
 
+    public function update(Request $request)
+    {
+          $rules = array(
+            'titulo' => 'required|max:255',
+            'resumen' => 'required',
+            'caratula' => 'required_without:caratula_url|max:20000|image',
+            'contenido' => 'required|string|max:65535',
+            'id'        => 'required'
+        );
+
+        $validator = Validator::make($request->all(), $rules);
+        if ($validator->fails())
+            {
+                return response()->json(array(
+                                            'success' => false,
+                                            'errors' => $validator->getMessageBag()->toArray()
+                                            ), 
+                                400); // 400 being the HTTP code for an invalid request.
+        
+            }
+
+
+
+
+       $token = JWTAuth::getToken();
+       $user = JWTAuth::toUser($token);
+      $articulo = Articulo::find($request->get('id'));
+
+       try {
+        if($request->hasFile('caratula')) {
+          unlink(storage_path('app/').$articulo->caratula);
+          $caratula_path = $request->file('caratula')->store('images');
+
+        }
+        else $caratula_path = $articulo->caratula;
+       } catch (Exception $e) {
+        return response()->json(null,500);
+        
+       }
+
+       $articulo->titulo = $request->get('titulo');
+       $articulo->resumen = $request->get('resumen');
+       $articulo->caratula = $caratula_path;
+       $articulo->contenido = $request->get('contenido');
+       $user->articulos()->save($articulo);
+       return response()->json(['id' => $articulo->id],200);
+
+    }
+
+    public function delete(Request $request)
+    {
+      $articulo = Articulo::find($request->get('id'));
+      if(!$articulo) return response()->json(['error'=>true],404);
+      $articulo->delete();
+      return response()->json(['success'=>true],200);
+    }
+
     public function getImage($image_name)
     {
     	$pathToFile = storage_path('app/images/'.$image_name);
@@ -74,6 +132,7 @@ class ArticuloController extends Controller
       $articulos_models = $articulo->user->articulos()->get(['id']);
       $articulos_arr = array();
       foreach ($articulos_models as $articulo_m) array_push($articulos_arr, $articulo_m->id);
+      $articulo->caratula  = url('api/v1/'.$articulo->caratula);
 
     	return response()->json(['articulo' => $articulo ,'articulos' => $articulos_arr ,'autor' => $autor],200);
     }
