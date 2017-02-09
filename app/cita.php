@@ -74,23 +74,22 @@ class cita extends Model
     /*
     *  busca y elimina la cita por id, si no se encuentra se manda un error
     */
-    static function eliminar($datas)
+    public static function eliminar($datas)
     {
-        $Cita = cita::where('codigo',$datas['codigo'])
-                     ->where(function($query) use ($datas) {
-                            /** @var $query Illuminate\Database\Query\Builder  */
-                            return $query->where('cliente_telefono',$datas['numeromail'])
-                                ->orWhere('cliente_email',$datas['numeromail']);
-                        })
+        $Cita = cita::where('codigo', $datas['codigo'])
+                     ->where(function ($query) use ($datas) {
+                         /** @var $query Illuminate\Database\Query\Builder  */
+                            return $query->where('cliente_telefono', $datas['numeromail'])
+                                ->orWhere('cliente_email', $datas['numeromail']);
+                     })
                       ->first();
         if ($Cita === null) {
             return response()->json([
                     'errors' => ['Los datos de entrada son incorrectos o la cita ya no existe']
                 ], 404);
         } else {
-
             $Cita->delete();
-            return response()->json(['success' => true,'codigo' => $datas['codigo']],200);
+            return response()->json(['success' => true,'codigo' => $datas['codigo']], 200);
         }
     }
 
@@ -222,21 +221,31 @@ class cita extends Model
             ->get();
         foreach ($Citas as $fecha) {
             $espacios= cita::timeslot($fecha['fecha_inicio'], $tipo_id, $calendario_id);
-           //disponibilidad baja
-         if (count($espacios)>=0 and count($espacios)<=2) {
-             $disponibilidad=3;
-         }
-            //disponibilidad media
-         if (count($espacios)>2 and count($espacios)<=5) {
-             $disponibilidad=2;
-         }
-         //disponibilidad alta
-         if (count($espacios)>5) {
-             $disponibilidad=1;
-         }
+            $disponibilidad=cita::espaciosPorFecha(count($espacios));
             array_push($ocupado, ['fecha' => $fecha['fecha_inicio'], 'disponibilidad' => $disponibilidad]);
         }
         return $ocupado;
+    }
+     /**
+  * Function espaciosPorFecha
+  *
+  * @param (int)($numEspacios) numero de espacios sin agendar en el dia
+  * @return int disponibilidad : alta=1,media=2,baja=3
+ */
+    public static function espaciosPorFecha($numEspacios)
+    {
+        //disponibilidad baja
+         if ($numEspacios>=0 and $numEspacios<=2) {
+             return 3;
+         }
+            //disponibilidad media
+         if ($numEspacios>2 and $numEspacios<=5) {
+             return 2;
+         }
+         //disponibilidad alta
+         if ($numEspacios>5) {
+             return 1;
+         }
     }
   /**
    * Function horasDelDia
@@ -274,9 +283,8 @@ class cita extends Model
         $horasInhabiles =array();
         if ($diaInhabil!=null) {
             if ($diaInhabil->completo==1) {
-                //todo el dia es inhabil
-                
-            return range (0,23);
+                //todo el dia es inhabil regresa un arreglo con todas las horas
+            return range(0, 23);
             } else {
                 //regresa un arreglo con las horas inhabiles del dia
           $horas=$diaInhabil->horasInhabiles()->get(['hora'])->toArray();
@@ -478,12 +486,10 @@ class cita extends Model
                     return false;
                 }
             }
-        } else{
+        } else {
             return true;
         }
         return true;
-       
-        
     }
   /**
    * Function sms
