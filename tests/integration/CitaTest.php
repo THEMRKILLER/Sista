@@ -45,4 +45,41 @@ class CitaTest extends TestCase
         $this->assertEquals($disponibilidadMedia, 2); //regresa disponibilidad Media
         $this->assertEquals($disponibilidadAlta, 1); //regresa disponibilidad Alta
     }
+    /** @test */
+    public function creacion_de_citas()
+    {
+        //given
+        //simulando datos de entrada de una cita
+        $datosCita['calendario_id']=1;
+        $datosCita['tipo_id']=1;
+        $datosCita['fecha_inicio']='2018-02-21 08:00:00';
+        //$datosCita['fecha_final']='2018-02-21 09:00:00';
+        $datosCita['cliente_nombre']='Metatron';
+        $datosCita['cliente_telefono']='66660022';
+        $datosCita['cliente_email']='ArcMet@gmail.com';
+        //uso del metodo para crear cita
+        $nuevaCita = $this->action('Post', 'CitaController@store', $datosCita);
+        //cita creada correctamente
+        $this->assertEquals(200, $nuevaCita->getStatusCode(), "cita agendada correctamente");
+        //cambio de valores de calendario y tipo para probar un recurso no disponible
+        $datosCita['calendario_id']=23;
+        $datosCita['tipo_id']=23;
+        
+        $FalloAgendar=$this->action('Post', 'CitaController@store', $datosCita);
+        $this->assertEquals(404, $FalloAgendar->getStatusCode(), 'se trata de acceder a un recurso inexistente');
+        
+        $datosCita['tipo_id']='a';
+        $datosCita['calendario_id']='aweer';
+        $datosCita['cliente_nombre']='               ';
+        $ErrorValidador=$this->action('Post', 'CitaController@store', $datosCita);
+        $this->assertEquals(400, $ErrorValidador->getStatusCode(), 'validador falla');
+    }
+    /** @test */
+    public function reagendacion_de_citas()
+    {
+        $datosCita['tipo_id']=1;
+        $datosCita['fecha_inicio']='2018-02-21 08:00:00';
+        $citaExiste=$this->action('put', 'CitaController@reagendar', $datosCita);
+           
+    }
 }
