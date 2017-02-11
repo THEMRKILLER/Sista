@@ -11,7 +11,7 @@ class Cupon extends Model
         'id','servicio_id','fecha_inicial','fecha_final','porcentaje' 
     ];
 
-    public function servicios()
+    public function servicio()
     {
         return $this->belongsTo('App\tipo');
     }

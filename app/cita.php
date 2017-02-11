@@ -42,6 +42,7 @@ class cita extends Model
      */
     public static function crear($datosCita, $codigo)
     {
+
         $calendario = calendario::find($datosCita['calendario_id']);
         $tipo = tipo::find($datosCita['tipo_id']);
         $nuevaCita = new cita();
@@ -51,6 +52,7 @@ class cita extends Model
         $nuevaCita->cliente_telefono = $datosCita['cliente_telefono'];
         $nuevaCita->cliente_email = $datosCita['cliente_email'];
         $nuevaCita->codigo = $codigo;
+        $nuevaCita->costo = $datosCita['costo_total'];
         $nuevaCita->tipo()->associate($tipo);
         $citaGuardada=$calendario->citas()->save($nuevaCita);
         //si la cita es guardada correctamente se manda una notificacion al usuario

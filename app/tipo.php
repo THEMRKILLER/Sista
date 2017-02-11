@@ -20,7 +20,7 @@ class tipo extends Model
       }
       public function calendario()
       {
-        return $this->belongsTo('App\tipo');
+        return $this->belongsTo('App\calendario');
       }
       
 

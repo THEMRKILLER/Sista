@@ -7,16 +7,18 @@ use App\Cupon;
 use App\tipo;
 use Validator;
 use App\calendario;
+use Carbon\Carbon;
 class CuponController extends Controller
 {
     public function create(Request $request)
     {
+
     	$rules = array(
                     
                         'porcentaje' => 'required|numeric|max:100|min:0',
                         'fecha_inicial' => 'required|date_format:Y-m-d|before_or_equal:fecha_final',
                         'fecha_final' => 'required|date_format:Y-m-d|after_or_equal:fecha_inicial',
-                        
+                        'costo'       => 'required'
                 );
 
             $validator = Validator::make($request->all(), $rules);
@@ -47,6 +49,15 @@ class CuponController extends Controller
                 $codigo = $request->get('word_key');
 
             }
+            $cupon_descuento = $request->get('cupon_descuento');
+            $costo_total = $request->get('costo_total');
+
+
+            if(!$this->validar_costo($cupon_descuento,$costo_total,$servicio))
+             return response()->json(
+                ['errors' => ['No es posible agendar la cita por que los datos que se proporcionaron no son los correctos, verifiquelos y vuelva a intentar'] ]
+                ,400);
+           
             $cupon = new Cupon();
             $cupon->codigo = $codigo;
             $cupon->porcentaje = $request->get('porcentaje');
@@ -91,4 +102,38 @@ class CuponController extends Controller
 
             return $codigo;    
     }
+
+    public function verificar(Request $request)
+    {
+        try{
+       $cupon = Cupon::where('codigo',$request->get('codigo'))->first();
+
+        if($cupon == null) return response()->json(['error' => 'El cupón no existe'],404);  
+
+        if(!$cupon->servicio->calendario->id == $request->get('id_calendario'))  
+            return response()->json(['error'=>'El cupón no existe'],404);
+        else {
+            if(!($cupon->servicio->id == $request->get('servicio_id')))
+                return response()->json(['error'=>'El cupón ingresado no es valido para el servicio seleccionado'],404);
+            else {
+
+                $hoy = Carbon::now()->format('Y-m-d');
+                
+                if(($hoy >= $cupon->fecha_inicial && $hoy<= $cupon->fecha_final)) return response()->json(['descuento' => $cupon->porcentaje],200);
+                else return response()->json(['error'=> 'El cupon aún no está vigente para su uso'],404);
+
+
+                
+            }
+        }
+       
+        }
+        catch(\Exception $e){
+            print_r($e);
+        }
+       
+
+    }
+
+
 }

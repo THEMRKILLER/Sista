@@ -8,6 +8,8 @@ use Validator;
 use Carbon\Carbon;
 use Nexmo\Client;
 use App\Mail\NotificacionNCita;
+use App\tipo;
+use App\Cupon;
 
 class CitaController extends Controller
 {
@@ -49,10 +51,16 @@ class CitaController extends Controller
                                 400); // 400 being the HTTP code for an invalid request.
             }
 
-            
+                
                     $val=cita::fechaDisponible($request->all())&&cita::revisarDiasInhabiles($request->all() );
-                    var_dump(cita::revisarDiasInhabiles($request->all()));
         if ( $val) {
+
+                $cupon_descuento = $request->get('cupon_descuento');
+                $costo_total = $request->get('costo_total');
+                $servicio = tipo::find($request->get('tipo_id'));
+            if(!$this->validar_costo($cupon_descuento,$costo_total,$servicio)) 
+                return response()->json(['errors' => ['No es posible agendar la cita por que los datos que se proporcionaron no son los correctos, verifiquelos y vuelva a intentar'] ],400);
+            
             cita::crear($request->all(),$this->generarCodigoCita());
         } else {
             return response()->json(array(
@@ -223,5 +231,30 @@ class CitaController extends Controller
             return response()->json(['success' => true, 'cita' => $cita_arr], 200);
         } 
         else return response()->json(['success' => false, 'errors' => ['No existe una cita agendada con estos datos']],404);    
+    }
+
+        private function validar_costo($cupon_descuento,$costo_total,$servicio)
+    {
+        $porcentaje_descuento = 0;
+     
+        $costo_original_servicio = $servicio->costo;
+
+        if($cupon_descuento === null || $cupon_descuento==='' || $cupon_descuento === 0)
+        {
+            if($costo_total == $costo_original_servicio) return true;
+            else return false;
+        }
+        else {
+            $cupon = Cupon::where('codigo',$cupon_descuento)->first();
+            if(!$cupon) return false;
+            else {
+                $porcentaje_descuento = $cupon->porcentaje;
+                $precio_con_descuento = $costo_original_servicio - ($costo_original_servicio * ($porcentaje_descuento/100));
+
+                if($costo_total == $precio_con_descuento) return true;
+                else return false;
+            }
+        }
+
     }
 }

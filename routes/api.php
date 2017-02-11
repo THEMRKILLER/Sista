@@ -50,6 +50,11 @@ Route::group(['middleware' => ['cors'], 'prefix' => 'v1'], function () {
     Route::post('cita', 'CitaController@store');
     Route::put('/cita/{id}', 'CitaController@update'); 
     Route::delete('cita', 'CitaController@destroy');
+
+
+    /*cupones*/
+
+    Route::get('verificarcupon','CuponController@verificar');
 });
 
 Route::group(['middleware' => ['cors','jwt.refresh'],'prefix' => 'v1'], function () {

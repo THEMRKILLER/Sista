@@ -25,6 +25,7 @@ class CreateCita extends Migration
             $table->string('cliente_telefono');
             $table->string('cliente_email');
             $table->string('codigo');
+            $table->integer('costo');
             $table->timestamps();
         });
     }
