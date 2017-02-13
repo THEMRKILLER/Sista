@@ -9,6 +9,7 @@ use Carbon\Carbon;
 use Nexmo\Client;
 use App\Mail\NotificacionNCita;
 use App\tipo;
+use App\calendario;
 use App\Cupon;
 
 class CitaController extends Controller
@@ -23,9 +24,9 @@ class CitaController extends Controller
 
     public function store(Request $request)
     {
+  
+       
         $rules = array(
-                        'calendario_id' => 'required|numeric|max:255',
-                        'tipo_id' => 'required|numeric',
                         'fecha_inicio' => 'required|date_format:Y-m-d H:i:s',
                         'cliente_nombre' => 'required',
                         'cliente_telefono' => 'required',
@@ -48,11 +49,21 @@ class CitaController extends Controller
 
                 $cupon_descuento = $request->get('cupon_descuento');
                 $costo_total = $request->get('costo_total');
-                $servicio = tipo::find($request->get('tipo_id'));
+                  
+                   if (tipo::find($request->get('tipo_id'))===null) {
+            return response()->json([
+                    'error' => true,
+                    'message' => 'se ah tratado de acceder a un recurso que no existe'
+                ], 404);
+        } else { 
+                            $servicio = tipo::find($request->get('tipo_id'));
             if(!$this->validar_costo($cupon_descuento,$costo_total,$servicio)) 
                 return response()->json(['errors' => ['No es posible agendar la cita por que los datos que se proporcionaron no son los correctos, verifiquelos y vuelva a intentar'] ],400);
             
             cita::crear($request->all(),$this->generarCodigoCita());
+        }
+
+
 
         } else {
              
@@ -81,8 +92,7 @@ class CitaController extends Controller
     public function reagendar(Request $request)
     {
         $rules = array(
-
-                        'tipo_id' => 'required',
+                        
                         'fecha_inicio' => 'required|date',
                 );
         $validator = Validator::make($request->all(), $rules);
@@ -95,7 +105,7 @@ class CitaController extends Controller
         } else {
 
             if (cita::fechaDisponible($request->all())&&cita::revisarDiasInhabiles($request->all())) {
-                return response('Hello World', 409);
+                
                 return cita::reagendar($request->all());
             } else {
                 return response()->json(array(
@@ -202,5 +212,27 @@ class CitaController extends Controller
             }
         }
 
+    }
+    public function verificarCalendario($idCalendario,$idServicio)
+    {
+           if (calendario::find($idCalendario)===null||tipo::find($idServicio)===null) {
+            return response()->json([
+                    'error' => true,
+                    'message' => 'se ah tratado de acceder a un recurso que no existe'
+                ], 404);
+        } else {
+             $tipo = tipo::find($idServicio);
+             $calendario_servicio=$tipo->calendario;
+             if($idCalendario===$calendario_servicio){
+                return true;
+             }else{
+                               return response()->json(array(
+                                            'success' => false,
+                                            'errors' => 'no se puede acceder a ese recurso'
+                                            ),
+                                403 );
+             }
+
+        }
     }
 }
