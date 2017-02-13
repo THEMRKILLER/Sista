@@ -39,6 +39,7 @@ class TipoController extends Controller
         $rules = array(
             'nombre' => 'required|unique:tipo|max:255',
             'duracion' => 'required',
+            'costo'     => 'required|integer'
         );
         $validator = Validator::make($request->all(), $rules);
         if ($validator->fails())
@@ -101,6 +102,7 @@ class TipoController extends Controller
 
         $id  = $request->get('id');
         $tipo = $user->calendario->tipos()->where('id',$id)->first();
+        if(!$tipo) return response()->json(['errors'=> ['Acceso denegado'],403]);
         $tipo->editar($request->all());
     }
 

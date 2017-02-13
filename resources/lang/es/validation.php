@@ -152,7 +152,8 @@ return [
         'fecha_inicio'          => 'hora',
         'cliente_email'         => 'correo electrónico',
         'cliente_nombre'        => 'nombre',
-        'cliente_telefono'      => 'telefono'
+        'cliente_telefono'      => 'telefono',
+        'current-password'      => 'Contraseña actual'
 
     ],
 

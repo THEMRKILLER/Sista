@@ -7,7 +7,7 @@
             <div class="panel panel-default">
                 <div class="panel-heading">Registrar Usuario</div>
                 <div class="panel-body">
-                    <form class="form-horizontal" role="form" method="POST" action="{{ url('/sysadmin/register_user') }}">
+                    <form class="form-horizontal" role="form" method="POST" action="{{ url('/sysadmin/altausuario') }}">
                         {{ csrf_field() }}
 
                         <div class="form-group{{ $errors->has('name') ? ' has-error' : '' }}">
@@ -33,6 +33,20 @@
                                 @if ($errors->has('email'))
                                     <span class="help-block">
                                         <strong>{{ $errors->first('email') }}</strong>
+                                    </span>
+                                @endif
+                            </div>
+                        </div>
+
+                         <div class="form-group{{ $errors->has('cedula') ? ' has-error' : '' }}">
+                            <label for="cedula" class="col-md-4 control-label">Cedula Profesional</label>
+
+                            <div class="col-md-6">
+                                <input id="cedula" type="text" class="form-control" name="cedula" value="{{ old('cedula') }}">
+
+                                @if ($errors->has('cedula'))
+                                    <span class="help-block">
+                                        <strong>{{ $errors->first('cedula') }}</strong>
                                     </span>
                                 @endif
                             </div>

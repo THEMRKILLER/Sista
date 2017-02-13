@@ -134,6 +134,7 @@ class ArticuloController extends Controller
       foreach ($articulos_models as $articulo_m) array_push($articulos_arr, $articulo_m->id);
       $articulo->caratula  = url('api/v1/'.$articulo->caratula);
 
+      $autor->avatar = url()->asset('api/v1/foto_perfil/'.$autor->avatar);
     	return response()->json(['articulo' => $articulo ,'articulos' => $articulos_arr ,'autor' => $autor],200);
     }
     public function getArticulos()

@@ -31,7 +31,6 @@ class User extends Authenticatable
     {
               return $this->hasOne('App\calendario');
 
-
     }
 
     public function articulos()
