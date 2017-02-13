@@ -17,8 +17,8 @@ class CuponController extends Controller
                     
                         'porcentaje' => 'required|numeric|max:100|min:0',
                         'fecha_inicial' => 'required|date_format:Y-m-d|before_or_equal:fecha_final',
-                        'fecha_final' => 'required|date_format:Y-m-d|after_or_equal:fecha_inicial',
-                        'costo'       => 'required'
+                        'fecha_final' => 'required|date_format:Y-m-d|after_or_equal:fecha_inicial'
+                        
                 );
 
             $validator = Validator::make($request->all(), $rules);
@@ -53,10 +53,7 @@ class CuponController extends Controller
             $costo_total = $request->get('costo_total');
 
 
-            if(!$this->validar_costo($cupon_descuento,$costo_total,$servicio))
-             return response()->json(
-                ['errors' => ['No es posible agendar la cita por que los datos que se proporcionaron no son los correctos, verifiquelos y vuelva a intentar'] ]
-                ,400);
+           
            
             $cupon = new Cupon();
             $cupon->codigo = $codigo;
