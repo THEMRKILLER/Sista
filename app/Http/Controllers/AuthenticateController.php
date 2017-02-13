@@ -23,6 +23,7 @@ class AuthenticateController extends Controller
         }
 
             $user = JWTAuth::toUser($token);
-            return response()->json(['token'  => compact('token') , 'user_id' => $user->id],200);
+            $user->avatar = url()->asset('api/v1/foto_perfil/'.$user->avatar);
+            return response()->json(['token'  => compact('token') , 'user' => $user,'calendario_id' => $user->calendario->id],200);
     }
 }

@@ -1,13 +1,14 @@
 @extends('sysadmin.layout.auth')
 
 @section('content')
+
 <div class="container">
     <div class="row">
         <div class="col-md-8 col-md-offset-2">
             <div class="panel panel-success">
                 <div class="panel-heading">
                     <div><h4>Dashboard</h4> </div>
-                    <a href="alta_usuario">
+                    <a href="altausuario">
                         <button class="btn btn-primary">
                         Dar de alta usuario
                     </button>
@@ -17,16 +18,35 @@
                 <div class="panel-body">
                     @if(isset($users))
                     <ul class="list-group">
-                      
-                       @foreach($users as $user)
-                            <li class="list-group-item">
-                                Nombre : {{$user->name}}
-                                <br>
-                                Correo Electronico : {{$user->email}}
-
-                            </li>
-                            
-                        @endforeach
+                       <table class="table">
+                                    <thead>
+                                      <tr>
+                                        <th>ID</th>
+                                        <th>Nombre</th>
+                                        <th>Correo Electronico</th>
+                                        <th>Acción</th>
+                                      </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach($users as $user)
+                                            <tr>
+                                                <td>
+                                                    {{$user->id}}
+                                                </td>
+                                                <td>
+                                                    {{$user->name}}
+                                                </td>
+                                                <td>
+                                                    {{$user->email}}
+                                                </td>
+                                                <td></td>
+                                            </tr>
+                                    
+                                        @endforeach
+                                     
+                                    </tbody>
+                        </table>
+                       
                     </ul>
                        
                     @endif
