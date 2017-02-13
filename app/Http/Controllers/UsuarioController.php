@@ -113,7 +113,7 @@ class UsuarioController extends Controller
         {
         $file_name_actual = explode('/', $user->avatar);
         try{
-        if(file_exists($folderName.$file_name_actual[count($file_name_actual)-1]))
+        if(file_exists($folderName.$file_name_actual[count($file_name_actual)-1]) && $file_name_actual != 'default.png')
             unlink($folderName.$file_name_actual[count($file_name_actual)-1]);
         }
         catch(\Exception $e){}
@@ -123,7 +123,7 @@ class UsuarioController extends Controller
         $user->save();
         
 
-        return response()->json(['success' => true,'avatar' => $user->avatar ],200);
+        return response()->json(['success' => true,'avatar' => $url],200);
 
 
     }
