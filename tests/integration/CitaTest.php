@@ -24,7 +24,7 @@ class CitaTest extends TestCase
     $this->assertFalse($regresaFalso);
         $this->assertTrue($regresaVerdadero);
     }
-    /** @test */
+   
     public function disponibilidad_del_calendario()
     {
         $tipo_id=3;//duracion 60 mins
@@ -52,17 +52,19 @@ class CitaTest extends TestCase
         $datosCita['calendario_id']=1;
         $datosCita['tipo_id']=1;
         $datosCita['fecha_inicio']='2018-02-21 08:00:00';
-        //$datosCita['fecha_final']='2018-02-21 09:00:00';
         $datosCita['cliente_nombre']='Metatron';
         $datosCita['cliente_telefono']='66660022';
         $datosCita['cliente_email']='ArcMet@gmail.com';
-        $datosCita['costo_total']=5000;
+        $datosCita['costo_total']=0;
         $datosCita['cupon_descuento']='';
         
+        //acceso a otro calendario :
+   
 
         //cita creada correctamente
+      
         $nuevaCita = $this->action('Post', 'CitaController@store', $datosCita);
-        $this->assertEquals(200, $nuevaCita->getStatusCode(), "cita agendada correctamente");
+        $this->assertEquals(200, $nuevaCita->getStatusCode(), "".$nuevaCita);
    
         //fecha no disponible
          $fechanodisponible=$this->action('Post', 'CitaController@store', $datosCita);
@@ -77,26 +79,36 @@ class CitaTest extends TestCase
         $cuponinvalido=$this->action('Post', 'CitaController@store', $datosCita);
         $this->assertEquals(400, $cuponinvalido->getStatusCode(), ' cupon invalido');
         // cupon valido pero costo total incorrecto
- 		$datosCita['cupon_descuento']='parto89nj';
+ 		$datosCita['cupon_descuento']='last24z0';
  		        $datosCita['costo_total']=2000;
         $cuponvalido=$this->action('Post', 'CitaController@store', $datosCita);
         $this->assertEquals(400, $cuponvalido->getStatusCode(), ' cupon valido costo total incorrecto');
         // cupon valido,costo correcto
- 		$datosCita['cupon_descuento']='parto89nj';
- 		        $datosCita['costo_total']=4500;
+ 		
+ 		        $datosCita['costo_total']=0;
         $cuponvalido=$this->action('Post', 'CitaController@store', $datosCita);
         $this->assertEquals(200, $cuponvalido->getStatusCode(), ' cupon valido');
         //recurso no disponible.
-        $datosCita['calendario_id']=1;
+        $datosCita['calendario_id']=28;
         $datosCita['tipo_id']=1024;
         $FalloAgendar=$this->action('Post', 'CitaController@store', $datosCita);
         $this->assertEquals(404, $FalloAgendar->getStatusCode(), 'se trata de acceder a un recurso inexistente');
         //fallo de formulario
-        $datosCita['tipo_id']='a';
-        $datosCita['calendario_id']='aweer';
+                $datosCita['calendario_id']=1;
+        $datosCita['tipo_id']=1;
         $datosCita['cliente_nombre']='               ';
         $ErrorValidador=$this->action('Post', 'CitaController@store', $datosCita);
         $this->assertEquals(400, $ErrorValidador->getStatusCode(), 'validador falla');
+   		
+   		        //cita creada con conflictos
+        $datosCita['calendario_id']=1;
+        $datosCita['cliente_nombre']='khun aguero annis';
+        $datosCita['tipo_id']=203;
+        $datosCita['costo_total']=100;
+        $datosCita['fecha_inicio']='2018-02-24 10:00:00';
+        $datosCita['cupon_descuento']='';
+        $conflictos = $this->action('Post', 'CitaController@store', $datosCita);
+        $this->assertEquals(403, $conflictos->getStatusCode(), ''.$conflictos);
     }
     /** @test */
     public function eliminar_citas()

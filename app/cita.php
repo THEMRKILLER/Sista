@@ -214,6 +214,7 @@ class cita extends Model
         $ocupado=array();
         $Citas=cita::distinct()->select(DB::raw('DATE_FORMAT(fecha_inicio, \'%Y-%m-%d\') AS fecha_inicio'))
             ->where('fecha_inicio', '>=', $inicial->toDateTimeString())
+            ->where('calendario_id', '=', $calendario_id)
             ->get();
         foreach ($Citas as $fecha) {
             $espacios= cita::timeslot($fecha['fecha_inicio'], $tipo_id, $calendario_id);
@@ -554,4 +555,5 @@ class cita extends Model
         $destinatario=$cita->cliente_email;
         \Mail::to($destinatario)->send(new NotificacionNCita($cita, $medico, $opcionMensaje));
     }
+
 }
