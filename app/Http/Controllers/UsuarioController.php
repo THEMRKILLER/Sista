@@ -137,20 +137,51 @@ class UsuarioController extends Controller
 
     }
 
+    public function update(Request $request)
+    {
+        $token = JWTAuth::getToken();
+        $user = JWTAuth::toUser($token);
+        $validator = Validator::make($request->all(), [
+                // Here's how our new validation rule is used.
+                'nombre' => 'required',
+                'cedula_profesional' => 'required',
+                'informacion_profesional_resumen' => 'required|max:255|string',
+                'informacion_profesional_completo' => 'required|string|max:65535'
+        ]);
 
+        if ($validator->fails())
+            {
+                return response()->json(array(
+                                            'success' => false,
+                                            'errors' => $validator->getMessageBag()->toArray()
+                                            ), 
+                                400); // 400 being the HTTP code for an invalid request.
+        
+            }
+
+        $user->name = $request->get('nombre');
+        $user->cedula_profesional = $request->get('cedula_profesional');
+        $user->informacion_profesional_resumen = $request->get('informacion_profesional_resumen');
+        $user->informacion_profesional_completo = $request->get('informacion_profesional_completo');
+        $user->save();
+        $user->avatar = URL::asset('api/v1/foto_perfil/'.$user->avatar);
+        return response()->json(['user' => $user],200);
+
+
+
+    }
      public function settingsUpdatePassword(Request $request)
     {
 
         $token = JWTAuth::getToken();
         $user = JWTAuth::toUser($token);
-        // old_password, new_password, password_confirmation
+
 
          
     $validator = Validator::make($request->all(), [
     // Here's how our new validation rule is used.
         'current-password' => 'required',
-        'password' => 'required|same:password',
-        'password_confirmation' => 'required|same:password',
+        'newpassword' => 'required|min:6|confirmed',
     ]);
 
         if ($validator->fails())
@@ -165,7 +196,7 @@ class UsuarioController extends Controller
 
         if(Hash::check($request->get('current-password'), $user->password))
         {
-            $user->password = Hash::make($request->get('password'));
+            $user->password = Hash::make($request->get('newpassword'));
             $user->save();
             return response()->json(['success' => true],200);
         }
