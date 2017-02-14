@@ -222,6 +222,14 @@ class cita extends Model
             $disponibilidad=cita::espaciosPorFecha(count($espacios));
             array_push($ocupado, ['fecha' => $fecha['fecha_inicio'], 'disponibilidad' => $disponibilidad]);
         }
+        $calendario=calendario::find($calendario_id);
+        $diasInhabiles=$calendario->fechasInhabiles()->pluck('fecha');
+        ///agrega las fechas inhabiles con disponibilidad de 0
+        foreach ($diasInhabiles as $diainhabil ) {
+             array_push($ocupado, ['fecha' => $diainhabil, 'disponibilidad' => 0]);
+        }
+
+
         return $ocupado;
     }
      /**
@@ -234,7 +242,7 @@ class cita extends Model
     {
         //disponibilidad baja
          if ($numEspacios>=0 and $numEspacios<=2) {
-             return 3;
+             return 1;
          }
             //disponibilidad media
          if ($numEspacios>2 and $numEspacios<=5) {
@@ -242,7 +250,7 @@ class cita extends Model
          }
          //disponibilidad alta
          if ($numEspacios>5) {
-             return 1;
+             return 3;
          }
     }
   /**

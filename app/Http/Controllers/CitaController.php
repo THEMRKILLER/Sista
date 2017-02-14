@@ -45,9 +45,13 @@ class CitaController extends Controller
                                             ),
                                 400); // 400 being the HTTP code for an invalid request.
                 }
-
-                
-
+                $fechaActual=carbon::now();
+                if ($fechaActual->toDateTimeString() >= $request->get('fecha_inicio')) {
+                    return response()->json(array(
+                                            'success' => false,
+                                            'errors' => 'la fecha de inicio de la cita ya paso y no se puede agendar'
+                                            ), 409);
+                } else {
                 $val=cita::fechaDisponible($request->all())&&cita::revisarDiasInhabiles($request->all());
                 if ($val) {
                     $cupon_descuento = $request->get('cupon_descuento');
@@ -56,24 +60,6 @@ class CitaController extends Controller
                     if (!$this->validar_costo($cupon_descuento, $costo_total, $servicio)) {
                         return response()->json(['errors' => ['No es posible agendar la cita por que los datos que se proporcionaron no son los correctos, verifiquelos y vuelva a intentar'] ], 400);
                     }
-
-                    $val=cita::fechaDisponible($request->all())&&cita::revisarDiasInhabiles($request->all() );
-        if ( $val) {
-
-                $cupon_descuento = $request->get('cupon_descuento');
-                $costo_total = $request->get('costo_total');
-                  
-                   if (tipo::find($request->get('tipo_id'))===null) {
-            return response()->json([
-                    'error' => true,
-                    'message' => 'se ah tratado de acceder a un recurso que no existe'
-                ], 404);
-        } else { 
-            
-            $servicio = tipo::find($request->get('tipo_id'));
-            if(!$this->validar_costo($cupon_descuento,$costo_total,$servicio)) 
-                return response()->json(['errors' => ['No es posible agendar la cita por que los datos que se proporcionaron no son los correctos, verifiquelos y vuelva a intentar'] ],400);
-
             
                     cita::crear($request->all(), $this->generarCodigoCita());
                 } else {
@@ -88,6 +74,9 @@ class CitaController extends Controller
                                             ), 404);
                     }
                 }
+                }
+                
+
             } else {
                 return response()->json(array(
                                             'success' => false,

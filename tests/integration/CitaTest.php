@@ -65,10 +65,15 @@ class CitaTest extends TestCase
       
         $nuevaCita = $this->action('Post', 'CitaController@store', $datosCita);
         $this->assertEquals(200, $nuevaCita->getStatusCode(), "".$nuevaCita);
-   
+           
+
         //fecha no disponible
          $fechanodisponible=$this->action('Post', 'CitaController@store', $datosCita);
         $this->assertEquals(404, $fechanodisponible->getStatusCode(), 'fecha no disponible ');
+        //cita con una fecha que ya paso
+        $datosCita['fecha_inicio']='2017-02-14 12:00:00';
+         $fechapasada = $this->action('Post', 'CitaController@store', $datosCita);
+        $this->assertEquals(409, $fechapasada->getStatusCode(), "".$fechapasada);
 		//dia inhabil (debe estar agregado en la bd)
         $datosCita['fecha_inicio']='2017-02-24 10:00:00';
         $diainhabil=$this->action('Post', 'CitaController@store', $datosCita);
@@ -109,6 +114,9 @@ class CitaTest extends TestCase
         $datosCita['cupon_descuento']='';
         $conflictos = $this->action('Post', 'CitaController@store', $datosCita);
         $this->assertEquals(403, $conflictos->getStatusCode(), ''.$conflictos);
+
+
+
     }
     /** @test */
     public function eliminar_citas()
