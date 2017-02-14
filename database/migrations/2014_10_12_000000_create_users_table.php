@@ -19,6 +19,8 @@ class CreateUsersTable extends Migration
             $table->string('email')->unique();
             $table->string('avatar');
             $table->string('cedula_profesional');
+            $table->string('informacion_profesional_resumen');
+            $table->text('informacion_profesional_completo');
             $table->string('password');
             $table->rememberToken();
             $table->timestamps();

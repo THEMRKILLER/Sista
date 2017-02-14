@@ -69,6 +69,7 @@ Route::group(['middleware' => ['cors','jwt.auth'], 'prefix' => 'v1'],
 
     /* USUARIO */
     Route::get('user','UsuarioController@index');
+    Route::put('user','UsuarioController@update');
     Route::put('password','UsuarioController@settingsUpdatePassword');
 
     
@@ -80,8 +81,6 @@ Route::group(['middleware' => ['cors','jwt.auth'], 'prefix' => 'v1'],
    Route::get('inhabilitar_fecha', 'CalendarioController@inhabilitar_fecha');
 
    /*Crud Citas*/
-
- 
 
   
    //tipo-cita (servicios)

@@ -36,10 +36,13 @@ class TipoController extends Controller
      */
     public function store(Request $request)
     {
+        $token = JWTAuth::getToken();
+        $user = JWTAuth::toUser($token);
+
         $rules = array(
-            'nombre' => 'required|unique:tipo|max:255',
-            'duracion' => 'required',
-            'costo'     => 'required|integer'
+            'nombre' => 'required|max:255',
+            'duracion' => 'required|max:255',
+            'costo'     => 'required|numeric|min:0|'
         );
         $validator = Validator::make($request->all(), $rules);
         if ($validator->fails())
@@ -52,8 +55,18 @@ class TipoController extends Controller
         
             }
 
-        $token = JWTAuth::getToken();
-        $user = JWTAuth::toUser($token);
+        $nombre = $request->get('nombre');
+        if(tipo::where('calendario_id',$user->calendario->id)->where('nombre',$nombre)->count() > 0)
+        {
+             return response()->json(array(
+                                            'success' => false,
+                                            'errors' => array(['Ya existe un servicio con el mismo nombre, intente con otro'])
+                                            ), 
+                                400); // 400 being the HTTP code for an invalid request.
+        }
+         
+
+ 
 
         $calendario = $user->calendario;
         

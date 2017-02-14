@@ -19,7 +19,7 @@ class CreateTipo extends Migration
             $table->foreign('calendario_id')->references('id')->on('calendario')->onDelete('cascade');
             $table->string('nombre');
             $table->string('duracion');
-            $table->integer('costo');
+            $table->float('costo');
             $table->string('denominacion');
             $table->timestamps();
         });
