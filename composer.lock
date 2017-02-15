@@ -2551,8 +2551,7 @@
             "time": "2016-11-14T01:06:16+00:00"
         },
         {
-<<<<<<< HEAD
-=======
+
             "name": "symfony/polyfill-php54",
             "version": "v1.3.0",
             "source": {
