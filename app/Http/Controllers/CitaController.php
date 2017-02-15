@@ -24,64 +24,74 @@ class CitaController extends Controller
 
     public function store(Request $request)
     {
-  
-       
-        $rules = array(
+        $idCalendario=intval($request->get('calendario_id'));
+        $idTipo=intval($request->get('tipo_id'));
+        $verificarId=$this->verificarIdentificadores($idCalendario, $idTipo);
+        if ($verificarId) {
+            $VerificarCalendario= $this->verificarCalendario($idCalendario, $idTipo);
+            if ($VerificarCalendario) {
+                $rules = array(
                         'fecha_inicio' => 'required|date_format:Y-m-d H:i:s',
                         'cliente_nombre' => 'required',
                         'cliente_telefono' => 'required',
                         'cliente_email' => 'email',
             );
+
         
         $validator = Validator::make($request->all(), $rules);
 
-        if ($validator->fails()) {
-            return response()->json(array(
+
+                if ($validator->fails()) {
+                    return response()->json(array(
                                             'success' => false,
                                             'errors' => $validator->getMessageBag()->toArray()
                                             ),
                                 400); // 400 being the HTTP code for an invalid request.
+      }
+                $fechaActual=carbon::now();
+                if ($fechaActual->toDateTimeString() >= $request->get('fecha_inicio')) {
+                    return response()->json(array(
+                                            'success' => false,
+                                            'errors' => 'la fecha de inicio de la cita ya paso y no se puede agendar'
+                                            ), 409);
+                } else {
+                $val=cita::fechaDisponible($request->all())&&cita::revisarDiasInhabiles($request->all());
+                if ($val) {
+                    $cupon_descuento = $request->get('cupon_descuento');
+                    $costo_total = $request->get('costo_total');
+                    $servicio = tipo::find($request->get('tipo_id'));
+                    if (!$this->validar_costo($cupon_descuento, $costo_total, $servicio)) {
+                        return response()->json(['errors' => ['No es posible agendar la cita por que los datos que se proporcionaron no son los correctos, verifiquelos y vuelva a intentar'] ], 400);
+                    }
 
-            }
-
-                
-                    $val=cita::fechaDisponible($request->all())&&cita::revisarDiasInhabiles($request->all() );
-        if ( $val) {
-
-                $cupon_descuento = $request->get('cupon_descuento');
-                $costo_total = $request->get('costo_total');
-                  
-                   if (tipo::find($request->get('tipo_id'))===null) {
-            return response()->json([
-                    'error' => true,
-                    'message' => 'se ah tratado de acceder a un recurso que no existe'
-                ], 404);
-        } else { 
-
-            $servicio = tipo::find($request->get('tipo_id'));
-            if(!$this->validar_costo($cupon_descuento,$costo_total,$servicio)) 
-                return response()->json(['errors' => ['No es posible agendar la cita por que los datos que se proporcionaron no son los correctos, verifiquelos y vuelva a intentar'] ],400);
             
-            cita::crear($request->all(),$this->generarCodigoCita());
-        }
-
-
-
-        } else {
-             
-
-            $val=cita::fechaDisponible($request->all())&&cita::revisarDiasInhabiles($request->all());
+                    cita::crear($request->all(), $this->generarCodigoCita());
+                } else {
+                    $val=cita::fechaDisponible($request->all())&&cita::revisarDiasInhabiles($request->all());
                   
-            if ($val) {
-
-                cita::crear($request->all(), $this->generarCodigoCita());
+                    if ($val) {
+                        cita::crear($request->all(), $this->generarCodigoCita());
+                    } else {
+                        return response()->json(array(
+                                            'success' => false,
+                                            'errors' => 'no se puede agendar esa fecha'
+                                            ), 404);
+                    }
+                }
+                }
+                
 
             } else {
                 return response()->json(array(
                                             'success' => false,
-                                            'errors' => 'no se puede agendar esa fecha'
-                                            ), 404);
+                                            'errors' => 'acceso restringido calendario'
+                                            ), 403);
             }
+        } else {
+            return response()->json([
+                    'error' => true,
+                    'message' => 'el calendario o servicio al que se esta tratando de acceder no existe'
+                ], 404);
         }
     }
     /**
@@ -105,16 +115,14 @@ class CitaController extends Controller
                                             ),
                                 400); // 400 being the HTTP code for an invalid request.
         } else {
-
             if (cita::fechaDisponible($request->all())&&cita::revisarDiasInhabiles($request->all())) {
-                
                 return cita::reagendar($request->all());
             } else {
                 return response()->json(array(
                                             'success' => false,
                                             'errors' => 'no se puede agendar esa fecha'
                                             ),
-                                409 );
+                                409);
             }
         }
     }
@@ -134,6 +142,14 @@ class CitaController extends Controller
         $tipo=$request['tipo_id'];
         $calendario_id=$request['calendario_id'];
         $horasDisponibles= cita::timeslot($dia, $tipo, $calendario_id);
+
+        $fechaActual=carbon::now();
+        foreach ($horasDisponibles as $key => $hora) {
+            if ($fechaActual->toDateTimeString() > $hora['value']) {
+                unset($horasDisponibles[$key]);
+            }
+        }
+        $horasDisponibles=array_values($horasDisponibles);
         return \Response::json($horasDisponibles, 200);
     }
     public function disponibilidadCalendario(Request $request)
@@ -191,50 +207,50 @@ class CitaController extends Controller
         }
     }
 
-        private function validar_costo($cupon_descuento,$costo_total,$servicio)
+    private function validar_costo($cupon_descuento, $costo_total, $servicio)
     {
         $porcentaje_descuento = 0;
      
         $costo_original_servicio = $servicio->costo;
 
-        if($cupon_descuento === null || $cupon_descuento==='' || $cupon_descuento === 0)
-        {
-            if($costo_total == $costo_original_servicio) return true;
-            else return false;
-        }
-        else {
-            $cupon = Cupon::where('codigo',$cupon_descuento)->first();
-            if(!$cupon) return false;
-            else {
+        if ($cupon_descuento === null || $cupon_descuento==='' || $cupon_descuento === 0) {
+            if ($costo_total == $costo_original_servicio) {
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            $cupon = Cupon::where('codigo', $cupon_descuento)->first();
+            if (!$cupon) {
+                return false;
+            } else {
                 $porcentaje_descuento = $cupon->porcentaje;
                 $precio_con_descuento = $costo_original_servicio - ($costo_original_servicio * ($porcentaje_descuento/100));
 
-                if($costo_total == $precio_con_descuento) return true;
-                else return false;
+                if ($costo_total == $precio_con_descuento) {
+                    return true;
+                } else {
+                    return false;
+                }
             }
         }
-
     }
-    public function verificarCalendario($idCalendario,$idServicio)
+    public function verificarCalendario($idCalendario, $idServicio)
     {
-           if (calendario::find($idCalendario)===null||tipo::find($idServicio)===null) {
-            return response()->json([
-                    'error' => true,
-                    'message' => 'se ah tratado de acceder a un recurso que no existe'
-                ], 404);
+        $idCalendario_desdeTipo = tipo::find($idServicio)->calendario['id'];
+               
+        if ($idCalendario===$idCalendario_desdeTipo) {
+            return true;
         } else {
-             $tipo = tipo::find($idServicio);
-             $calendario_servicio=$tipo->calendario;
-             if($idCalendario===$calendario_servicio){
-                return true;
-             }else{
-                               return response()->json(array(
-                                            'success' => false,
-                                            'errors' => 'no se puede acceder a ese recurso'
-                                            ),
-                                403 );
-             }
-
+            return false;
+        }
+    }
+    public function verificarIdentificadores($idCalendario, $idServicio)
+    {
+        if (calendario::find($idCalendario)===null||tipo::find($idServicio)===null) {
+            return false;
+        } else {
+            return true;
         }
     }
 }

@@ -12,19 +12,12 @@ class CuponController extends Controller
 {
     public function create(Request $request)
     {
-
     	$rules = array(
-                    
                         'porcentaje' => 'required|numeric|max:100|min:0',
                         'fecha_inicial' => 'required|date_format:Y-m-d|before_or_equal:fecha_final',
                         'fecha_final' => 'required|date_format:Y-m-d|after_or_equal:fecha_inicial'
-
                 );
-
             $validator = Validator::make($request->all(), $rules);
-
-  
-
             if ($validator->fails()) {
                 return response()->json(array(
                                             'success' => false,
@@ -32,8 +25,6 @@ class CuponController extends Controller
                                             ),
                                 400); // 400 being the HTTP code for an invalid request.
             }
-
-
             $servicio = tipo::find($request->get('servicio_id'));
             $codigo = '';
             if(!$servicio) return response()->json(['errors' => 'El servicio no existe'],404);
@@ -41,7 +32,6 @@ class CuponController extends Controller
             if($request->get('word_key') == null || $request->get('word_key') == '' || $request->get('word_key') == '')
             {
                 $codigo = $this->generarCodigo(null);
-
             }
             else {
                 $exist = Cupon::where('codigo',$request->get('word_key'))->count() > 0 ? true : false ;

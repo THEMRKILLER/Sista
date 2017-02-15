@@ -48,7 +48,6 @@ Route::group(['middleware' => ['cors'], 'prefix' => 'v1'], function () {
     Route::get('foto_perfil/{image_name}', 'UsuarioController@getProfilePicture');
 
     Route::post('cita', 'CitaController@store');
-    Route::put('/cita/{id}', 'CitaController@update'); 
     Route::delete('cita', 'CitaController@destroy');
 
 
@@ -82,7 +81,6 @@ Route::group(['middleware' => ['cors','jwt.auth'], 'prefix' => 'v1'],
    Route::get('inhabilitar_fecha', 'CalendarioController@inhabilitar_fecha');
 
    /*Crud Citas*/
-
 
   
    //tipo-cita (servicios)

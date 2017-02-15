@@ -215,12 +215,21 @@ class cita extends Model
         $ocupado=array();
         $Citas=cita::distinct()->select(DB::raw('DATE_FORMAT(fecha_inicio, \'%Y-%m-%d\') AS fecha_inicio'))
             ->where('fecha_inicio', '>=', $inicial->toDateTimeString())
+            ->where('calendario_id', '=', $calendario_id)
             ->get();
         foreach ($Citas as $fecha) {
             $espacios= cita::timeslot($fecha['fecha_inicio'], $tipo_id, $calendario_id);
             $disponibilidad=cita::espaciosPorFecha(count($espacios));
             array_push($ocupado, ['fecha' => $fecha['fecha_inicio'], 'disponibilidad' => $disponibilidad]);
         }
+        $calendario=calendario::find($calendario_id);
+        $diasInhabiles=$calendario->fechasInhabiles()->pluck('fecha');
+        ///agrega las fechas inhabiles con disponibilidad de 0
+        foreach ($diasInhabiles as $diainhabil ) {
+             array_push($ocupado, ['fecha' => $diainhabil, 'disponibilidad' => 0]);
+        }
+
+
         return $ocupado;
     }
      /**
@@ -233,7 +242,7 @@ class cita extends Model
     {
         //disponibilidad baja
          if ($numEspacios>=0 and $numEspacios<=2) {
-             return 3;
+             return 1;
          }
             //disponibilidad media
          if ($numEspacios>2 and $numEspacios<=5) {
@@ -241,7 +250,7 @@ class cita extends Model
          }
          //disponibilidad alta
          if ($numEspacios>5) {
-             return 1;
+             return 3;
          }
     }
   /**
@@ -555,4 +564,5 @@ class cita extends Model
         $destinatario=$cita->cliente_email;
         \Mail::to($destinatario)->send(new NotificacionNCita($cita, $medico, $opcionMensaje));
     }
+
 }
