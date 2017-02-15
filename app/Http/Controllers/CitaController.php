@@ -32,6 +32,7 @@ class CitaController extends Controller
                         'cliente_telefono' => 'required',
                         'cliente_email' => 'email',
             );
+        
         $validator = Validator::make($request->all(), $rules);
 
         if ($validator->fails()) {
@@ -56,7 +57,7 @@ class CitaController extends Controller
                     'message' => 'se ah tratado de acceder a un recurso que no existe'
                 ], 404);
         } else { 
-            
+
             $servicio = tipo::find($request->get('tipo_id'));
             if(!$this->validar_costo($cupon_descuento,$costo_total,$servicio)) 
                 return response()->json(['errors' => ['No es posible agendar la cita por que los datos que se proporcionaron no son los correctos, verifiquelos y vuelva a intentar'] ],400);

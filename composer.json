@@ -14,7 +14,8 @@
         "nexmo/client": "@beta",
         "nexmo/laravel": "1.0.0-beta3",
         "intervention/image": "2.*",
-        "intervention/imagecache": "2.*"
+        "intervention/imagecache": "2.*",
+        "tymon/jwt-auth": "0.5.*"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",
@@ -22,8 +23,7 @@
         "mockery/mockery": "0.9.*",
         "phpunit/phpunit": "~5.0",
         "symfony/css-selector": "3.1.*",
-        "symfony/dom-crawler": "3.1.*",
-        "tymon/jwt-auth": "0.5.*"
+        "symfony/dom-crawler": "3.1.*"
     },
     "autoload": {
         "classmap": [
