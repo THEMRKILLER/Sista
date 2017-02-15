@@ -17,7 +17,7 @@ class CreateCita extends Migration
             $table->increments('id');
             $table->integer('calendario_id')->unsigned()->index();
             $table->foreign('calendario_id')->references('id')->on('calendario')->onDelete('cascade');
-             $table->integer('tipo_id')->unsigned()->index();
+            $table->integer('tipo_id')->unsigned()->index();
             $table->foreign('tipo_id')->references('id')->on('tipo')->onDelete('cascade');
             $table->datetime('fecha_inicio');
             $table->datetime('fecha_final');
@@ -25,7 +25,7 @@ class CreateCita extends Migration
             $table->string('cliente_telefono');
             $table->string('cliente_email');
             $table->string('codigo');
-            $table->integer('costo');
+            $table->decimal('costo',10,4);
             $table->timestamps();
         });
     }

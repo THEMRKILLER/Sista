@@ -104,7 +104,9 @@ class UsuarioController extends Controller
 
         $folderName =  storage_path('app').'/profile_images/';
         $safeName = str_random(10). uniqid().time()  .'.'.'png';
-
+        if (!file_exists($folderName)) {
+                mkdir($folderName, 0777, true);
+        }
         file_put_contents($folderName.$safeName, $data);
 
         $token = JWTAuth::getToken();

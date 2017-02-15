@@ -36,7 +36,10 @@ class CitaController extends Controller
                         'cliente_telefono' => 'required',
                         'cliente_email' => 'email',
             );
-                $validator = Validator::make($request->all(), $rules);
+
+        
+        $validator = Validator::make($request->all(), $rules);
+
 
                 if ($validator->fails()) {
                     return response()->json(array(
@@ -44,7 +47,7 @@ class CitaController extends Controller
                                             'errors' => $validator->getMessageBag()->toArray()
                                             ),
                                 400); // 400 being the HTTP code for an invalid request.
-                }
+      }
                 $fechaActual=carbon::now();
                 if ($fechaActual->toDateTimeString() >= $request->get('fecha_inicio')) {
                     return response()->json(array(
@@ -60,6 +63,7 @@ class CitaController extends Controller
                     if (!$this->validar_costo($cupon_descuento, $costo_total, $servicio)) {
                         return response()->json(['errors' => ['No es posible agendar la cita por que los datos que se proporcionaron no son los correctos, verifiquelos y vuelva a intentar'] ], 400);
                     }
+
             
                     cita::crear($request->all(), $this->generarCodigoCita());
                 } else {
