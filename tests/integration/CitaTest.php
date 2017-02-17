@@ -45,7 +45,7 @@ class CitaTest extends TestCase
         $this->assertEquals($disponibilidadMedia, 2); //regresa disponibilidad Media
         $this->assertEquals($disponibilidadAlta, 1); //regresa disponibilidad Alta
     }
-    /** @test */
+        
     public function creacion_de_citas()
     {
         //simulando datos de entrada de una cita
@@ -72,9 +72,9 @@ class CitaTest extends TestCase
         $this->assertEquals(404, $fechanodisponible->getStatusCode(), 'fecha no disponible ');
         //cita con una fecha que ya paso
         $datosCita['fecha_inicio']='2017-02-14 12:00:00';
-         $fechapasada = $this->action('Post', 'CitaController@store', $datosCita);
+        $fechapasada = $this->action('Post', 'CitaController@store', $datosCita);
         $this->assertEquals(409, $fechapasada->getStatusCode(), "".$fechapasada);
-		//dia inhabil (debe estar agregado en la bd)
+        //dia inhabil (debe estar agregado en la bd)
         $datosCita['fecha_inicio']='2017-02-24 10:00:00';
         $diainhabil=$this->action('Post', 'CitaController@store', $datosCita);
         $this->assertEquals(404, $diainhabil->getStatusCode(), 'dia inhabil');
@@ -84,13 +84,13 @@ class CitaTest extends TestCase
         $cuponinvalido=$this->action('Post', 'CitaController@store', $datosCita);
         $this->assertEquals(400, $cuponinvalido->getStatusCode(), ' cupon invalido');
         // cupon valido pero costo total incorrecto
- 		$datosCita['cupon_descuento']='last24z0';
- 		        $datosCita['costo_total']=2000;
+        $datosCita['cupon_descuento']='last24z0';
+        $datosCita['costo_total']=2000;
         $cuponvalido=$this->action('Post', 'CitaController@store', $datosCita);
         $this->assertEquals(400, $cuponvalido->getStatusCode(), ' cupon valido costo total incorrecto');
         // cupon valido,costo correcto
- 		
- 		        $datosCita['costo_total']=0;
+        
+                $datosCita['costo_total']=0;
         $cuponvalido=$this->action('Post', 'CitaController@store', $datosCita);
         $this->assertEquals(200, $cuponvalido->getStatusCode(), ' cupon valido');
         //recurso no disponible.
@@ -104,25 +104,112 @@ class CitaTest extends TestCase
         $datosCita['cliente_nombre']='               ';
         $ErrorValidador=$this->action('Post', 'CitaController@store', $datosCita);
         $this->assertEquals(400, $ErrorValidador->getStatusCode(), 'validador falla');
-   		
-   		        //cita creada con conflictos
-        $datosCita['calendario_id']=1;
+        
+                //cita creada con conflictos
+        $datosCita['calendario_id']=3;
         $datosCita['cliente_nombre']='khun aguero annis';
-        $datosCita['tipo_id']=203;
-        $datosCita['costo_total']=100;
+        $datosCita['tipo_id']=1;
+        $datosCita['costo_total']=0.0000;
         $datosCita['fecha_inicio']='2018-02-24 10:00:00';
         $datosCita['cupon_descuento']='';
         $conflictos = $this->action('Post', 'CitaController@store', $datosCita);
         $this->assertEquals(403, $conflictos->getStatusCode(), ''.$conflictos);
+    }
+  
+    public function Reagendar_citas()
+    {
+        $datosCita['tipo_id']=4;
+        $datosCita['id_cita']=1610;
+        $datosCita['calendario_id']=1;
+        $datosCita['fecha_inicio']='2017-08-21 10:00:00';
+        //reagendacion exitosa
+        $reagendar=$this->action('put', 'CitaController@reagendar', $datosCita);
+        $this->assertEquals(200, $reagendar->getStatusCode(), ''.$reagendar);
+        
 
+        //fecha  no disponible
+        $reagendar=$this->action('put', 'CitaController@reagendar', $datosCita);
 
+        $this->assertEquals(404, $reagendar->getStatusCode(), ''.$reagendar);
+              //fallo del formulario
+        $datosCita['fecha_inicio']=' ';
+        $reagendar=$this->action('put', 'CitaController@reagendar', $datosCita);
+        $this->assertEquals(400, $reagendar->getStatusCode(), ''.$reagendar);
+        $datosCita['fecha_inicio']='24-02-2017 10:00:00 ';
+        $reagendar=$this->action('put', 'CitaController@reagendar', $datosCita);
+        $this->assertEquals(400, $reagendar->getStatusCode(), ''.$reagendar);
+                //dia inhabil
+        $datosCita['fecha_inicio']='2017-02-24 10:00:00';
+        $reagendar=$this->action('put', 'CitaController@reagendar', $datosCita);
+        $this->assertEquals(404, $reagendar->getStatusCode(), ''.$reagendar);
+        
 
+        //recurso no existe
+        $datosCita['tipo_id']=500;
+        $reagendar=$this->action('put', 'CitaController@reagendar', $datosCita);
+        $this->assertEquals(404, $reagendar->getStatusCode(), ''.$reagendar);
+        $datosCita['id_cita']=1;
+        $reagendar=$this->action('put', 'CitaController@reagendar', $datosCita);
+        $this->assertEquals(404, $reagendar->getStatusCode(), ''.$reagendar);
+        $datosCita['calendario_id']=20;
+        $reagendar=$this->action('put', 'CitaController@reagendar', $datosCita);
+        $this->assertEquals(404, $reagendar->getStatusCode(), ''.$reagendar);
+        //accede a un calendario diferente
+        $datosCita['tipo_id']=4;
+        $datosCita['id_cita']=1610;
+        $datosCita['calendario_id']=3;
+        $datosCita['fecha_inicio']='2017-09-21 10:00:00';
+        $reagendar=$this->action('put', 'CitaController@reagendar', $datosCita);
+        $this->assertEquals(403, $reagendar->getStatusCode(), ''.$reagendar);
+    }
+    
+    public function eliminar_cita()
+    {
+        //elimina bien
+        $datosCita['codigo']='5a6q3';
+        $datosCita['numeromail']='nyhedgg@gmail.com';
+        $eliminar=$this->action('delete', 'CitaController@destroy', $datosCita);
+        $this->assertEquals(200, $eliminar->getStatusCode(), ''.$eliminar);
+                //codigo no existe
+       
+        $eliminar=$this->action('delete', 'CitaController@destroy', $datosCita);
+        $this->assertEquals(404, $eliminar->getStatusCode(), ''.$eliminar);
+                        //codigo bien email mal
+        $datosCita['codigo']='f5yhj';
+        $datosCita['numeromail']='f5yhj';
+        $eliminar=$this->action('delete', 'CitaController@destroy', $datosCita);
+        $this->assertEquals(404, $eliminar->getStatusCode(), ''.$eliminar);
+        //elimina con email y numero de telefono
+        $datosCita['numeromail']='9612280890';
+        $eliminar=$this->action('delete', 'CitaController@destroy', $datosCita);
+        $this->assertEquals(200, $eliminar->getStatusCode(), ''.$eliminar);
     }
     /** @test */
-    public function eliminar_citas()
+    public function regreso_de_horas_dispónibles()
     {
+        $datosCita['dia']='2017-02-20';
+        $datosCita['tipo_id']=4;
+        $datosCita['calendario_id']=1;
+        $horasDisponible=$this->action('get', 'CitaController@horasDisponibles', $datosCita);
+
+        $this->assertEquals(200, $horasDisponible->getStatusCode(), ''.$horasDisponible);
+         ///acceso restringido
         $datosCita['tipo_id']=1;
-        $datosCita['fecha_inicio']='2018-02-21 08:00:00';
-        $citaExiste=$this->action('put', 'CitaController@reagendar', $datosCita);
+        $datosCita['calendario_id']=3;
+        $horasDisponible=$this->action('get', 'CitaController@horasDisponibles', $datosCita);
+        $this->assertEquals(403, $horasDisponible->getStatusCode(), ''.$horasDisponible);
+        $datosCita['tipo_id']=203;
+        $datosCita['calendario_id']=1;
+        $horasDisponible=$this->action('get', 'CitaController@horasDisponibles', $datosCita);
+        $this->assertEquals(403, $horasDisponible->getStatusCode(), ''.$horasDisponible);
+        //recurso no disponible
+        $datosCita['tipo_id']=1000;
+        $datosCita['calendario_id']=1;
+        $horasDisponible=$this->action('get', 'CitaController@horasDisponibles', $datosCita);
+        $this->assertEquals(404, $horasDisponible->getStatusCode(), ''.$horasDisponible);
+        $datosCita['tipo_id']=1;
+        $datosCita['calendario_id']=500;
+        $horasDisponible=$this->action('get', 'CitaController@horasDisponibles', $datosCita);
+        $this->assertEquals(404, $horasDisponible->getStatusCode(), ''.$horasDisponible);
     }
 }
