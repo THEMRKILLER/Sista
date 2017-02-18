@@ -61,7 +61,6 @@ class ArticuloController extends Controller
             'resumen' => 'required',
             'caratula' => 'required_without:caratula_url|max:20000|image',
             'contenido' => 'required|string|max:65535',
-            'id'        => 'required'
         );
 
         $validator = Validator::make($request->all(), $rules);
@@ -84,7 +83,9 @@ class ArticuloController extends Controller
 
        try {
         if($request->hasFile('caratula')) {
-          unlink(storage_path('app/').$articulo->caratula);
+          if(file_exists(storage_path('app/').$articulo->caratula))
+            unlink(storage_path('app/').$articulo->caratula);
+          
           $caratula_path = $request->file('caratula')->store('images');
 
         }
