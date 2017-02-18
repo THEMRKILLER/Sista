@@ -42,6 +42,8 @@ class UsuarioController extends Controller
          $user->email = $data['email'];
          $user->password = bcrypt($data['password']);
          $user->avatar = 'default.png';
+         $user->informacion_profesional_resumen = "";
+         $user->informacion_profesional_completo = "";
          $user->cedula_profesional = $data['cedula'];
          $user->save();
          $calendario = new calendario();
