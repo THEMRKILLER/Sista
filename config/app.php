@@ -166,10 +166,10 @@ return [
         Tymon\JWTAuth\Providers\JWTAuthServiceProvider::class,
         Barryvdh\Cors\ServiceProvider::class,
         Nexmo\Laravel\NexmoServiceProvider::class,
-        Intervention\Image\ImageServiceProvider::class,   
+        Intervention\Image\ImageServiceProvider::class,
         /*
          * Package Service Providers...
-         nyhedgg@gmail.com
+         
          */
 
         //
@@ -231,7 +231,11 @@ return [
         'URL' => Illuminate\Support\Facades\URL::class,
         'Validator' => Illuminate\Support\Facades\Validator::class,
         'View' => Illuminate\Support\Facades\View::class,
+
+        'JWTAuth' => Tymon\JWTAuth\Facades\JWTAuth::class,
+
         'JWTAuth'   => Tymon\JWTAuth\Facades\JWTAuth::class,
+
         'JWTFactory' => Tymon\JWTAuth\Facades\JWTFactory::class,
         'Nexmo' => \Nexmo\Laravel\Facade\Nexmo::class,
         'Image' => Intervention\Image\Facades\Image::class,

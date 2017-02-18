@@ -7,15 +7,20 @@
     "require": {
         "php": ">=5.6.4",
         "barryvdh/laravel-cors": "^0.8.2",
-        "fabpot/php-cs-fixer": "^2.0",
         "hesto/multi-auth": "^1.0",
         "laracasts/generators": "^1.1",
         "laravel/framework": "5.3.*",
         "nexmo/client": "@beta",
         "nexmo/laravel": "1.0.0-beta3",
         "intervention/image": "2.*",
+
+        "tymon/jwt-auth": "0.5.*",
+        "intervention/imagecache": "2.*",
+        
+
         "intervention/imagecache": "2.*",
         "tymon/jwt-auth": "0.5.*"
+
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",
@@ -24,6 +29,7 @@
         "phpunit/phpunit": "~5.0",
         "symfony/css-selector": "3.1.*",
         "symfony/dom-crawler": "3.1.*"
+
     },
     "autoload": {
         "classmap": [
