@@ -182,12 +182,13 @@ class CitaController extends Controller
     }
     public function disponibilidadCalendario(Request $request)
     {
-        $tipo=intval($request['tipo_id']);
-        $calendario_id=$request['calendario_id'];
+        $idTipo=intval($request['tipo_id']);
+        $idCalendario=$request['idCalendario'];
+        
         //dias que no hay ninguna horahabil
-        $diasNoHabiles= cita::diasNoHabiles($calendario_id);
+        $diasNoHabiles= cita::diasNoHabiles($idCalendario);
         //disponibilidad del dia en base al numero de huecos vacios
-        $disponibilidad= cita::disponibilidadCal($tipo, $calendario_id);
+        $disponibilidad= cita::disponibilidadCal($idTipo, $idCalendario);
       
         return response()->json(['disponibilidades' => $disponibilidad, 'no_laborales' => $diasNoHabiles], 200);
     }

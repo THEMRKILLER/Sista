@@ -184,7 +184,7 @@ class CitaTest extends TestCase
         $eliminar=$this->action('delete', 'CitaController@destroy', $datosCita);
         $this->assertEquals(200, $eliminar->getStatusCode(), ''.$eliminar);
     }
-    /** @test */
+
     public function regreso_de_horas_dispónibles()
     {
         $datosCita['dia']='2017-02-20';
@@ -212,4 +212,10 @@ class CitaTest extends TestCase
         $horasDisponible=$this->action('get', 'CitaController@horasDisponibles', $datosCita);
         $this->assertEquals(404, $horasDisponible->getStatusCode(), ''.$horasDisponible);
     }
+        /** @test */
+        public function disponibilidadCalendario()
+        {
+            $datosCita['tipo_id']=4;
+            $datosCita['calendario_id']=1;
+        }
 }
