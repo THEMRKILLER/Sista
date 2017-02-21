@@ -212,7 +212,7 @@ class CitaTest extends TestCase
         $horasDisponible=$this->action('get', 'CitaController@horasDisponibles', $datosCita);
         $this->assertEquals(404, $horasDisponible->getStatusCode(), ''.$horasDisponible);
     }
-        /** @test */
+        
         public function disponibilidadCalendario()
         {
             ////OK
@@ -230,5 +230,15 @@ class CitaTest extends TestCase
             $datosCita['calendario_id']=5;
             $dispCal=$this->action('get', 'CitaController@disponibilidadCalendario', $datosCita);
             $this->assertEquals(404, $dispCal->getStatusCode(), ''.$dispCal);
+        }
+        /** @test */
+        public function horas()
+        {
+                    $datosCita['dia']='2017-02-27';
+        $datosCita['tipo_id']=4;
+        $datosCita['calendario_id']=3;
+        $horasDisponible=$this->action('get', 'CitaController@horasDisponibles', $datosCita);
+
+        $this->assertEquals(404, $horasDisponible->getStatusCode(), ''.$horasDisponible);
         }
 }
