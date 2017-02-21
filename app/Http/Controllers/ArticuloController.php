@@ -8,8 +8,15 @@ use JWTAuth;
 use App\Articulo;
 use Image;
 use Json;
+use Exception;
 class ArticuloController extends Controller
 {
+    /**
+     * Guarda un nuevo articulo
+     *    
+     * @param  \Illuminate\Http\Request  $request  ['titulo','resumen','caratula','contenido']
+     * @return \Illuminate\Http\Response 
+     */
     public function store(Request $request)
     {
     	$rules = array(
@@ -54,6 +61,15 @@ class ArticuloController extends Controller
 
     }
 
+     /**
+     * Actualiza un articulo mediante su id
+     *  
+     * @param  \Illuminate\Http\Request  $request  ['titulo','resumen','caratula','contenido','id','caratula_url']
+     * caratula_url -> es la url de la última imagen que contenia el articulo, en caso de haber cargado
+     * una nueva imagen esta vendrá como null 
+     * @return \Illuminate\Http\Response [json -> responde con el id del articulo que se acaba de actualizar]
+     */
+
     public function update(Request $request)
     {
           $rules = array(
@@ -83,6 +99,7 @@ class ArticuloController extends Controller
 
        try {
         if($request->hasFile('caratula')) {
+          //el archivo es eliminado del servidor en caso de existir
           if(file_exists(storage_path('app/').$articulo->caratula))
             unlink(storage_path('app/').$articulo->caratula);
           
@@ -104,40 +121,68 @@ class ArticuloController extends Controller
 
     }
 
+     /**
+     * Elimina un articulo mediante su id
+     *  
+     * @param  \Illuminate\Http\Request  $request  ['id']
+     * @return \Illuminate\Http\Response 
+     */
     public function delete(Request $request)
     {
-      $articulo = Articulo::find($request->get('id'));
-      if(!$articulo) return response()->json(['error'=>true],404);
-      $articulo->delete();
-      return response()->json(['success'=>true],200);
+      
+        $articulo = Articulo::find($request->get('id'));
+        if(!$articulo) return response()->json(['errors'=>["El articulo no fue encontrado"]],404);
+        $articulo->delete();
+        return response()->json(null,200);
+      
+      
     }
 
+     /**
+     * Obtiene el archivo imagen que corresponde al nombre recibido como parametro
+     *  
+     * @param  $image_name 
+     * @return \Illuminate\Http\Response responde con un archivo imagen ó json con código de error, 
+     * en caso de que la imagen no haya sido encontrada en el servidor
+     */
     public function getImage($image_name)
     {
     	$pathToFile = storage_path('app/images/'.$image_name);
-      
-    	return response()->file($pathToFile);
-
+      if(file_exists($pathToFile))return response()->file($pathToFile);
+      else return response()->json('errors'=> ['imagen' => 'la imagen solicitada no se encuentra en el servidor'],404);
+    	
     }
 
+    /**
+     * Obtiene un articulo mediante su id
+     *  
+     * @param  $id
+     * @return \Illuminate\Http\Response 
+     */
     public function getArticulo($id)
     {
     	$articulo = Articulo::find($id);
+      //en caso de no encontrar el articulo solicitado responde con un código de estado 404
+    	if(!$articulo) return response()->json(['error' => true],404);
 
-    	if($articulo == null) return response()->json(['error' => true],404);
-
-
+      //obtiene toda la información necesaria relacionada al autor del articulo que se solicita
     	$autor = $articulo->user()->get(['name','avatar','informacion_profesional_resumen'])->first();
 
-
+      //obtiene los ids de los articulos redactados por el mismo autor
       $articulos_models = $articulo->user->articulos()->get(['id']);
       $articulos_arr = array();
       foreach ($articulos_models as $articulo_m) array_push($articulos_arr, $articulo_m->id);
+      //modifica la url para tener acceso a la caratula a nivel de objeto (no lo guarda en la BD)
       $articulo->caratula  = url('api/v1/'.$articulo->caratula);
-
       $autor->avatar = url()->asset('api/v1/foto_perfil/'.$autor->avatar);
     	return response()->json(['articulo' => $articulo ,'articulos' => $articulos_arr ,'autor' => $autor],200);
     }
+     /**
+     * Obtiene una lista de articulos redactados por el autor quien hace la petición
+     *  
+     * @param  
+     * @return \Illuminate\Http\Response 
+     */
     public function getArticulos()
     {
     	   $token = JWTAuth::getToken();
