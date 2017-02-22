@@ -26,7 +26,7 @@ class CalendarioController extends Controller
        $fechaActual=carbon::now;
        $citas =$calendario
                 ->citas()
-                ->where('fecha','>',$fechaActual)
+                ->where('fecha_inicio','>',$fechaActual)
                 ->get();//->whereMonth('fecha', '=', '06')->get();
        
        $events=array();
