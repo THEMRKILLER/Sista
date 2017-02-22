@@ -332,10 +332,10 @@ class cita extends Model
     {
         $h_p = $horas_propuestas;
         //validacion extra
-        //$lastMinute=carbon::parse($hora_final_dia)->addHour()->subSecond()->toDateTimeString();
+        $lastMinute=carbon::parse($hora_final_dia)->addHour()->toDateTimeString();
         //$hfd=carbon::parse($hora_inicial)->addMinutes($duracion_servicio)->toDateTimeString();
         // && $hfd>=$lastMinute
-        if ($hora_inicial >= $hora_final_dia) {
+        if ($hora_inicial >= $lastMinute) {
             return $h_p;
         }
         $d_s = $duracion_servicio;

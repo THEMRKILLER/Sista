@@ -183,14 +183,23 @@ class CitaController extends Controller
     public function disponibilidadCalendario(Request $request)
     {
         $idTipo=intval($request['tipo_id']);
-        $idCalendario=$request['idCalendario'];
-        
-        //dias que no hay ninguna horahabil
-        $diasNoHabiles= cita::diasNoHabiles($idCalendario);
-        //disponibilidad del dia en base al numero de huecos vacios
-        $disponibilidad= cita::disponibilidadCal($idTipo, $idCalendario);
+        $idCalendario=intval($request['calendario_id']);
+        $verificarId=$this->verificarIdentificadoresA($idCalendario, $idTipo);
+        if ($verificarId) {
+            $VerificarCalendario= $this->verificarCalendario($idCalendario, $idTipo);
+            if ($VerificarCalendario) {
+                //dias que no hay ninguna horahabil
+                $diasNoHabiles= cita::diasNoHabiles($idCalendario);
+                //disponibilidad del dia en base al numero de huecos vacios
+                $disponibilidad= cita::disponibilidadCal($idTipo, $idCalendario);
       
-        return response()->json(['disponibilidades' => $disponibilidad, 'no_laborales' => $diasNoHabiles], 200);
+                return response()->json(['disponibilidades' => $disponibilidad, 'no_laborales' => $diasNoHabiles], 200);
+            } else {
+                return \Response::json('acceso restringido a calendario', 403);
+            }
+        } else {
+            return \Response::json('el recurso al que se esta tratando de acceder no esta disponible', 404);
+        }
     }
     //ruta de prueba, eliminar
     public function generarCodigoCita()
@@ -269,10 +278,8 @@ class CitaController extends Controller
         $idCalendario_desdeTipo = tipo::find($idServicio)->calendario['id'];
     
         if ($idCalendario===$idCalendario_desdeTipo) {
-
             return true;
         } else {
-               
             return false;
         }
     }
