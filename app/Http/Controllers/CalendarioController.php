@@ -23,10 +23,10 @@ class CalendarioController extends Controller
        $user = JWTAuth::toUser($token);
        $calendario =$user->calendario;
        $servicios = $calendario->tipos;
-       $fechaActual= carbon::now()->startOfDay();
+       $fechaActual= carbon::now();
        $citas =$calendario
                 ->citas()
-                ->where('fecha_inicio','>',$fechaActual)
+                ->where('fecha_final','>',$fechaActual)
                 ->get();//->whereMonth('fecha', '=', '06')->get();
        
        $events=array();
