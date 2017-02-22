@@ -8,7 +8,7 @@ use Validator;
 use Auth;
 use App\fecha_inhabil;
 use App\fechahora_inhabil;
-
+use Carbon\Carbon;
 class CalendarioController extends Controller
 {
     /**
@@ -18,12 +18,16 @@ class CalendarioController extends Controller
      */
     public function index()
     {
-        
+      
        $token = JWTAuth::getToken();
        $user = JWTAuth::toUser($token);
        $calendario =$user->calendario;
        $servicios = $calendario->tipos;
-       $citas =$calendario->citas()->get();//->whereMonth('fecha', '=', '06')->get();
+       $fechaActual=Carbon::now;
+       $citas =$calendario
+                ->citas()
+                ->where('fecha','>',$fechaActual)
+                ->get();//->whereMonth('fecha', '=', '06')->get();
        
        $events=array();
 
