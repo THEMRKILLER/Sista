@@ -111,7 +111,7 @@ Route::group(['middleware' => ['cors','jwt.auth'], 'prefix' => 'v1'],
 
    //cupones
 
-   Route::post('cupon', 'CuponController@create');
+    Route::post('cupon', 'CuponController@create');
      Route::get('cupon', 'CuponController@index');
 
   //Codigo cupones

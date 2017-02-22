@@ -144,7 +144,7 @@ class CuponController extends Controller
        
         }
         catch(Exception $e){
-            return response->json(null,500);
+         return response()->json(null,500);
         }
        
 

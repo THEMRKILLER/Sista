@@ -149,7 +149,7 @@ class ArticuloController extends Controller
     {
     	$pathToFile = storage_path('app/images/'.$image_name);
       if(file_exists($pathToFile))return response()->file($pathToFile);
-      else return response()->json('errors'=> ['imagen' => 'la imagen solicitada no se encuentra en el servidor'],404);
+      else return response()->json(['errors'=> ['imagen' => 'la imagen solicitada no se encuentra en el servidor']],404);
     	
     }
 
