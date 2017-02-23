@@ -246,9 +246,9 @@ class CitaTest extends TestCase
                     $datosCita['dia']='2017-02-27';
         $datosCita['tipo_id']=4;
         $datosCita['calendario_id']=3;
-        $horasDisponible=$this->action('get', 'CitaController@horasDisponibles', $datosCita);
+        //$horasDisponible=$this->action('get', 'CitaController@horasDisponibles', $datosCita);
 
-        $this->assertEquals(200, $horasDisponible->getStatusCode(), ''.$horasDisponible);
+        //$this->assertEquals(200, $horasDisponible->getStatusCode(), ''.$horasDisponible);
 
         }
 }
