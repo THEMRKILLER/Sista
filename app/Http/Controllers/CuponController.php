@@ -9,6 +9,7 @@ use Validator;
 use App\calendario;
 use Carbon\Carbon;
 use Exception;
+use JWTAuth;
 class CuponController extends Controller
 {
      /**
@@ -22,11 +23,15 @@ class CuponController extends Controller
      */
     public function create(Request $request)
     {
+        $token = JWTAuth::getToken();
+        $user = JWTAuth::toUser($token);
+
     	$rules = array(
                         'porcentaje' => 'required|integer|max:100|min:0',
                         'fecha_inicial' => 'required|date_format:Y-m-d|before_or_equal:fecha_final',
                         'fecha_final' => 'required|date_format:Y-m-d|after_or_equal:fecha_inicial'
                 );
+
             $validator = Validator::make($request->all(), $rules);
             if ($validator->fails()) {
                 return response()->json(array(
@@ -35,7 +40,9 @@ class CuponController extends Controller
                                             ),
                                 400); // 400 being the HTTP code for an invalid request.
             }
-            $servicio = tipo::find($request->get('servicio_id'));
+
+            $servicio = $user->calendario->tipos()->where('id',$request->get('servicio_id'))->first();
+
             $codigo = $request->get('word_key');
             if(!$servicio) return response()->json(['errors' => 'El servicio no existe'],404);
 
@@ -73,6 +80,7 @@ class CuponController extends Controller
     {
         $calendario_id = $request->get('calendario_id');
         $calendario = calendario::find($calendario_id);
+        if(!$calendario) return response()->json(['Recurso no encontrado'],404);
         $cupones = $calendario->cupones;
         $servicios = $calendario->tipos;
 
