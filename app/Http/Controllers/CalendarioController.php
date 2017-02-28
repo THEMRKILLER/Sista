@@ -306,6 +306,7 @@ class CalendarioController extends Controller
 
 
     }
+/////desde aca parece que no se usa
     private $horas_filtrado = [8,9,10,11,12,13,15,16,17,18,19];
     public function algoritmo()
     {
