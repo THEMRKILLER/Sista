@@ -12,10 +12,11 @@ use Carbon\Carbon;
 class CalendarioController extends Controller
 {
     /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+  * Function index ?????????
+  * regresa 
+  * @param (datetime[])($rango) fecha inicial,fecha final
+  * @return 1 en  caso de que la hora sea libre, fechafinal de la cita cuando exista una en ese rango
+ */
     public function index()
     {
       
@@ -108,44 +109,7 @@ class CalendarioController extends Controller
     {
         //
     }
-    public function asignar_horario(Request $request)
-    {
-        /*
-            "dias_habiles"{
-                {'dia' : 'Lunes',
-                 'horas' : '1,2,3,4,5,6,7,8,9'
-                },
-                {'dia' : 'Martes',
-                 'horas' : '4,5,6,7,8,9
-                }
-            }
-        */
-         $dias_habiles = [
-                            ['dia' => 1, 'horas'=>[1,2,3,4,5,6,7,8,9,10]],
-                            ['dia' => 2, 'horas'=>[1,2,3,4,5,6,7,8,9,10]],
-                            ['dia' => 3, 'horas'=>[1,2,3,4,5,6,7,8,9,10]],
-                            ['dia' => 4, 'horas'=>[1,2,3,4,5,6,7,8,9,10]],
-                            ['dia' => 5, 'horas'=>[1,2,3,4,5,6,7,8,9,10]],
-                            ['dia' => 6, 'horas'=>[1,2,3,4,5,6,7,8,9,10]]
-                        ];
-      // $dias_habiles = $request->get('dias_habiles');
-       $token = JWTAuth::getToken();
-       $user = JWTAuth::toUser($token);
-       $user->calendario->asignar_horario($dias_habiles);
-
-       
-
-    }
-    public function url(Request $request)
-    {
-       $url =  $request->getHttpHost();
-       echo $url;
-    }
-    public function asignar_horario_validate($horario)
-    {
-
-
-    }
+   
     public function inhabilitar_fecha(Request $request)
     {
      
@@ -154,12 +118,14 @@ class CalendarioController extends Controller
         $user->calendario->inhabilitar_fecha($fechas);
 
     }
+
     /**
      * Obtiene los días habiles así como también las horas de servicio de cada día habil
      *
      * @param  \Illuminate\Http\Request  $request
      * @return JSON
      */
+
     public function getDiasHabiles(Request $request)
     {
         $calendario_id = $request->get('calendario');
@@ -177,10 +143,20 @@ class CalendarioController extends Controller
             }
 
 
-        if(count($dias_habiles) > 0 )return response()->json(['horario' => $dias_habiles, 'hora_inicio' => $calendario->hora_inicio,'hora_final' => $calendario->hora_final],200);
+        if(count($dias_habiles) > 0 ) return response()->json(['horario' => $dias_habiles, 'hora_inicio' => $calendario->hora_inicio,'hora_final' => $calendario->hora_final],200);
         else return response()->json(null,404);
 
     }
+
+  /**
+  * Function setDiasHabililes
+  * crea o actualiza los días habiles del calendario 
+  * @param (int[])(int)(int) dias,hora_inicio,hora_final
+  * ejemplo de arreglo dias ['dia' => '1','horas' => ['1' => true,'2' => false,'3' => true,'4' => true,'5' => true'6' => true,'7' => true] ]
+  * las horas siempre tienen que venir las 7 del cliente aun que no haya modificado todas,
+  * lo único que cambia es su valor booleano que lo acompaña en dicho día, e indica si el día está disponible o no disponible (laboral|nolaboral)
+  * @return json con código de estado 200 cuando el proceso se llevó acabo de manera exitosa
+ */
 
   
     public function setDiasHabiles(Request $request)
@@ -194,36 +170,47 @@ class CalendarioController extends Controller
         $dias_habiles = array();
 
 
-    
+        //recorro cada uno de los días hábiles que he obtenido desde el cliente
         foreach ($dias_habiles_request as $dia_habil) 
         {
             $horas = array();
 
+            //voy recorriendo cada una de las horas
             foreach ($dia_habil['horas'] as $hora) 
             {
+                //cada hora tiene está marcado como disponible o no disponible (true | false)
                  if($hora['disponible'])
                     array_push($horas, $hora['hora']);
-                else {
-
-                }
+                
 
             }
-               
+            // se agregan en este array con la estructura de datos que la clase calendario puede interpretar   
             array_push($dias_habiles,['dia' => $dia_habil['dia'] , 'horas' => $horas , 'laboral' => $dia_habil['laboral'] ]);
 
         }
+        //el calendario tiene 2 atributos (hora inicio,hora final) el cual solo contiene el rango de la hora inicio a la hora final
         $user->calendario->hora_inicio = $hora_inicio;
         $user->calendario->hora_final = $hora_final;
         $user->push();
         $user->calendario->asignar_horario($dias_habiles);
 
-
+        return response()->json(null,200);
 
     }
+
+      /**
+  * Function getDiasHorasInhabiles
+  * obtiene un listado de las horas inhabiles del calendario
+  * @param (int) calendario_id
+  * @return json con la lista de día inhabiles con código de estado 200 cuando el proceso se llevó acabo de manera exitosa
+ */
+
+
     public function getDiasHorasInhabiles(Request $request)
     {
         $calendario_id = $request->get('calendario_id');
         $calendario = calendario::find($calendario_id);
+        if(!$calendario) return response()->json(['errors' => ['not_found' => ['No se especifico un calendario']],404);
         $dias_inhabiles  = $calendario->fechasInhabiles()->orderBy('fecha', 'asc')->get();
  //       dd($dias_inhabiles);
         $dias_inhabiles_arr = array();
@@ -234,13 +221,45 @@ class CalendarioController extends Controller
 
 
     }
+
+  /**
+  * Function setDiasHorasInhabiles
+  * envia una fecha para que se deshabilite en el calendario, este día puede estár desactivado de manera completa o parcialmente (solo horas especificadas)
+  * @param \Illuminate\Http\Request  $request ('fecha' => datetime,'completo' => integer,'horas' => String[])
+  * @return json con la lista de día inhabiles con código de estado 200 cuando el proceso se llevó acabo de manera exitosa
+ */
     public function setDiasHorasInhabiles(Request $request)
     {
         $token = JWTAuth::getToken();
         $user = JWTAuth::toUser($token);
+        $rules = array(
+            'fecha' => 'required|date_format:Y-m-d',
+            'completo' => 'required',
+        );
+        $validator = Validator::make($request->all(), $rules);
+        if ($validator->fails())
+            {
+                return response()->json(array(
+                                            'success' => false,
+                                            'errors' => $validator->getMessageBag()->toArray()
+                                            ), 
+                                400); // 400 being the HTTP code for an invalid request.
+        
+            }
+
+        if(!$request->get('completo') )
+        {
+          if($request->get('horas') == []) return response()->json(['errors' => ['no_horas' => ['No se han especificado las horas que se van a deshabilitar']]],400);
+        }
+
+
+        //especifica la fecha que se desea inhabilitar
         $dia_inhabil_r = $request->get('fecha');
+        //especifica si el día estará deshabilitado completamente o sólo parcialmente
         $completo = $request->get('completo');
+        //en caso de que el dia se va a deshabilitar sólo parcialmente se especifica las horas
         $horas = $request->get('horas');
+
         $calendario = $user->calendario;
         if($calendario->fechasInhabiles()->where('fecha',$dia_inhabil_r)->first()) return response()->json(null,400);
      
@@ -248,6 +267,8 @@ class CalendarioController extends Controller
         $dia_inhabil->fecha = $dia_inhabil_r;
         $dia_inhabil->completo = $completo;
         $calendario->fechasInhabiles()->save($dia_inhabil);
+        //lista todas las horas que anteriormente se desahabilitaron pero que actualmente no viene en el request
+        //con la finalidad de eliminarlos en caso de que existan
         $dia_inhabil->horasInhabiles()->whereNotIn('hora',$horas)->delete();
         if(!$completo)
         {
@@ -261,6 +282,13 @@ class CalendarioController extends Controller
 
         
     }
+
+    /**
+  * Function deleteDiasHorasInhabiles
+  * elimina una fecha inhabil que se ha creado anteriormente
+  * @param \Illuminate\Http\Request  $request ('fecha' => 'fecha_inhabil_id')
+  * @return json con con codigo de status 200 cuando la peticion se ha atendido de manera correcta
+ */
 
     public function deleteDiasHorasInhabiles(Request $request)
     {
