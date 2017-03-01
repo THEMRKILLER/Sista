@@ -15,11 +15,16 @@ class CalendarioTest extends TestCase
        /** @test */
     public function probarindex()
     {
+    	////sin token 400
         $response = $this->call('get', '/api/v1/dashboard', [], [], [], [], []);
         $this->assertEquals(400, $response->getStatusCode(), ''.$response);
-        $credentials = JWTAuth::attempt(['email' => 'test@gmail.com', 'password' => '123456']);
+        //con token
+        $credentials = JWTAuth::attempt(['email' => 'cristianrocker93@gmail.com', 'password' => 'nomeacuerdo']);
         $response = $this->call('get', '/api/v1/dashboard', [], [], [], ['HTTP_Authorization' => 'Bearer ' . $credentials], []);
         $this->assertEquals(200, $response->getStatusCode(), ''.$response);
-////sin token 400
+    }
+    public function prueba_obtender_dias_habiles()
+    {
+    	
     }
 }
