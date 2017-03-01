@@ -146,7 +146,10 @@ class cita extends Model
                                   'codigo' => $Cita->codigo,
                                   'cliente_nombre' => $Cita->cliente_nombre,
                                   'fecha' => $Cita->fecha_inicio,
-                                  'servicio' => $Cita->tipo->nombre ],
+                                  'servicio' => $Cita->tipo->nombre,
+                                  'cita' => ['id' => $Cita->id,'codigo' => $Cita->codigo,'title' => $Cita->tipo->nombre, 'start' => $Cita->fecha_inicio, 'end' => $Cita->fecha_final,'cliente_nombre' => $Cita->cliente_nombre , 'cliente_telefono' => $Cita->cliente_telefono,'cliente_email' => $Cita->cliente_email , 'servicio' => $Cita->tipo->nombre]
+                                   ],
+
                                   200);
         } else {
             return response()->json([
