@@ -55,22 +55,26 @@ class CitaController extends Controller
                                             'errors' => 'la fecha de inicio de la cita ya paso y no se puede agendar'
                                             ), 409);
                 } else {
-                    $val=cita::fechaDisponible($request->all())&&cita::revisarDiasInhabiles($request->all());
+                    $val = cita::fechaDisponible($request->all())&&cita::revisarDiasInhabiles($request->all());
                     if ($val) {
+
+                                        
                         $cupon_descuento = $request->get('cupon_descuento');
                         $costo_total = $request->get('costo_total');
                         $servicio = tipo::find($request->get('tipo_id'));
+
+
                         if (!$this->validar_costo($cupon_descuento, $costo_total, $servicio)) {
                             return response()->json(['errors' => ['No es posible agendar la cita por que los datos que se proporcionaron no son los correctos, verifiquelos y vuelva a intentar'] ], 400);
                         }
 
             
-                        cita::crear($request->all(), $this->generarCodigoCita());
+                        return cita::crear($request->all(), $this->generarCodigoCita());
                     } else {
                         $val=cita::fechaDisponible($request->all())&&cita::revisarDiasInhabiles($request->all());
                   
                         if ($val) {
-                            cita::crear($request->all(), $this->generarCodigoCita());
+                            return cita::crear($request->all(), $this->generarCodigoCita());
                         } else {
                             return response()->json(array(
                                             'success' => false,

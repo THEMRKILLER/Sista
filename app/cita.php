@@ -73,7 +73,8 @@ class cita extends Model
          //   cita::mail($nuevaCita, $medico, "agendada");
                     return response()->json([
                     'success' => true,
-                    'message' => 'La cita se ah agendado'
+                    'message' => 'La cita se ah agendado',
+                    'cita' => $nuevaCita
                 ], 200);
         } else {
             return response()->json([
