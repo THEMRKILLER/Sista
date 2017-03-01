@@ -1,5 +1,6 @@
 <?php
 namespace App\Http\Controllers;
+
 use App\calendario;
 use Illuminate\Http\Request;
 use JWTAuth;
@@ -9,55 +10,53 @@ use Auth;
 use App\fecha_inhabil;
 use App\fechahora_inhabil;
 use Carbon\Carbon;
+
 class CalendarioController extends Controller
 {
     /**
   * Function index ?????????
-  * regresa 
+  * regresa
   * @param (datetime[])($rango) fecha inicial,fecha final
   * @return 1 en  caso de que la hora sea libre, fechafinal de la cita cuando exista una en ese rango
  */
     public function index()
     {
-      
-       $token = JWTAuth::getToken();
-       $user = JWTAuth::toUser($token);
-       $calendario =$user->calendario;
-       $servicios = $calendario->tipos;
-       $fechaActual= carbon::now();
-       $citas =$calendario
+        $token = JWTAuth::getToken();
+        $user = JWTAuth::toUser($token);
+        $calendario =$user->calendario;
+        $servicios = $calendario->tipos;
+        $fechaActual= carbon::now();
+        $citas =$calendario
                 ->citas()
-                ->where('fecha_final','>',$fechaActual)
+                ->where('fecha_final', '>', $fechaActual)
                 ->get();//->whereMonth('fecha', '=', '06')->get();
        
        $events=array();
-
-            $diasNohabiles= array();
-            $dias_semana= [1,2,3,4,5,6,7];
-            foreach ($diasHabiles as $dia) {
-                $dia_id= $dia->horasHabiles()->distinct()->select('diahabil_id')->get();
-                if (count($dia_id)>0) {
-                    array_push($diasNohabiles, $dia_id->first()->diahabil_id);
-                }
+        $diasHabiles=$calendario->diasHabiles()->get();
+        $diasNohabiles= array();
+        $dias_semana= [1,2,3,4,5,6,7];
+        foreach ($diasHabiles as $dia) {
+            $dia_id= $dia->horasHabiles()->distinct()->select('diahabil_id')->get();
+            if (count($dia_id)>0) {
+                array_push($diasNohabiles, $dia_id->first()->diahabil_id);
             }
+        }
             
-            $DiasnoHabiles= array_values(array_diff($dias_semana, $diasNohabiles));
-$diasInhabiles=$calendario->fechasInhabiles()->pluck('fecha')->toArray();
-      foreach ($citas as $cita) {
-        
-        $title=$cita->tipo->nombre;
-        $start=$cita['fecha_inicio'];
-        $end=$cita['fecha_final'];
-        $id=$cita->id;
-        $cliente_nombre = $cita->cliente_nombre;
-        $cliente_telefono = $cita->cliente_telefono;
-        $cliente_email = $cita->cliente_email;
-        $cita_tipo      = $cita->tipo->nombre;
-        array_push($events, ['id' => $id,'codigo' => $cita->codigo,'title' => $title, 'start' => $start, 'end' => $end,'cliente_nombre' => $cliente_nombre , 'cliente_telefono' => $cliente_telefono,'cliente_email' => $cliente_email , 'servicio' => $cita_tipo ]);
-    }
+        $DiasnoHabiles= array_values(array_diff($dias_semana, $diasNohabiles));
+        $diasInhabiles=$calendario->fechasInhabiles()->pluck('fecha')->toArray();
+        foreach ($citas as $cita) {
+            $title=$cita->tipo->nombre;
+            $start=$cita['fecha_inicio'];
+            $end=$cita['fecha_final'];
+            $id=$cita->id;
+            $cliente_nombre = $cita->cliente_nombre;
+            $cliente_telefono = $cita->cliente_telefono;
+            $cliente_email = $cita->cliente_email;
+            $cita_tipo      = $cita->tipo->nombre;
+            array_push($events, ['id' => $id,'codigo' => $cita->codigo,'title' => $title, 'start' => $start, 'end' => $end,'cliente_nombre' => $cliente_nombre , 'cliente_telefono' => $cliente_telefono,'cliente_email' => $cliente_email , 'servicio' => $cita_tipo ]);
+        }
  
-       return \Response::json(['citas' => $events, 'servicios' => $servicios,'dia_no_habil'=>$DiasnoHabiles,'dias_inhabiles'=>$diasInhabiles],200);
-   
+        return \Response::json(['citas' => $events, 'servicios' => $servicios,'dia_no_habil'=>$DiasnoHabiles,'dias_inhabiles'=>$diasInhabiles], 200);
     }
     /**
      * Show the form for creating a new resource.
@@ -122,11 +121,9 @@ $diasInhabiles=$calendario->fechasInhabiles()->pluck('fecha')->toArray();
    
     public function inhabilitar_fecha(Request $request)
     {
-     
         $token = JWTAuth::getToken();
         $user = JWTAuth::toUser($token);
         $user->calendario->inhabilitar_fecha($fechas);
-
     }
 
     /**
@@ -142,24 +139,27 @@ $diasInhabiles=$calendario->fechasInhabiles()->pluck('fecha')->toArray();
         $dias_habiles = array();
         $c_dias_habiles = $calendario->diasHabiles;
         $horas_dia_habil = array(); //declaracion global
-        foreach ($c_dias_habiles as $dia_habil) 
-            {
-                $horas_dia_habil = array(); // se limpia el array
+        foreach ($c_dias_habiles as $dia_habil) {
+            $horas_dia_habil = array(); // se limpia el array
                 //se recorre las horas de los días habiles para darle un formato que el
                 //cliente pueda interpretar
-                foreach ($dia_habil->horasHabiles as $hora_model) array_push($horas_dia_habil, $hora_model->hora);
-                array_push($dias_habiles,['dia' => $dia_habil->dia,'horas' => $horas_dia_habil]);
-            }
+                foreach ($dia_habil->horasHabiles as $hora_model) {
+                    array_push($horas_dia_habil, $hora_model->hora);
+                }
+            array_push($dias_habiles, ['dia' => $dia_habil->dia,'horas' => $horas_dia_habil]);
+        }
 
 
-        if(count($dias_habiles) > 0 ) return response()->json(['horario' => $dias_habiles, 'hora_inicio' => $calendario->hora_inicio,'hora_final' => $calendario->hora_final],200);
-        else return response()->json(null,404);
-
+        if (count($dias_habiles) > 0) {
+            return response()->json(['horario' => $dias_habiles, 'hora_inicio' => $calendario->hora_inicio,'hora_final' => $calendario->hora_final], 200);
+        } else {
+            return response()->json(null, 404);
+        }
     }
 
   /**
   * Function setDiasHabililes
-  * crea o actualiza los días habiles del calendario 
+  * crea o actualiza los días habiles del calendario
   * @param (int[])(int)(int) dias,hora_inicio,hora_final
   * ejemplo de arreglo dias ['dia' => '1','horas' => ['1' => true,'2' => false,'3' => true,'4' => true,'5' => true'6' => true,'7' => true] ]
   * las horas siempre tienen que venir las 7 del cliente aun que no haya modificado todas,
@@ -170,7 +170,6 @@ $diasInhabiles=$calendario->fechasInhabiles()->pluck('fecha')->toArray();
   
     public function setDiasHabiles(Request $request)
     {
-
         $dias_habiles_request = $request->get('dias');
         $hora_inicio = $request->get('hora_inicio');
         $hora_final = $request->get('hora_final');
@@ -180,22 +179,18 @@ $diasInhabiles=$calendario->fechasInhabiles()->pluck('fecha')->toArray();
 
 
         //recorro cada uno de los días hábiles que he obtenido desde el cliente
-        foreach ($dias_habiles_request as $dia_habil) 
-        {
+        foreach ($dias_habiles_request as $dia_habil) {
             $horas = array();
 
             //voy recorriendo cada una de las horas
-            foreach ($dia_habil['horas'] as $hora) 
-            {
+            foreach ($dia_habil['horas'] as $hora) {
                 //cada hora tiene está marcado como disponible o no disponible (true | false)
-                 if($hora['disponible'])
-                    array_push($horas, $hora['hora']);
-                
-
+                 if ($hora['disponible']) {
+                     array_push($horas, $hora['hora']);
+                 }
             }
-            // se agregan en este array con la estructura de datos que la clase calendario puede interpretar   
-            array_push($dias_habiles,['dia' => $dia_habil['dia'] , 'horas' => $horas , 'laboral' => $dia_habil['laboral'] ]);
-
+            // se agregan en este array con la estructura de datos que la clase calendario puede interpretar
+            array_push($dias_habiles, ['dia' => $dia_habil['dia'] , 'horas' => $horas , 'laboral' => $dia_habil['laboral'] ]);
         }
         //el calendario tiene 2 atributos (hora inicio,hora final) el cual solo contiene el rango de la hora inicio a la hora final
         $user->calendario->hora_inicio = $hora_inicio;
@@ -203,8 +198,7 @@ $diasInhabiles=$calendario->fechasInhabiles()->pluck('fecha')->toArray();
         $user->push();
         $user->calendario->asignar_horario($dias_habiles);
 
-        return response()->json(null,200);
-
+        return response()->json(null, 200);
     }
 
       /**
@@ -219,16 +213,16 @@ $diasInhabiles=$calendario->fechasInhabiles()->pluck('fecha')->toArray();
     {
         $calendario_id = $request->get('calendario_id');
         $calendario = calendario::find($calendario_id);
-        if(!$calendario) return response()->json(['errors' => ['not_found' => ['No se especifico un calendario']]],404);
+        if (!$calendario) {
+            return response()->json(['errors' => ['not_found' => ['No se especifico un calendario']]], 404);
+        }
         $dias_inhabiles  = $calendario->fechasInhabiles()->orderBy('fecha', 'asc')->get();
  //       dd($dias_inhabiles);
         $dias_inhabiles_arr = array();
         foreach ($dias_inhabiles as $dia_inhabil) {
-                array_push($dias_inhabiles_arr,['dia' => $dia_inhabil->fecha,'id'=> $dia_inhabil->id,'completo' => $dia_inhabil->completo,'horas' => $dia_inhabil->horasInhabiles]);
+            array_push($dias_inhabiles_arr, ['dia' => $dia_inhabil->fecha,'id'=> $dia_inhabil->id,'completo' => $dia_inhabil->completo,'horas' => $dia_inhabil->horasInhabiles]);
         }
-        return response()->json($dias_inhabiles_arr,200);
-
-
+        return response()->json($dias_inhabiles_arr, 200);
     }
 
   /**
@@ -246,19 +240,18 @@ $diasInhabiles=$calendario->fechasInhabiles()->pluck('fecha')->toArray();
             'completo' => 'required',
         );
         $validator = Validator::make($request->all(), $rules);
-        if ($validator->fails())
-            {
-                return response()->json(array(
+        if ($validator->fails()) {
+            return response()->json(array(
                                             'success' => false,
                                             'errors' => $validator->getMessageBag()->toArray()
-                                            ), 
+                                            ),
                                 400); // 400 being the HTTP code for an invalid request.
-        
-            }
+        }
 
-        if(!$request->get('completo') )
-        {
-          if($request->get('horas') == []) return response()->json(['errors' => ['no_horas' => ['No se han especificado las horas que se van a deshabilitar']]],400);
+        if (!$request->get('completo')) {
+            if ($request->get('horas') == []) {
+                return response()->json(['errors' => ['no_horas' => ['No se han especificado las horas que se van a deshabilitar']]], 400);
+            }
         }
 
 
@@ -270,7 +263,9 @@ $diasInhabiles=$calendario->fechasInhabiles()->pluck('fecha')->toArray();
         $horas = $request->get('horas');
 
         $calendario = $user->calendario;
-        if($calendario->fechasInhabiles()->where('fecha',$dia_inhabil_r)->first()) return response()->json(null,400);
+        if ($calendario->fechasInhabiles()->where('fecha', $dia_inhabil_r)->first()) {
+            return response()->json(null, 400);
+        }
      
         $dia_inhabil = new fecha_inhabil();
         $dia_inhabil->fecha = $dia_inhabil_r;
@@ -278,18 +273,13 @@ $diasInhabiles=$calendario->fechasInhabiles()->pluck('fecha')->toArray();
         $calendario->fechasInhabiles()->save($dia_inhabil);
         //lista todas las horas que anteriormente se desahabilitaron pero que actualmente no viene en el request
         //con la finalidad de eliminarlos en caso de que existan
-        $dia_inhabil->horasInhabiles()->whereNotIn('hora',$horas)->delete();
-        if(!$completo)
-        {
-
-            foreach ($horas as $hora) 
-            {
+        $dia_inhabil->horasInhabiles()->whereNotIn('hora', $horas)->delete();
+        if (!$completo) {
+            foreach ($horas as $hora) {
                 $hora_inhabil = fechahora_inhabil::firstOrNew(['fechainhabil_id'=> $dia_inhabil->id, 'hora' => $hora]);
                 $dia_inhabil->horasInhabiles()->save($hora_inhabil);
             }
         }
-
-        
     }
 
     /**
@@ -306,29 +296,24 @@ $diasInhabiles=$calendario->fechasInhabiles()->pluck('fecha')->toArray();
         $fecha_inhabil_id = $request->get('fecha_inhabil_id');
 
         $fecha_inhabil = fecha_inhabil::find($fecha_inhabil_id);
-        if($fecha_inhabil)
-        {
-          $fecha_inhabil->delete();
-          return response()->json(null,200);
+        if ($fecha_inhabil) {
+            $fecha_inhabil->delete();
+            return response()->json(null, 200);
+        } else {
+            return response()->json(['error' => true,'message' => 'Fecha inhabil no encontrada'], 404);
         }
-        else return response()->json(['error' => true,'message' => 'Fecha inhabil no encontrada'],404);
-
-
     }
 /////desde aca parece que no se usa
     private $horas_filtrado = [8,9,10,11,12,13,15,16,17,18,19];
     public function algoritmo()
     {
-     
         $horas_propuestas = array();
         $duracion_servicio = 132/100;
         $hora_inicial = reset($this->horas_filtrado);
         $hora_final_dia = end($this->horas_filtrado);
-
-
     }
 
-    public function consultarCita($hora_inicial,$hora_final)
+    public function consultarCita($hora_inicial, $hora_final)
     {
         $hora_final = $hora_final - 0.01;
         
@@ -339,65 +324,64 @@ $diasInhabiles=$calendario->fechasInhabiles()->pluck('fecha')->toArray();
             ['hora_inicial' => 15 , 'hora_final' => 16.99  ],
         ];
         foreach ($citas as $cita) {
-
-
-                if( 
-                    floatval($hora_inicial )<= floatval($cita['hora_inicial'])  && floatval($hora_final) >= floatval($cita['hora_inicial'])
+            if (
+                    floatval($hora_inicial)<= floatval($cita['hora_inicial'])  && floatval($hora_final) >= floatval($cita['hora_inicial'])
                                                     ||
-                   floatval($cita['hora_inicial'] ) <= floatval($hora_inicial)  && floatval($cita['hora_final'] ) >= floatval($hora_final) 
-                    )
-                    return $cita;
+                   floatval($cita['hora_inicial']) <= floatval($hora_inicial)  && floatval($cita['hora_final']) >= floatval($hora_final)
+                    ) {
+                return $cita;
+            }
         }
         return false;
     }
 
 
-    public function rellenarHoras($duracion_servicio,$hora_inicial,$horas_propuestas,$hora_final_dia)
+    public function rellenarHoras($duracion_servicio, $hora_inicial, $horas_propuestas, $hora_final_dia)
     {
-      $h_p = $horas_propuestas; 
-      if($hora_inicial >= $hora_final_dia) return $h_p;
+        $h_p = $horas_propuestas;
+        if ($hora_inicial >= $hora_final_dia) {
+            return $h_p;
+        }
 
-      $d_s = $duracion_servicio;
-      $h_f_d  = $hora_final_dia;
-      $hora_final = floatval($hora_inicial + $duracion_servicio);
-      $cita = $this->consultarCita($hora_inicial,$hora_final);
+        $d_s = $duracion_servicio;
+        $h_f_d  = $hora_final_dia;
+        $hora_final = floatval($hora_inicial + $duracion_servicio);
+        $cita = $this->consultarCita($hora_inicial, $hora_final);
 
-      if($cita != false)return $this->rellenarHoras($d_s,$cita['hora_final']+0.01,$horas_propuestas,$hora_final_dia );
-   
-      else
-      {
-          $hora_inicial_next = $this->nextDisponible($hora_inicial);        
-          if($hora_inicial_next == $hora_inicial ) 
-          {
-            array_push($horas_propuestas,$hora_inicial);
-            $hora_final_tmp = floatval($hora_inicial_next + $duracion_servicio);
-            echo "\n";
-            echo "Next devolvio : ".$hora_inicial_next;
-            echo "\n";
-            echo "Se hizo push de : ".$hora_inicial;
-            echo "Se calcula ahora : ".$hora_final_tmp;
-            echo "\n";
-            return $this->rellenarHoras($duracion_servicio,$hora_final_tmp,$horas_propuestas,$hora_final_dia );
-          }
-
-        else  return $this->rellenarHoras($d_s,$hora_inicial_next,$horas_propuestas,$h_f_d );
-           
-        
-      }
-    }
-    function nextDisponible($hora)
-    {
-            $_h = intval($hora);
-            if(end($this->horas_filtrado) < $_h) return $hora; 
-            $flag = false;
-            foreach($this->horas_filtrado as $h_f)
-            {
-                if($h_f == $_h) {
-                    $flag = true;
-                    return $hora;
-                }
+        if ($cita != false) {
+            return $this->rellenarHoras($d_s, $cita['hora_final']+0.01, $horas_propuestas, $hora_final_dia);
+        } else {
+            $hora_inicial_next = $this->nextDisponible($hora_inicial);
+            if ($hora_inicial_next == $hora_inicial) {
+                array_push($horas_propuestas, $hora_inicial);
+                $hora_final_tmp = floatval($hora_inicial_next + $duracion_servicio);
+                echo "\n";
+                echo "Next devolvio : ".$hora_inicial_next;
+                echo "\n";
+                echo "Se hizo push de : ".$hora_inicial;
+                echo "Se calcula ahora : ".$hora_final_tmp;
+                echo "\n";
+                return $this->rellenarHoras($duracion_servicio, $hora_final_tmp, $horas_propuestas, $hora_final_dia);
+            } else {
+                return $this->rellenarHoras($d_s, $hora_inicial_next, $horas_propuestas, $h_f_d);
             }
-           if($flag == false) return $this->nextDisponible($hora+1);
+        }
     }
-
+    public function nextDisponible($hora)
+    {
+        $_h = intval($hora);
+        if (end($this->horas_filtrado) < $_h) {
+            return $hora;
+        }
+        $flag = false;
+        foreach ($this->horas_filtrado as $h_f) {
+            if ($h_f == $_h) {
+                $flag = true;
+                return $hora;
+            }
+        }
+        if ($flag == false) {
+            return $this->nextDisponible($hora+1);
+        }
+    }
 }
