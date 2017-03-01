@@ -32,7 +32,17 @@ class CalendarioController extends Controller
        
        $events=array();
 
-
+            $diasNohabiles= array();
+            $dias_semana= [1,2,3,4,5,6,7];
+            foreach ($diasHabiles as $dia) {
+                $dia_id= $dia->horasHabiles()->distinct()->select('diahabil_id')->get();
+                if (count($dia_id)>0) {
+                    array_push($diasNohabiles, $dia_id->first()->diahabil_id);
+                }
+            }
+            
+            $DiasnoHabiles= array_values(array_diff($dias_semana, $diasNohabiles));
+$diasInhabiles=$calendario->fechasInhabiles()->pluck('fecha')->toArray();
       foreach ($citas as $cita) {
         
         $title=$cita->tipo->nombre;
@@ -46,7 +56,7 @@ class CalendarioController extends Controller
         array_push($events, ['id' => $id,'codigo' => $cita->codigo,'title' => $title, 'start' => $start, 'end' => $end,'cliente_nombre' => $cliente_nombre , 'cliente_telefono' => $cliente_telefono,'cliente_email' => $cliente_email , 'servicio' => $cita_tipo ]);
     }
  
-       return \Response::json(['citas' => $events, 'servicios' => $servicios],200);
+       return \Response::json(['citas' => $events, 'servicios' => $servicios,'dia_no_habil'=>$DiasnoHabiles,'dias_inhabiles'=>$diasInhabiles],200);
    
     }
     /**
@@ -125,7 +135,6 @@ class CalendarioController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return JSON
      */
-
     public function getDiasHabiles(Request $request)
     {
         $calendario_id = $request->get('calendario');
@@ -210,7 +219,7 @@ class CalendarioController extends Controller
     {
         $calendario_id = $request->get('calendario_id');
         $calendario = calendario::find($calendario_id);
-        if(!$calendario) return response()->json(['errors' => ['not_found' => ['No se especifico un calendario']],404);
+        if(!$calendario) return response()->json(['errors' => ['not_found' => ['No se especifico un calendario']]],404);
         $dias_inhabiles  = $calendario->fechasInhabiles()->orderBy('fecha', 'asc')->get();
  //       dd($dias_inhabiles);
         $dias_inhabiles_arr = array();
@@ -306,6 +315,7 @@ class CalendarioController extends Controller
 
 
     }
+/////desde aca parece que no se usa
     private $horas_filtrado = [8,9,10,11,12,13,15,16,17,18,19];
     public function algoritmo()
     {

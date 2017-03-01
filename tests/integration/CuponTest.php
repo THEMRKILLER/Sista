@@ -12,7 +12,7 @@ class CuponTest extends TestCase
 {
     use DatabaseTransactions;
 
-       /** @test */
+   
     public function crear_cupon()
     {
 
@@ -27,7 +27,7 @@ class CuponTest extends TestCase
         $response = $this->call('post', '/api/v1/cupon', $datoscupon, [], [], ['HTTP_Authorization' => 'Bearer ' . $credentials], []);
         $this->assertEquals(404, $response->getStatusCode(), ''.$response);
 
-         $datoscupon['servicio_id']=4;
+        $datoscupon['servicio_id']=4;
         $credentials = JWTAuth::attempt(['email' => 'test@gmail.com', 'password' => '123456']);
         $response = $this->call('post', '/api/v1/cupon', $datoscupon, [], [], ['HTTP_Authorization' => 'Bearer ' . $credentials], []);
         $this->assertEquals(200, $response->getStatusCode(), ''.$response);
@@ -38,7 +38,7 @@ class CuponTest extends TestCase
         $datoscupon['word_key']='limpieza2br6';
         $response = $this->call('post', '/api/v1/cupon', $datoscupon, [], [], ['HTTP_Authorization' => 'Bearer ' . $credentials], []);
         $this->assertEquals(404, $response->getStatusCode(), ''.$response);
-                $datoscupon['word_key']='limpieza2br6';
+        $datoscupon['word_key']='limpieza2br6';
         $response = $this->call('post', '/api/v1/cupon', $datoscupon, [], [], ['HTTP_Authorization' => 'Bearer ' . $credentials], []);
         $this->assertEquals(404, $response->getStatusCode(), ''.$response);
         //fallo del formulario
@@ -55,7 +55,6 @@ class CuponTest extends TestCase
                 $datoscupon=array();
         $response = $this->call('post', '/api/v1/cupon', $datoscupon, [], [], ['HTTP_Authorization' => 'Bearer ' . $credentials], []);
         $this->assertEquals(400, $response->getStatusCode(), ''.$response);
-
     }
 
     /**
@@ -92,23 +91,46 @@ class CuponTest extends TestCase
         $this->assertNotEmpty($content->token);
     }
     /** @test */
+    public function verificar_validez_cupon()
+    {
+        $credentials = JWTAuth::attempt(['email' => 'test@gmail.com', 'password' => '123456']);
+        $datoscupon['codigo']='minutero9ymv';
+        $datoscupon['id_calendario']=3;
+        $datoscupon['servicio_id']=6;
+        $response = $this->call('get', '/api/v1/verificarcupon', $datoscupon, [], [], ['HTTP_Authorization' => 'Bearer ' . $credentials], []);
+        $this->assertEquals(200, $response->getStatusCode(), ''.$response);
+        //////CUPON NO EXISTE
+        $datoscupon['codigo']='asdasdas';
+        $response = $this->call('get', '/api/v1/verificarcupon', $datoscupon, [], [], ['HTTP_Authorization' => 'Bearer ' . $credentials], []);
+        $this->assertEquals(404, $response->getStatusCode(), ''.$response);
+        //////no es valido para el servicio
+        $datoscupon['servicio_id']=4;
+        $datoscupon['codigo']='minutero9ymv';
+                 $response = $this->call('get', '/api/v1/verificarcupon', $datoscupon, [], [], ['HTTP_Authorization' => 'Bearer ' . $credentials], []);
+        $this->assertEquals(404, $response->getStatusCode(), ''.$response);
+        ///el cupon no es valido en esa fecha
+                $datoscupon['servicio_id']=6;
+        $datoscupon['codigo']='minutero1lsw';
+                         $response = $this->call('get', '/api/v1/verificarcupon', $datoscupon, [], [], ['HTTP_Authorization' => 'Bearer ' . $credentials], []);
+        $this->assertEquals(404, $response->getStatusCode(), ''.$response);
+    }
     public function obtener_servicios_y_cupones()
     {
-    	
+        
         ///peticion correcta
         $datoscupon['calendario_id']=3;
         $credentials = JWTAuth::attempt(['email' => 'test@gmail.com', 'password' => '123456']);
         $response = $this->call('get', '/api/v1/cupon', $datoscupon, [], [], ['HTTP_Authorization' => 'Bearer ' . $credentials], []);
-                $this->assertEquals(200, $response->getStatusCode(), ''.$response);
+        $this->assertEquals(200, $response->getStatusCode(), ''.$response);
                         ///calendario nulo
         $datoscupon['calendario_id']=20;
         $credentials = JWTAuth::attempt(['email' => 'test@gmail.com', 'password' => '123456']);
         $response = $this->call('get', '/api/v1/cupon', $datoscupon, [], [], ['HTTP_Authorization' => 'Bearer ' . $credentials], []);
-                $this->assertEquals(404, $response->getStatusCode(), ''.$response);
+        $this->assertEquals(404, $response->getStatusCode(), ''.$response);
                         ///peticion correcta
         $datoscupon['calendario_id']=4;
         $credentials = JWTAuth::attempt(['email' => 'test@gmail.com', 'password' => '123456']);
         $response = $this->call('get', '/api/v1/cupon', $datoscupon, [], [], ['HTTP_Authorization' => 'Bearer ' . $credentials], []);
-                $this->assertEquals(404, $response->getStatusCode(), ''.$response);
+        $this->assertEquals(404, $response->getStatusCode(), ''.$response);
     }
 }
