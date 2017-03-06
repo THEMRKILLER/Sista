@@ -247,14 +247,11 @@ class CalendarioController extends Controller
                                             ),
                                 400); // 400 being the HTTP code for an invalid request.
         }
-
         if (!$request->get('completo')) {
             if ($request->get('horas') == []) {
                 return response()->json(['errors' => ['no_horas' => ['No se han especificado las horas que se van a deshabilitar']]], 400);
             }
         }
-
-
         //especifica la fecha que se desea inhabilitar
         $dia_inhabil_r = $request->get('fecha');
         //especifica si el día estará deshabilitado completamente o sólo parcialmente
@@ -288,7 +285,6 @@ class CalendarioController extends Controller
   * @param \Illuminate\Http\Request  $request ('fecha' => 'fecha_inhabil_id')
   * @return json con con codigo de status 200 cuando la peticion se ha atendido de manera correcta
  */
-
     public function deleteDiasHorasInhabiles(Request $request)
     {
         $token = JWTAuth::getToken();
