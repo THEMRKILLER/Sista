@@ -339,6 +339,7 @@ class cita extends Model
         $lastMinute=carbon::parse($hora_final_dia)->addHour()->toDateTimeString();
         $hora_final_Cita=carbon::parse($hora_inicial)->addMinutes($duracion_servicio)->toDateTimeString();
         // && $hora_final_Cita>=$lastMinute
+        if ($hora_inicial >= $lastMinute || $hora_final_Cita>$lastMinute) {
             return $h_p;
         }
         $d_s = $duracion_servicio;
