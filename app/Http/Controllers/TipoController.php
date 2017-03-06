@@ -40,7 +40,7 @@ class TipoController extends Controller
         $user = JWTAuth::toUser($token);
 
         $rules = array(
-            'nombre' => 'required|max:255',
+            'nombre' => 'required|integer|max:4',
             'duracion' => 'required|max:255',
             'costo'     => 'required|numeric|min:0|'
         );
