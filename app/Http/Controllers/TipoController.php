@@ -132,8 +132,10 @@ class TipoController extends Controller
         $id = $request->get('id');
         
         $tipo = $user->calendario->tipos()->where('id',$id)->first();
+        if(!$tipo) return response()->json(['errors'=> [ 'cupon_not_found' => ['Cupon no encontrado']]],404);
         //dd($tipo);
         $tipo->delete();
+        return response()->json(null,200);
 
     }
 }

@@ -158,5 +158,20 @@ class CuponController extends Controller
 
     }
 
+    public function destroy(Request $request)
+    {
+        $token = JWTAuth::getToken();
+        $user = JWTAuth::toUser($token);
+        $id = $request->get('id');
+        $cupon = Cupon::find($id);
+        if(!$cupon) return response()->json(['errors' => ['cupon_not_found' => ['El cupon no existe']]],404);
+        $servicio = $user->calendario->tipos()->where('id',$cupon->servicio_id)->first();
+        if(!$servicio) return response()->json(['errors' => ['cupon_not_found' => ['El cupon no existe']]],404);
+        $cupon->delete();
+        return response()->json(null,200);
+
+
+    }
+
 
 }
