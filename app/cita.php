@@ -337,9 +337,9 @@ class cita extends Model
         $h_p = $horas_propuestas;
         //validacion extra
         $lastMinute=carbon::parse($hora_final_dia)->addHour()->toDateTimeString();
-        //$hfd=carbon::parse($hora_inicial)->addMinutes($duracion_servicio)->toDateTimeString();
-        // && $hfd>=$lastMinute
-        if ($hora_inicial >= $lastMinute) {
+        $hora_final_Cita=carbon::parse($hora_inicial)->addMinutes($duracion_servicio)->toDateTimeString();
+        // && $hora_final_Cita>=$lastMinute
+        if ($hora_inicial >= $lastMinute || $hora_final_Cita>$lastMinute) {
             return $h_p;
         }
         $d_s = $duracion_servicio;
@@ -503,7 +503,7 @@ class cita extends Model
    * obtiene las horas inhabiles del dia
    * @param (Datetime)($fecha)
    * @param (int)($calendario_id)
-   * @return arreglo con todas las horas habiles del dia
+   * @return 
    */
     public static function revisarDiasInhabiles($datosCita)
     {
