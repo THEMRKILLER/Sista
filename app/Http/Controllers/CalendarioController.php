@@ -123,7 +123,7 @@ class CalendarioController extends Controller
     {
         $token = JWTAuth::getToken();
         $user = JWTAuth::toUser($token);
-        $user->calendario->inhabilitar_fecha($fechas);
+       return $user->calendario->inhabilitar_fecha($fechas);
     }
 
     /**
@@ -173,6 +173,7 @@ class CalendarioController extends Controller
         $dias_habiles_request = $request->get('dias');
         $hora_inicio = $request->get('hora_inicio');
         $hora_final = $request->get('hora_final');
+        if($dias_habiles_request == [] || $dias_habiles_request == null ) return response()->json(['errors' => ['sin_datos_enviados' => ['No se enviaron datos']]],404); 
         $token = JWTAuth::getToken();
         $user = JWTAuth::toUser($token);
         $dias_habiles = array();
@@ -196,9 +197,8 @@ class CalendarioController extends Controller
         $user->calendario->hora_inicio = $hora_inicio;
         $user->calendario->hora_final = $hora_final;
         $user->push();
-        $user->calendario->asignar_horario($dias_habiles);
+       return  $user->calendario->asignar_horario($dias_habiles);
 
-        return response()->json(null, 200);
     }
 
       /**
