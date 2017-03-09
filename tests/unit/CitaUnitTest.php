@@ -77,7 +77,7 @@ class CitaUnitTest extends TestCase
 
         $this->assertEquals(10, count($horas), json_encode($horas));
     }
-    /** @test */
+    
     public function dias_no_habiles_del_calendario()
     {
         $calendario_id=2;
@@ -94,7 +94,7 @@ class CitaUnitTest extends TestCase
         $dia=cita::revisarDiasInhabiles($datoscita);
         $this->assertFalse($dia);
     }
-        /** @test */
+   
     public function verificar_funcionamiento_de_timeslot()
     {
         ////todo esto es asumiendo un dia de 9 horas
@@ -121,5 +121,13 @@ class CitaUnitTest extends TestCase
         $calendario_id=2;
         $horasdeldia=cita::timeslot($fecha, $tipo_id, $calendario_id);
         $this->assertEquals(540, count($horasdeldia), json_encode($horasdeldia));
+    }
+    /** @test */
+    public function tiempo_ejecucion_caldisp()
+    {
+            $datosCita['tipo_id']=2;
+            $datosCita['calendario_id']=2;
+            $dispCal=$this->action('get', 'CitaController@disponibilidadCalendario', $datosCita);
+            $this->assertEquals(200, $dispCal->getStatusCode(), ''.$dispCal);
     }
 }

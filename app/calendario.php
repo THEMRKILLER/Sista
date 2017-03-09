@@ -80,6 +80,7 @@ class calendario extends Model
                 $dia_habil_model->save();
                 if($dia_habil['laboral'])$dia_habil_model->asignar_horas($dia_habil['horas']);
                 else $dia_habil_model->asignar_horas(null);
+                
         }
       
       return response()->json(null,200);
@@ -121,8 +122,8 @@ class calendario extends Model
       public function inhabilitar_fecha($fechas)
     	{
             
-            if($fecha['fecha'] == null || $fecha['fecha'] == [] )
-              return response()->json(['errors' => ['fechas_not_found' => 'No se especificaron fechas']],404)
+            if($fechas['fecha'] == null || $fechas['fecha'] == [] )
+              return response()->json(['errors' => ['fechas_not_found' => 'No se especificaron fechas']],404);
             
             if(!$this->verificarHorasValidasdeFechasInhabiles($fechas))
               return response()->json(['errors' => ['horas_not_found' => ['No se especifico las horas de la fecha invalida']]],404);

@@ -190,7 +190,6 @@ class CitaTest extends TestCase
             $this->assertEquals(200, $dispCal->getStatusCode(), ''.$dispCal);
             ////acceso restringido
             $datosCita['tipo_id']=1;
-
             $datosCita['calendario_id']=2;
             $dispCal=$this->action('get', 'CitaController@disponibilidadCalendario', $datosCita);
             $this->assertEquals(200, $dispCal->getStatusCode(), ''.$dispCal);
@@ -207,7 +206,8 @@ class CitaTest extends TestCase
             $this->assertEquals(404, $dispCal->getStatusCode(), ''.$dispCal);
 
         }
-  /** @test */
+
+
         public function horas()
         {
                     $datosCita['dia']='2017-02-27';

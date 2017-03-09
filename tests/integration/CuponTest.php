@@ -90,7 +90,7 @@ class CuponTest extends TestCase
         $this->assertObjectHasAttribute('token', $content);
         $this->assertNotEmpty($content->token);
     }
-    /** @test */
+  
     public function verificar_validez_cupon()
     {
         $credentials = JWTAuth::attempt(['email' => 'test@gmail.com', 'password' => '123456']);

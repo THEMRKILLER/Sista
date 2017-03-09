@@ -212,24 +212,24 @@ class cita extends Model
   * @param (int)($calendario_id)
   * @return objeto json con fechas y su disponibilidad alta=1,media=2,baja=3
  */
-    public static function disponibilidadCal($tipo_id, $calendario_id)
+    public static function disponibilidadCal($tipo, $calendario)
     {
         $disponibilidad=0;
         $inicial = carbon::now();
         $ocupado=array();
-        $Citas=cita::distinct()->select(DB::raw('DATE_FORMAT(fecha_inicio, \'%Y-%m-%d\') AS fecha_inicio'))
+        $Citas=$calendario->citas()->distinct()->select(DB::raw('DATE_FORMAT(fecha_inicio, \'%Y-%m-%d\') AS fecha_inicio'))
             ->where('fecha_inicio', '>=', $inicial->toDateTimeString())
-            ->where('calendario_id', '=', $calendario_id)
-            ->get();
+            ->pluck('fecha_inicio');
+           
         foreach ($Citas as $fecha) {
-            $espacios= cita::timeslot($fecha['fecha_inicio'], $tipo_id, $calendario_id);
+            $espacios= cita::timeslot($fecha, $tipo, $calendario);
             $disponibilidad=cita::espaciosPorFecha(count($espacios));
-            array_push($ocupado, ['fecha' => $fecha['fecha_inicio'], 'disponibilidad' => $disponibilidad]);
+            array_push($ocupado, ['fecha' => $fecha, 'disponibilidad' => $disponibilidad]);
         }
-        $calendario=calendario::find($calendario_id);
+        
         $diasInhabiles=$calendario->fechasInhabiles()->pluck('fecha');
         ///agrega las fechas inhabiles con disponibilidad de 0
-        foreach ($diasInhabiles as $diainhabil ) {
+        foreach ($diasInhabiles as $diainhabil ){
              array_push($ocupado, ['fecha' => $diainhabil, 'disponibilidad' => 0]);
         }
 
@@ -264,15 +264,9 @@ class cita extends Model
    * @param (int)($calendario_id)
    * @return arreglo con todas las horas habiles del dia
    */
-    public static function horasDelDia($fecha, $calendario_id)
+    public static function horasDelDia($fecha, $calendario)
     {
-        if (calendario::find($calendario_id)===null) {
-            return response()->json([
-                    'error' => true,
-                    'message' => 'se ah tratado de acceder a un recurso que no existe'
-                ], 404);
-        } else {
-            $calendario = calendario::find($calendario_id);
+            
             $dia=carbon::parse($fecha)->dayOfWeek;
             $diasHabiles=$calendario->diasHabiles()->where('dia', $dia)->first();
             $horasHabiles = array();
@@ -284,7 +278,7 @@ class cita extends Model
             } else {
             }
             return $horasHabiles;
-        }
+        
     }
   /**
    * Function filtroHorasInhabiles
@@ -293,15 +287,8 @@ class cita extends Model
    * @param (int)($calendario_id)
    * @return arreglo con todas las horas habiles del dia
    */
-    public static function filtroHorasInhabiles($fecha, $calendario_id)
+    public static function filtroHorasInhabiles($fecha, $calendario)
     {
-        if (calendario::find($calendario_id)===null) {
-            return response()->json([
-                    'error' => true,
-                    'message' => 'se ah tratado de acceder a un recurso que no existe'
-                ], 404);
-        } else {
-            $calendario = calendario::find($calendario_id);
             $diaInhabil=$calendario->fechasInhabiles()->where('fecha', $fecha)->first();
             $horasInhabiles =array();
             if ($diaInhabil!=null) {
@@ -319,7 +306,7 @@ class cita extends Model
             } else {
             }
             return array();
-        }
+        
     }
   /**
    * Function rellenarHoras
@@ -425,19 +412,13 @@ class cita extends Model
    * @param ([])(int)($calendario_id)
    * @return arreglo con todos los huecos libres del dia
    */
-    public static function timeslot($fecha, $tipo_id, $calendario_id)
+    public static function timeslot($fecha, $tipo, $calendario)
     {
-        if (tipo::find($tipo_id)===null||calendario::find($calendario_id)===null) {
-            return response()->json([
-                    'error' => true,
-                    'message' => 'se ah tratado de acceder a un recurso que no existe'
-                ], 404);
-        } else {
             //se declara arreglo para llenarlo mas adelante
         $horas_propuestas = array();
-            $duracion_servicio= tipo::find($tipo_id)->duracion;
-            $horas_habiles = cita::horasDelDia($fecha, $calendario_id);
-            $horas_inhabiles = cita::filtroHorasInhabiles($fecha, $calendario_id);
+            $duracion_servicio= $tipo->duracion;
+            $horas_habiles = cita::horasDelDia($fecha, $calendario);
+            $horas_inhabiles = cita::filtroHorasInhabiles($fecha, $calendario);
 
         //el producto final, despues de haber pasado por todos los filtros
         $horas_filtrado=array_diff($horas_habiles, $horas_inhabiles);
@@ -450,7 +431,7 @@ class cita extends Model
                 $horas_propuestas = cita::rellenarHoras($fecha, $horas_filtrado, $duracion_servicio, $hora_inicial, $horas_propuestas, $hora_final_dia);
                 return cita::ConversionArray($horas_propuestas);
             }
-        }
+        
     }
   /**
    * Function ConversionArray
@@ -473,28 +454,18 @@ class cita extends Model
    * @param (int)($calendario_id)
    * @return arreglo con dias no habiles
    */
-    public static function diasNoHabiles($calendario_id)
+    public static function diasNoHabiles($calendario)
     {
-        if (calendario::find($calendario_id)===null) {
-            return response()->json([
-                    'error' => true,
-                    'message' => 'se ah tratado de acceder a un recurso que no existe'
-                ], 404);
-        } else {
-            $calendario = calendario::find($calendario_id);
             $diasHabiles=$calendario->diasHabiles()->get();
             $diasNohabiles= array();
             $dias_semana= [1,2,3,4,5,6,7];
-               
             foreach ($diasHabiles as $dia) {
                 $dia_id= $dia->horasHabiles()->distinct()->select('diahabil_id')->get();
                 if (count($dia_id)>0) {
                     array_push($diasNohabiles, $dia_id->first()->diahabil_id);
                 }
-            }
-            
+            }      
             return array_values(array_diff($dias_semana, $diasNohabiles));
-        }
     }
 
 
