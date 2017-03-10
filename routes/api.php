@@ -122,5 +122,5 @@ Route::group(['middleware' => ['cors','jwt.auth'], 'prefix' => 'v1'],
 
 
   
-
+Route::get('checktoken',function(){});
  });
