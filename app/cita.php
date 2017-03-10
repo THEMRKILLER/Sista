@@ -220,9 +220,14 @@ class cita extends Model
         $Citas=$calendario->citas()->distinct()->select(DB::raw('DATE_FORMAT(fecha_inicio, \'%Y-%m-%d\') AS fecha_inicio'))
             ->where('fecha_inicio', '>=', $inicial->toDateTimeString())
             ->pluck('fecha_inicio');
+
+            //$diasHabiles=  $calendario->diasHabiles()->where('dia', $dia)->first();
+            $diasHabiles=$calendario->diasHabiles()->with('horasHabiles')->get();
+            $diaInhabil=$calendario->fechasInhabiles()->with('horasInhabiles')->get();
+
            
         foreach ($Citas as $fecha) {
-            $espacios= cita::timeslot($fecha, $tipo, $calendario);
+            $espacios= cita::timeslot($fecha, $tipo, $calendario,$diasHabiles,$diaInhabil);
             $disponibilidad=cita::espaciosPorFecha(count($espacios));
             array_push($ocupado, ['fecha' => $fecha, 'disponibilidad' => $disponibilidad]);
         }
@@ -268,7 +273,8 @@ class cita extends Model
     {
             
             $dia=carbon::parse($fecha)->dayOfWeek;
-            $diasHabiles=$calendario->diasHabiles()->where('dia', $dia)->first();
+          
+            $diasHabiles=  $calendario->diasHabiles()->where('dia', $dia)->first();
             $horasHabiles = array();
             if ($diasHabiles!=null) {
                 $horas=$diasHabiles->horasHabiles;
@@ -287,9 +293,10 @@ class cita extends Model
    * @param (int)($calendario_id)
    * @return arreglo con todas las horas habiles del dia
    */
-    public static function filtroHorasInhabiles($fecha, $calendario)
+    public static function filtroHorasInhabiles($fecha, $diasInhabiles)
     {
-            $diaInhabil=$calendario->fechasInhabiles()->where('fecha', $fecha)->first();
+         
+            $diaInhabil=$diasInhabiles->keyBy('fecha')->get($fecha);
             $horasInhabiles =array();
             if ($diaInhabil!=null) {
                 if ($diaInhabil->completo==1) {
@@ -297,10 +304,7 @@ class cita extends Model
             return range(0, 23);
                 } else {
                     //regresa un arreglo con las horas inhabiles del dia
-          $horas=$diaInhabil->horasInhabiles()->get(['hora'])->toArray();
-                    foreach ($horas as $hora) {
-                        array_push($horasInhabiles, $hora['hora']);
-                    }
+          $horasInhabiles=$diaInhabil->horasInhabiles()->pluck('hora')->toArray();
                     return $horasInhabiles;
                 }
             } else {
@@ -412,13 +416,15 @@ class cita extends Model
    * @param ([])(int)($calendario_id)
    * @return arreglo con todos los huecos libres del dia
    */
-    public static function timeslot($fecha, $tipo, $calendario)
+    public static function timeslot($fecha, $tipo, $calendario,$diasHabiles,$diasInhabiles)
     {
             //se declara arreglo para llenarlo mas adelante
         $horas_propuestas = array();
             $duracion_servicio= $tipo->duracion;
-            $horas_habiles = cita::horasDelDia($fecha, $calendario);
-            $horas_inhabiles = cita::filtroHorasInhabiles($fecha, $calendario);
+            $dia=carbon::parse($fecha)->dayOfWeek;
+            $horas_habiles=$diasHabiles->keyBy('dia')->get($dia)->horasHabiles()->pluck('hora')->toArray();
+    
+            $horas_inhabiles = cita::filtroHorasInhabiles($fecha, $diasInhabiles);
 
         //el producto final, despues de haber pasado por todos los filtros
         $horas_filtrado=array_diff($horas_habiles, $horas_inhabiles);

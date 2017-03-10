@@ -169,7 +169,10 @@ class CitaController extends Controller
                 //una vez verificado el calendario y el tipo se procede a encontrar sus valores
                 $calendario=calendario::find($idCalendario);
                 $tipo=tipo::find($idTipo);
-                $horasDisponibles= cita::timeslot($dia, $tipo, $calendario);
+                $diasHabiles=$calendario->diasHabiles()->with('horasHabiles')->get();
+                $diaInhabil=$calendario->fechasInhabiles()->with('horasInhabiles')->get();
+
+                $horasDisponibles= cita::timeslot($dia, $tipo, $calendario,$diasHabiles,$diaInhabil);
                 $fechaActual=carbon::now();
                 foreach ($horasDisponibles as $key => $hora) {
                     if ($fechaActual->toDateTimeString() > $hora['value']) {
