@@ -422,6 +422,7 @@ class cita extends Model
         $horas_propuestas = array();
             $duracion_servicio= $tipo->duracion;
             $dia=carbon::parse($fecha)->dayOfWeek;
+            $dia=($dia== 0 ? 7 :$dia);
             $horas_habiles;
             if($diasHabiles->keyBy('dia')->get($dia)==null){
               $horas_habiles=array();
