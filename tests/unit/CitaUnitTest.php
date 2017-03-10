@@ -129,7 +129,7 @@ class CitaUnitTest extends TestCase
             //$datosCita['calendario_id']=2;
             //$dispCal=$this->action('get', 'CitaController@disponibilidadCalendario', $datosCita);
             //$this->assertEquals(200, $dispCal->getStatusCode(), ''.$dispCal);
-            $datosCita['dia']='2017-03-13';
+            $datosCita['dia']='2017-03-19';
             $datosCita['tipo_id']=2;
             $datosCita['calendario_id']=2;
             $dispCal=$this->action('get', 'CitaController@horasDisponibles', $datosCita);

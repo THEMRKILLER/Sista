@@ -424,12 +424,17 @@ class cita extends Model
             $dia=carbon::parse($fecha)->dayOfWeek;
             $dia=($dia== 0 ? 7 :$dia);
             $horas_habiles;
+
             if($diasHabiles->keyBy('dia')->get($dia)==null){
               $horas_habiles=array();
             }else{
+
               $horas_habiles=$diasHabiles->keyBy('dia')->get($dia)->horasHabiles()->pluck('hora')->toArray();
+              sort($horas_habiles);
             }
+            
             $horas_inhabiles = cita::filtroHorasInhabiles($fecha, $diasInhabiles);
+             sort($horas_inhabiles);
 
         //el producto final, despues de haber pasado por todos los filtros
         $horas_filtrado=array_diff($horas_habiles, $horas_inhabiles);
