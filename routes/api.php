@@ -59,11 +59,14 @@ Route::group(['middleware' => ['cors'], 'prefix' => 'v1'], function () {
 });
 
 Route::group(['middleware' => ['cors','jwt.refresh'],'prefix' => 'v1'], function () {
+
+
     Route::get('refresh_token', function () {
         $oldtoken = JWTAuth::getToken();
         $token = JWTAuth::refresh($oldtoken);
         return response()->json(compact('token'));
     });
+
 });
 
 Route::group(['middleware' => ['cors','jwt.auth'], 'prefix' => 'v1'],
@@ -120,7 +123,7 @@ Route::group(['middleware' => ['cors','jwt.auth'], 'prefix' => 'v1'],
   //Codigo cupones
       Route::get('codigo_cupon/{key}','CuponController@generarCodigo'); 
 
-
+    Route::get('checktoken',function(){});
   
 
  });

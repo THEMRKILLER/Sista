@@ -168,7 +168,8 @@ class CitaController extends Controller
             $VerificarCalendario= $this->verificarCalendario($idCalendario, $idTipo);
            
             if ($VerificarCalendario) {
-                $horasDisponibles= cita::timeslot($dia, $idTipo, $idCalendario);
+                $calendario = calendario::find($idCalendario);
+                $horasDisponibles= cita::timeslot($dia, $idTipo, $calendario);
                 $fechaActual=carbon::now();
                 foreach ($horasDisponibles as $key => $hora) {
                     if ($fechaActual->toDateTimeString() > $hora['value']) {
@@ -193,10 +194,11 @@ class CitaController extends Controller
             $VerificarCalendario= $this->verificarCalendario($idCalendario, $idTipo);
             if ($VerificarCalendario) {
                 //dias que no hay ninguna horahabil
-                $diasNoHabiles= cita::diasNoHabiles($idCalendario);
+               $diasNoHabiles= cita::diasNoHabiles($idCalendario);
                 //disponibilidad del dia en base al numero de huecos vacios
                 $disponibilidad= cita::disponibilidadCal($idTipo, $idCalendario);
-      
+               //$diasNoHabiles = [];
+              // $disponibilidad = [];
                 return response()->json(['disponibilidades' => $disponibilidad, 'no_laborales' => $diasNoHabiles], 200);
             } else {
                 return \Response::json('acceso restringido a calendario', 403);

@@ -122,7 +122,7 @@ class calendario extends Model
     	{
             
             if($fecha['fecha'] == null || $fecha['fecha'] == [] )
-              return response()->json(['errors' => ['fechas_not_found' => 'No se especificaron fechas']],404)
+              return response()->json(['errors' => ['fechas_not_found' => 'No se especificaron fechas']],404);
             
             if(!$this->verificarHorasValidasdeFechasInhabiles($fechas))
               return response()->json(['errors' => ['horas_not_found' => ['No se especifico las horas de la fecha invalida']]],404);

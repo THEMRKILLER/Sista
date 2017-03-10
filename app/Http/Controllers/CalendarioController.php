@@ -29,9 +29,9 @@ class CalendarioController extends Controller
         $citas =$calendario
                 ->citas()
                 ->where('fecha_final', '>', $fechaActual)
-                ->get();//->whereMonth('fecha', '=', '06')->get();
+                ->get();
        
-       $events=array();
+        $events=array();
         $diasHabiles=$calendario->diasHabiles()->get();
         $diasNohabiles= array();
         $dias_semana= [1,2,3,4,5,6,7];
@@ -44,6 +44,7 @@ class CalendarioController extends Controller
             
         $DiasnoHabiles= array_values(array_diff($dias_semana, $diasNohabiles));
         $diasInhabiles=$calendario->fechasInhabiles()->pluck('fecha')->toArray();
+
         foreach ($citas as $cita) {
             $title=$cita->tipo->nombre;
             $start=$cita['fecha_inicio'];
@@ -136,6 +137,9 @@ class CalendarioController extends Controller
     {
         $calendario_id = $request->get('calendario');
         $calendario = calendario::find($calendario_id);
+
+        if(!$calendario) return response()->json(['errors' => ['calendario_not_found' => ['El calendario no existe']]],404);
+
         $dias_habiles = array();
         $c_dias_habiles = $calendario->diasHabiles;
         $horas_dia_habil = array(); //declaracion global
@@ -287,11 +291,13 @@ class CalendarioController extends Controller
  */
     public function deleteDiasHorasInhabiles(Request $request)
     {
+
         $token = JWTAuth::getToken();
         $user = JWTAuth::toUser($token);
         $fecha_inhabil_id = $request->get('fecha_inhabil_id');
 
-        $fecha_inhabil = fecha_inhabil::find($fecha_inhabil_id);
+        $fecha_inhabil = $user->fechasInhabiles->where('id',$fecha_inhabil_id)->first();
+
         if ($fecha_inhabil) {
             $fecha_inhabil->delete();
             return response()->json(null, 200);
