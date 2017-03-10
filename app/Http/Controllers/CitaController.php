@@ -57,8 +57,6 @@ class CitaController extends Controller
                 } else {
                     $val = cita::fechaDisponible($request->all())&&cita::revisarDiasInhabiles($request->all());
                     if ($val) {
-
-                                        
                         $cupon_descuento = $request->get('cupon_descuento');
                         $costo_total = $request->get('costo_total');
                         $servicio = tipo::find($request->get('tipo_id'));
@@ -168,8 +166,15 @@ class CitaController extends Controller
             $VerificarCalendario= $this->verificarCalendario($idCalendario, $idTipo);
            
             if ($VerificarCalendario) {
-                $calendario = calendario::find($idCalendario);
-                $horasDisponibles= cita::timeslot($dia, $idTipo, $calendario);
+
+                //una vez verificado el calendario y el tipo se procede a encontrar sus valores
+                $calendario=calendario::find($idCalendario);
+                $tipo=tipo::find($idTipo);
+                $diasHabiles=$calendario->diasHabiles()->with('horasHabiles')->get();
+                $diaInhabil=$calendario->fechasInhabiles()->with('horasInhabiles')->get();
+
+                $horasDisponibles= cita::timeslot($dia, $tipo, $calendario,$diasHabiles,$diaInhabil);
+
                 $fechaActual=carbon::now();
                 foreach ($horasDisponibles as $key => $hora) {
                     if ($fechaActual->toDateTimeString() > $hora['value']) {
@@ -193,12 +198,17 @@ class CitaController extends Controller
         if ($verificarId) {
             $VerificarCalendario= $this->verificarCalendario($idCalendario, $idTipo);
             if ($VerificarCalendario) {
+                //una vez verificado el calendario y el tipo se procede a encontrar sus valores
+                $calendario=calendario::find($idCalendario);
+                $tipo=tipo::find($idTipo);
                 //dias que no hay ninguna horahabil
-               $diasNoHabiles= cita::diasNoHabiles($idCalendario);
+
+                $diasNoHabiles= cita::diasNoHabiles($calendario);
                 //disponibilidad del dia en base al numero de huecos vacios
-                $disponibilidad= cita::disponibilidadCal($idTipo, $idCalendario);
-               //$diasNoHabiles = [];
-              // $disponibilidad = [];
+                
+                $disponibilidad=cita::disponibilidadCal($tipo, $calendario);
+      
+
                 return response()->json(['disponibilidades' => $disponibilidad, 'no_laborales' => $diasNoHabiles], 200);
             } else {
                 return \Response::json('acceso restringido a calendario', 403);

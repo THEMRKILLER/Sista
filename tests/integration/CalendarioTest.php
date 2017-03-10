@@ -44,7 +44,7 @@ class CalendarioTest extends TestCase
         $response = $this->action('get', 'CalendarioController@getDiasHabiles', $calendario);
         $this->assertEquals(200, $response->getStatusCode(), "".$response);
     }
-        /** @test */
+   
         public function prueba_obtender_dias_horas_inhabiles()
         {
             $datos['calendario_id']=null;
@@ -102,6 +102,19 @@ class CalendarioTest extends TestCase
         $credentials = JWTAuth::attempt(['email' => 'cristianrocker93@gmail.com', 'password' => 'nomeacuerdo']);
         $response = $this->call('delete', '/api/v1/fecha_inhabil', $datos, [], [], ['HTTP_Authorization' => 'Bearer ' . $credentials], []);
         $this->assertEquals(403, $response->getStatusCode(), "".$response);
+    }
+    public function probar_asignar_horarios()
+    {
+        
+    }
+ 
+    public function probar_deshabilitar_fecha()
+    {
+        $datos['fecha_inhabil_id']=11;
+        $credentials = JWTAuth::attempt(['email' => 'cristianrocker93@gmail.com', 'password' => 'nomeacuerdo']);
+        $response = $this->call('delete', '/api/v1/fecha_inhabil', $datos, [], [], ['HTTP_Authorization' => 'Bearer ' . $credentials], []);
+        $this->assertEquals(403, $response->getStatusCode(), "".$response);
+        
     }
 
 }
