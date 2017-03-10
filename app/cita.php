@@ -422,8 +422,12 @@ class cita extends Model
         $horas_propuestas = array();
             $duracion_servicio= $tipo->duracion;
             $dia=carbon::parse($fecha)->dayOfWeek;
-            $horas_habiles=$diasHabiles->keyBy('dia')->get($dia)->horasHabiles()->pluck('hora')->toArray();
-    
+            $horas_habiles;
+            if($diasHabiles->keyBy('dia')->get($dia)==null){
+              $horas_habiles=array();
+            }else{
+              $horas_habiles=$diasHabiles->keyBy('dia')->get($dia)->horasHabiles()->pluck('hora')->toArray();
+            }
             $horas_inhabiles = cita::filtroHorasInhabiles($fecha, $diasInhabiles);
 
         //el producto final, despues de haber pasado por todos los filtros
