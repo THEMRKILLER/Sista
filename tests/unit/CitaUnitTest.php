@@ -122,18 +122,19 @@ class CitaUnitTest extends TestCase
         $horasdeldia=cita::timeslot($fecha, $tipo_id, $calendario_id);
         $this->assertEquals(540, count($horasdeldia), json_encode($horasdeldia));
     }
-    /** @test */
+ 
     public function tiempo_ejecucion_caldisp()
     {
-           // $datosCita['tipo_id']=2;
-            //$datosCita['calendario_id']=2;
-            //$dispCal=$this->action('get', 'CitaController@disponibilidadCalendario', $datosCita);
-            //$this->assertEquals(200, $dispCal->getStatusCode(), ''.$dispCal);
-            $datosCita['dia']='2017-03-19';
             $datosCita['tipo_id']=2;
-            $datosCita['calendario_id']=2;
-            $dispCal=$this->action('get', 'CitaController@horasDisponibles', $datosCita);
-            $this->assertEquals(223, $dispCal->getStatusCode(), ''.$dispCal);
+           $datosCita['calendario_id']=2;
+            $datosCita['mes']='03';
+           $dispCal=$this->action('get', 'CitaController@disponibilidadCalendario', $datosCita);
+           $this->assertEquals(203, $dispCal->getStatusCode(), ''.$dispCal);
+            //$datosCita['dia']='2017-03-19';
+            //$datosCita['tipo_id']=2;
+            //$datosCita['calendario_id']=2;
+            //$dispCal=$this->action('get', 'CitaController@horasDisponibles', $datosCita);
+            //$this->assertEquals(223, $dispCal->getStatusCode(), ''.$dispCal);
             
     }
 }

@@ -40,17 +40,9 @@ class cita extends Model
      *notifica al usuario por sms y email
      * @param datosCita estructura con nombre,telefono,email,fecha y hora de la cita
      */
-    public static function crear($datosCita, $codigo)
+    public static function crear($datosCita, $codigo,$calendario,$servicio)
     {
-        if (calendario::find($datosCita['calendario_id'])===null||tipo::find($datosCita['tipo_id'])===null) {
-            return response()->json([
-                    'error' => true,
-                    'message' => 'se ah tratado de acceder a un recurso que no existe'
-                ], 404);
-        } else {
-            $calendario = calendario::find($datosCita['calendario_id']);
-            $tipo = tipo::find($datosCita['tipo_id']);
-            $duracion_servicio=$tipo->duracion;
+            $duracion_servicio=$servicio->duracion;
             $nuevaCita = new cita();
             $nuevaCita->fecha_inicio = $datosCita['fecha_inicio'];
             $nuevaCita->fecha_final = carbon::parse($datosCita['fecha_inicio'])->addMinutes($duracion_servicio)->subMinute()->toDateTimeString();
@@ -59,7 +51,7 @@ class cita extends Model
             $nuevaCita->cliente_email = $datosCita['cliente_email'];
             $nuevaCita->codigo = $codigo;
             $nuevaCita->costo = $datosCita['costo_total'];
-            $nuevaCita->tipo()->associate($tipo);
+            $nuevaCita->tipo()->associate($servicio);
             $citaGuardada=$calendario->citas()->save($nuevaCita);
         //si la cita es guardada correctamente se manda una notificacion al usuario
         //en caso de que no se manda un codigo de error al cliente
@@ -79,10 +71,10 @@ class cita extends Model
         } else {
             return response()->json([
                     'error' => true,
-                    'message' => 'Ocurrio un error inesperado'
+                    'message' => 'Ocurrio un error inesperado al guardar la cita'
                 ], 500);
         }
-        }
+        
     }
     /*
     *  busca y elimina la cita por id, si no se encuentra se manda un error
@@ -110,21 +102,14 @@ class cita extends Model
      * @param datosCita estructura con fecha y hora
      */
 
-    public static function reagendar($datosCita)
+    public static function reagendar($datosCita,$cita,$servicio)
     {
-        if (cita::find($datosCita['id_cita'])===null||tipo::find($datosCita['tipo_id'])===null) {
-            return response()->json([
-                    'error' => true,
-                    'message' => 'se ah tratado de acceder a un recurso que no existe'
-                ], 404);
-        } else {
-            $Cita = cita::find($datosCita['id_cita']);
-            $tipo= tipo::find($datosCita['tipo_id'])->duracion;
-            $fecha_final = carbon::parse($datosCita['fecha_inicio'])->addMinutes($tipo)->subMinute();
-            $Cita->fecha_inicio = $datosCita['fecha_inicio'];
-            $Cita->fecha_final = $fecha_final;
-            $Cita->tipo_id = $datosCita['tipo_id'];
-            $citaGuardada=$Cita->save();
+            $duracion= $servicio->duracion;
+            $fecha_final = carbon::parse($datosCita['fecha_inicio'])->addMinutes($duracion)->subMinute();
+            $cita->fecha_inicio = $datosCita['fecha_inicio'];
+            $cita->fecha_final = $fecha_final;
+            $cita->tipo_id = $datosCita['tipo_id'];
+            $citaGuardada=$cita->save();
         //si la cita es guardada correctamente se manda una notificacion al usuario
         //en caso de que no se manda un codigo de error al cliente
         if ($citaGuardada) {
@@ -143,11 +128,11 @@ class cita extends Model
             */
 
           return response()->json([
-                                  'codigo' => $Cita->codigo,
-                                  'cliente_nombre' => $Cita->cliente_nombre,
-                                  'fecha' => $Cita->fecha_inicio,
-                                  'servicio' => $Cita->tipo->nombre,
-                                  'cita' => ['id' => $Cita->id,'codigo' => $Cita->codigo,'title' => $Cita->tipo->nombre, 'start' => $Cita->fecha_inicio, 'end' => $Cita->fecha_final,'cliente_nombre' => $Cita->cliente_nombre , 'cliente_telefono' => $Cita->cliente_telefono,'cliente_email' => $Cita->cliente_email , 'servicio' => $Cita->tipo->nombre]
+                                  'codigo' => $cita->codigo,
+                                  'cliente_nombre' => $cita->cliente_nombre,
+                                  'fecha' => $cita->fecha_inicio,
+                                  'servicio' => $cita->tipo->nombre,
+                                  'cita' => ['id' => $cita->id,'codigo' => $cita->codigo,'title' => $cita->tipo->nombre, 'start' => $cita->fecha_inicio, 'end' => $cita->fecha_final,'cliente_nombre' => $cita->cliente_nombre , 'cliente_telefono' => $cita->cliente_telefono,'cliente_email' => $cita->cliente_email , 'servicio' => $cita->tipo->nombre]
                                    ],
 
                                   200);
@@ -157,7 +142,7 @@ class cita extends Model
                     'message' => 'Ocurrio un error inesperado'
                 ], 500);
         }
-        }
+        
     }
  /**
   * Function fechaDisponible
@@ -212,12 +197,14 @@ class cita extends Model
   * @param (int)($calendario_id)
   * @return objeto json con fechas y su disponibilidad alta=1,media=2,baja=3
  */
-    public static function disponibilidadCal($tipo, $calendario)
+    public static function disponibilidadCal($tipo, $calendario,$mes)
     {
         $disponibilidad=0;
         $inicial = carbon::now();
         $ocupado=array();
-        $Citas=$calendario->citas()->distinct()->select(DB::raw('DATE_FORMAT(fecha_inicio, \'%Y-%m-%d\') AS fecha_inicio'))
+        
+;        $Citas=$calendario->citas()->distinct()->select(DB::raw('DATE_FORMAT(fecha_inicio, \'%Y-%m-%d\') AS fecha_inicio'))
+            ->whereMonth('fecha_inicio', $mes)
             ->where('fecha_inicio', '>=', $inicial->toDateTimeString())
             ->pluck('fecha_inicio');
 
