@@ -92,7 +92,7 @@ class UsuarioController extends Controller
     public function logout2()
     {
 
-        JWTAuth::invalidate(JWTAuth::getToken());
+      //  JWTAuth::invalidate(JWTAuth::getToken());
 
     }
 
