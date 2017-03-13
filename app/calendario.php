@@ -122,6 +122,7 @@ class calendario extends Model
       public function inhabilitar_fecha($fechas)
     	{
             
+
             if($fechas['fecha'] == null || $fechas['fecha'] == [] )
               return response()->json(['errors' => ['fechas_not_found' => 'No se especificaron fechas']],404);
             
