@@ -12,22 +12,22 @@ class CuponTest extends TestCase
 {
     use DatabaseTransactions;
 
-   
+   /** @test */
     public function crear_cupon()
     {
 
         ///peticion correcta
-        $datoscupon['servicio_id']=7;
-        $datoscupon['word_key']='bergial';
+        $datoscupon['servicio_id']=17;
+        $datoscupon['word_key']='';
         $datoscupon['porcentaje']=20;
-        $datoscupon['fecha_inicial']='2017-02-23';
-        $datoscupon['fecha_final']='2017-03-20';
+        $datoscupon['fecha_inicial']='2017-03-23';
+        $datoscupon['fecha_final']='2017-04-20';
 
-        $credentials = JWTAuth::attempt(['email' => 'test@gmail.com', 'password' => '123456']);
+        $credentials = JWTAuth::attempt(['email' => 'cristianrocker93@gmail.com', 'password' => 'nomeacuerdo']);
         $response = $this->call('post', '/api/v1/cupon', $datoscupon, [], [], ['HTTP_Authorization' => 'Bearer ' . $credentials], []);
         $this->assertEquals(404, $response->getStatusCode(), ''.$response);
 
-        $datoscupon['servicio_id']=4;
+        $datoscupon['servicio_id']=2;
         $credentials = JWTAuth::attempt(['email' => 'test@gmail.com', 'password' => '123456']);
         $response = $this->call('post', '/api/v1/cupon', $datoscupon, [], [], ['HTTP_Authorization' => 'Bearer ' . $credentials], []);
         $this->assertEquals(200, $response->getStatusCode(), ''.$response);

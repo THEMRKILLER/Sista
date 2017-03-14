@@ -28,6 +28,7 @@ class CuponController extends Controller
 
     	$rules = array(
                         'porcentaje' => 'required|integer|max:100|min:0',
+                        'word_key' => 'max:30|min:0',
                         'fecha_inicial' => 'required|date_format:Y-m-d|before_or_equal:fecha_final',
                         'fecha_final' => 'required|date_format:Y-m-d|after_or_equal:fecha_inicial'
                 );

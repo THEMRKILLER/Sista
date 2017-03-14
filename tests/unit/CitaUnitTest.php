@@ -122,7 +122,7 @@ class CitaUnitTest extends TestCase
         $horasdeldia=cita::timeslot($fecha, $tipo_id, $calendario_id);
         $this->assertEquals(540, count($horasdeldia), json_encode($horasdeldia));
     }
- 
+     
     public function tiempo_ejecucion_caldisp()
     {
             $datosCita['tipo_id']=2;

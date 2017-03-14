@@ -93,7 +93,6 @@ class CitaController extends Controller
         if ($verificarId) {
             $revisarServicio= $this->verificarServicio($idCalendario, $idTipo, $idCita);
             if ($revisarServicio) {
-
                 $rules = array('fecha_inicio' => 'required|date_format:Y-m-d H:i:s',);
                 $validator = Validator::make($request->all(), $rules);
                 if ($validator->fails()) {
@@ -103,10 +102,10 @@ class CitaController extends Controller
                                             ),
                                 400); // 400 being the HTTP code for an invalid request.
                 } else {
-                                    $cita = cita::find($idCita);
-                $servicio = tipo::find($idTipo);
+                    $cita = cita::find($idCita);
+                    $servicio = tipo::find($idTipo);
                     if (cita::fechaDisponible($request->all())&&cita::revisarDiasInhabiles($request->all())) {
-                        return cita::reagendar($request->all(),$cita,$servicio);
+                        return cita::reagendar($request->all(), $cita, $servicio);
                     } else {
                         return response()->json(array(
                                             'success' => false,
@@ -154,7 +153,7 @@ class CitaController extends Controller
                 $tipo=tipo::find($idTipo);
                 $diasHabiles=$calendario->diasHabiles()->with('horasHabiles')->get();
                 $diaInhabil=$calendario->fechasInhabiles()->with('horasInhabiles')->get();
-                $horasDisponibles= cita::timeslot($dia, $tipo, $calendario,$diasHabiles,$diaInhabil);
+                $horasDisponibles= cita::timeslot($dia, $tipo, $calendario, $diasHabiles, $diaInhabil);
                 $fechaActual=carbon::now();
                 foreach ($horasDisponibles as $key => $hora) {
                     if ($fechaActual->toDateTimeString() > $hora['value']) {
