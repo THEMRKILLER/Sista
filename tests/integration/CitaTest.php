@@ -12,17 +12,18 @@ class CitaTest extends TestCase
     use DatabaseTransactions;
    
 
-        
+    
+           /** @test */
     public function creacion_de_citas()
     {
         //simulando datos de entrada de una cita
-        $datosCita['calendario_id']=1;
-        $datosCita['tipo_id']=1;
+        $datosCita['calendario_id']=2;
+        $datosCita['tipo_id']=2;
         $datosCita['fecha_inicio']='2018-02-21 08:00:00';
         $datosCita['cliente_nombre']='Metatron';
-        $datosCita['cliente_telefono']='66660022';
+        $datosCita['cliente_telefono']='6665360022';
         $datosCita['cliente_email']='ArcMet@gmail.com';
-        $datosCita['costo_total']=0;
+        $datosCita['costo_total']=500;
         $datosCita['cupon_descuento']='';
         
         //acceso a otro calendario :
@@ -40,9 +41,9 @@ class CitaTest extends TestCase
         //cita con una fecha que ya paso
         $datosCita['fecha_inicio']='2017-02-14 12:00:00';
         $fechapasada = $this->action('Post', 'CitaController@store', $datosCita);
-        $this->assertEquals(409, $fechapasada->getStatusCode(), "".$fechapasada);
+        $this->assertEquals(400, $fechapasada->getStatusCode(), "".$fechapasada);
         //dia inhabil (debe estar agregado en la bd)
-        $datosCita['fecha_inicio']='2017-02-24 10:00:00';
+        $datosCita['fecha_inicio']='2017-03-25 10:00:00';
         $diainhabil=$this->action('Post', 'CitaController@store', $datosCita);
         $this->assertEquals(404, $diainhabil->getStatusCode(), 'dia inhabil');
         // cupon no es valido
@@ -51,23 +52,23 @@ class CitaTest extends TestCase
         $cuponinvalido=$this->action('Post', 'CitaController@store', $datosCita);
         $this->assertEquals(400, $cuponinvalido->getStatusCode(), ' cupon invalido');
         // cupon valido pero costo total incorrecto
-        $datosCita['cupon_descuento']='last24z0';
-        $datosCita['costo_total']=2000;
+        $datosCita['cupon_descuento']='dental2003j5';
+        $datosCita['costo_total']=8000;
         $cuponvalido=$this->action('Post', 'CitaController@store', $datosCita);
         $this->assertEquals(400, $cuponvalido->getStatusCode(), ' cupon valido costo total incorrecto');
         // cupon valido,costo correcto
         
-                $datosCita['costo_total']=0;
+                $datosCita['costo_total']=400;
         $cuponvalido=$this->action('Post', 'CitaController@store', $datosCita);
-        $this->assertEquals(200, $cuponvalido->getStatusCode(), ' cupon valido');
+        $this->assertEquals(200, $cuponvalido->getStatusCode(), ' cupon valido'.$cuponvalido);
         //recurso no disponible.
         $datosCita['calendario_id']=28;
         $datosCita['tipo_id']=1024;
         $FalloAgendar=$this->action('Post', 'CitaController@store', $datosCita);
         $this->assertEquals(404, $FalloAgendar->getStatusCode(), 'se trata de acceder a un recurso inexistente');
         //fallo de formulario
-                $datosCita['calendario_id']=1;
-        $datosCita['tipo_id']=1;
+                $datosCita['calendario_id']=2;
+        $datosCita['tipo_id']=2;
         $datosCita['cliente_nombre']='               ';
         $ErrorValidador=$this->action('Post', 'CitaController@store', $datosCita);
         $this->assertEquals(400, $ErrorValidador->getStatusCode(), 'validador falla');
@@ -80,14 +81,14 @@ class CitaTest extends TestCase
         $datosCita['fecha_inicio']='2018-02-24 10:00:00';
         $datosCita['cupon_descuento']='';
         $conflictos = $this->action('Post', 'CitaController@store', $datosCita);
-        $this->assertEquals(403, $conflictos->getStatusCode(), ''.$conflictos);
+        $this->assertEquals(404, $conflictos->getStatusCode(), ''.$conflictos);
     }
-  
+            /** @test */
     public function Reagendar_citas()
     {
-        $datosCita['tipo_id']=4;
-        $datosCita['id_cita']=1610;
-        $datosCita['calendario_id']=1;
+        $datosCita['tipo_id']=2;
+        $datosCita['id_cita']=294;
+        $datosCita['calendario_id']=2;
         $datosCita['fecha_inicio']='2017-08-21 10:00:00';
         //reagendacion exitosa
         $reagendar=$this->action('put', 'CitaController@reagendar', $datosCita);
@@ -123,11 +124,11 @@ class CitaTest extends TestCase
         $this->assertEquals(404, $reagendar->getStatusCode(), ''.$reagendar);
         //accede a un calendario diferente
         $datosCita['tipo_id']=4;
-        $datosCita['id_cita']=1610;
-        $datosCita['calendario_id']=3;
+        $datosCita['id_cita']=137;
+        $datosCita['calendario_id']=2;
         $datosCita['fecha_inicio']='2017-09-21 10:00:00';
         $reagendar=$this->action('put', 'CitaController@reagendar', $datosCita);
-        $this->assertEquals(403, $reagendar->getStatusCode(), ''.$reagendar);
+        $this->assertEquals(404, $reagendar->getStatusCode(), ''.$reagendar);
     }
     
     public function eliminar_cita()

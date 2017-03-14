@@ -26,21 +26,20 @@ class CitaController extends Controller
     {
         $idCalendario=intval($request->get('calendario_id'));
         $idTipo=intval($request->get('tipo_id'));
+        $fechaActual=carbon::now();
         $verificarId=$this->verificarIdentificadoresA($idCalendario, $idTipo);
         if ($verificarId) {
             $VerificarCalendario= $this->verificarCalendario($idCalendario, $idTipo);
             if ($VerificarCalendario) {
+                $calendario = calendario::find($idCalendario);
+                $servicio = tipo::find($idTipo);
                 $rules = array(
-                        'fecha_inicio' => 'required|date_format:Y-m-d H:i:s',
-                        'cliente_nombre' => 'required',
-                        'cliente_telefono' => 'required',
-                        'cliente_email' => 'email',
+                        'fecha_inicio' => 'required|date_format:Y-m-d H:i:s|after:'.$fechaActual,
+                        'cliente_nombre' => 'required|max:255',
+                        'cliente_telefono' => 'required|digits:10',
+                        'cliente_email' => 'email|max:255',
             );
-
-        
                 $validator = Validator::make($request->all(), $rules);
-
-
                 if ($validator->fails()) {
                     return response()->json(array(
                                             'success' => false,
@@ -48,49 +47,32 @@ class CitaController extends Controller
                                             ),
                                 400); // 400 being the HTTP code for an invalid request.
                 }
-                $fechaActual=carbon::now();
-                if ($fechaActual->toDateTimeString() >= $request->get('fecha_inicio')) {
-                    return response()->json(array(
-                                            'success' => false,
-                                            'errors' => 'la fecha de inicio de la cita ya paso y no se puede agendar'
-                                            ), 409);
-                } else {
-                    $val = cita::fechaDisponible($request->all())&&cita::revisarDiasInhabiles($request->all());
-                    if ($val) {
-                        $cupon_descuento = $request->get('cupon_descuento');
-                        $costo_total = $request->get('costo_total');
-                        $servicio = tipo::find($request->get('tipo_id'));
-
-
-                        if (!$this->validar_costo($cupon_descuento, $costo_total, $servicio)) {
-                            return response()->json(['errors' => ['No es posible agendar la cita por que los datos que se proporcionaron no son los correctos, verifiquelos y vuelva a intentar'] ], 400);
-                        }
-
-            
-                        return cita::crear($request->all(), $this->generarCodigoCita());
+                $val = cita::fechaDisponible($request->all())&&cita::revisarDiasInhabiles($request->all());
+                if ($val) {
+                    $cupon_descuento = $request->get('cupon_descuento');
+                    $costo_total = $request->get('costo_total');
+                    
+                    if (!$this->validar_costo($cupon_descuento, $costo_total, $servicio)) {
+                        return response()->json(['errors' => ['No es posible agendar la cita por que los datos que se proporcionaron no son los correctos, verifiquelos y vuelva a intentar'] ], 400);
                     } else {
-                        $val=cita::fechaDisponible($request->all())&&cita::revisarDiasInhabiles($request->all());
-                  
-                        if ($val) {
-                            return cita::crear($request->all(), $this->generarCodigoCita());
-                        } else {
-                            return response()->json(array(
+                        return cita::crear($request->all(), $this->generarCodigoCita(), $calendario, $servicio);
+                    }
+                } else {
+                    return response()->json(array(
                                             'success' => false,
                                             'errors' => 'no se puede agendar esa fecha'
                                             ), 404);
-                        }
-                    }
                 }
             } else {
                 return response()->json(array(
                                             'success' => false,
-                                            'errors' => 'acceso restringido a calendario'
-                                            ), 403);
+                                            'errors' => 'no se encontro el recurso calendario'
+                                            ), 404);
             }
         } else {
             return response()->json([
                     'error' => true,
-                    'message' => 'el calendario o servicio al que se esta tratando de acceder no existe'
+                    'message' => 'no se encontro el recurso calendario'
                 ], 404);
         }
     }
@@ -111,10 +93,8 @@ class CitaController extends Controller
         if ($verificarId) {
             $revisarServicio= $this->verificarServicio($idCalendario, $idTipo, $idCita);
             if ($revisarServicio) {
-                $rules = array(
-                        
-                        'fecha_inicio' => 'required|date_format:Y-m-d H:i:s',
-                );
+
+                $rules = array('fecha_inicio' => 'required|date_format:Y-m-d H:i:s',);
                 $validator = Validator::make($request->all(), $rules);
                 if ($validator->fails()) {
                     return response()->json(array(
@@ -123,8 +103,10 @@ class CitaController extends Controller
                                             ),
                                 400); // 400 being the HTTP code for an invalid request.
                 } else {
+                                    $cita = cita::find($idCita);
+                $servicio = tipo::find($idTipo);
                     if (cita::fechaDisponible($request->all())&&cita::revisarDiasInhabiles($request->all())) {
-                        return cita::reagendar($request->all());
+                        return cita::reagendar($request->all(),$cita,$servicio);
                     } else {
                         return response()->json(array(
                                             'success' => false,
@@ -136,8 +118,8 @@ class CitaController extends Controller
             } else {
                 return response()->json(array(
                                             'success' => false,
-                                            'errors' => 'acceso restringido a calendario'
-                                            ), 403);
+                                            'errors' => 'el calendario,servicio o cita al que se esta tratando de acceder no existe'
+                                            ), 404);
             }
         } else {
             return response()->json(array(
@@ -172,9 +154,7 @@ class CitaController extends Controller
                 $tipo=tipo::find($idTipo);
                 $diasHabiles=$calendario->diasHabiles()->with('horasHabiles')->get();
                 $diaInhabil=$calendario->fechasInhabiles()->with('horasInhabiles')->get();
-
                 $horasDisponibles= cita::timeslot($dia, $tipo, $calendario,$diasHabiles,$diaInhabil);
-
                 $fechaActual=carbon::now();
                 foreach ($horasDisponibles as $key => $hora) {
                     if ($fechaActual->toDateTimeString() > $hora['value']) {
@@ -194,6 +174,7 @@ class CitaController extends Controller
     {
         $idTipo=intval($request['tipo_id']);
         $idCalendario=intval($request['calendario_id']);
+        $mes=$request['mes'];
         $verificarId=$this->verificarIdentificadoresA($idCalendario, $idTipo);
         if ($verificarId) {
             $VerificarCalendario= $this->verificarCalendario($idCalendario, $idTipo);
@@ -206,7 +187,7 @@ class CitaController extends Controller
                 $diasNoHabiles= cita::diasNoHabiles($calendario);
                 //disponibilidad del dia en base al numero de huecos vacios
                 
-                $disponibilidad=cita::disponibilidadCal($tipo, $calendario);
+                $disponibilidad=cita::disponibilidadCal($tipo, $calendario, $mes);
       
 
                 return response()->json(['disponibilidades' => $disponibilidad, 'no_laborales' => $diasNoHabiles], 200);
