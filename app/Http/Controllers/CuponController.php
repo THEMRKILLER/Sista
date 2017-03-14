@@ -83,6 +83,7 @@ class CuponController extends Controller
         if(!$calendario) return response()->json(['Recurso no encontrado'],404);
         $cupones = $calendario->cupones;
         $servicios = $calendario->tipos;
+        
 
         return response()->json(['cupones' => $cupones,'servicios' => $servicios],200);  
 

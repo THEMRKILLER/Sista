@@ -134,7 +134,8 @@ class UsuarioController extends Controller
     public function getProfilePicture($image_name)
     {
 
-    $pathToFile = storage_path('app/profile_images/'.$image_name);;
+    $pathToFile = storage_path('app/profile_images/'.$image_name);
+
     if(file_exists($pathToFile))return response()->file($pathToFile);
 
     else response()->json(['message' => 'Foto de perfil no encontrado'],404);

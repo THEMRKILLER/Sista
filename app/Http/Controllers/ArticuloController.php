@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Validator;
 use JWTAuth;
 use App\Articulo;
+use App\calendario;
 use Image;
 use Json;
 use Exception;
@@ -202,5 +203,28 @@ class ArticuloController extends Controller
 
        	 return response()->json($articulos_arr,200);
 
+    }
+
+    function articulos_list(Request $request){
+
+      $id_calendario = $request->get('id_calendario');
+      $to_take = $request->get('to_take');
+      $calendario = calendario::find($id_calendario);
+      $articulo_actual_id = $request->get('id_articulo');
+      if(!$calendario) return response()->json(['errors' => ['calendario_not_found' => ['El calendario no existe']]],404);
+        $articulos =  $calendario->user->articulos()->where('id','!=', $articulo_actual_id)->limit($to_take)->offset(0)->get();
+        $articulos_arr = array();
+         foreach ($articulos as $articulo)
+         {
+          $articulo->caratula =  url('api/v1/'.$articulo->caratula);
+          array_push($articulos_arr,['caratula' => $articulo->caratula ,'id' => $articulo->id, 'resumen' => $articulo->resumen,
+                                     'titulo' => $articulo->titulo, 'autor' => $articulo->user->name,
+                                     'fecha' => $articulo->updated_at,
+
+                                    ]);
+         }
+      $overflow =  $calendario->user->articulos->count() >= count($articulos);
+
+      return response()->json(['articulos' => $articulos_arr,'overflow' => $overflow],200);
     }
 }

@@ -53,7 +53,7 @@ class dia_habil extends Model
 
         $this->horasHabiles()->whereNotIn('hora',$horas)->delete();
         foreach ($horas as $hora) {
-            $hora_habil = hora_habil::firstOrNew(['diahabil_id'=> $this->id, 'hora' => $hora]);
+            $hora_habil = $this->horasHabiles()->firstOrNew(['hora' => $hora]);
             $this->horasHabiles()->save($hora_habil);
         }
 

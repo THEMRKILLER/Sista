@@ -27,6 +27,8 @@ Route::group(['middleware' => ['cors'], 'prefix' => 'v1'], function () {
     Route::put('cita-r', 'CitaController@reagendar');
     Route::get('verificar_cita','CitaController@comprobar');
 
+    Route::get('articulos_list','ArticuloController@articulos_list');
+
 
 
 
