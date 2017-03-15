@@ -70,6 +70,7 @@ class calendario extends Model
     */
       public function asignar_horario($dias_habiles)
     	{
+       
           if(! $this->verificarHoras($dias_habiles))         
             return response()->json(['errors' => ['horas_no_especificadas' => ['Las horas de algún día habil no se especificaron']]],404);
 
@@ -110,43 +111,6 @@ class calendario extends Model
           return false;
         }
       }
-
-         /**
-          * Function inhabilitar_fecha
-          * Guarda una fecha invalida en el calendario para que no se puedan agendar citas para ese día
-          * @param (string[*]) $fechas Json que especifica el día y las horas invalidas en caso que se
-          * desactive todo el día (marcado como completo)
-          * ejemplo : ['fecha' => '2017-02-01', 'completo' => false, 'horas' => [1,2,3,4]]
-          * @return json con código de estado 200 cuando el proceso se llevó acabo de manera exitosa
-    */
-      public function inhabilitar_fecha($fechas)
-    	{
-            
-
-            if($fechas['fecha'] == null || $fechas['fecha'] == [] )
-              return response()->json(['errors' => ['fechas_not_found' => 'No se especificaron fechas']],404);
-            
-            if(!$this->verificarHorasValidasdeFechasInhabiles($fechas))
-              return response()->json(['errors' => ['horas_not_found' => ['No se especifico las horas de la fecha invalida']]],404);
-            
-            foreach ($fechas as $fecha) {
-                    $fecha_inhabilitada = new fecha_inhabil();
-                    $fecha_inhabilitada->fecha = $fecha['fecha'];
-                    $fecha_inhabilitada->completo = $fecha['completo'];
-                    $this->fechasInhabiles()->save($fecha_inhabilitada);
-                    if(!$fecha['completo'])
-                    {
-                        foreach ($fecha['horas'] as $hora) {
-                            $hora_inhabil = new fechahora_inhabil();
-                            $hora_inhabil->hora = $hora;
-                            $fecha_inhabilitada->horasInhabiles()->save($hora_inhabil);
-
-                        }
-                    }
-            }
-
-            return response()->json(null,200);
-    	}
 
 
         /**

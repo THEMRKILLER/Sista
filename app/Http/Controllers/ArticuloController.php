@@ -223,7 +223,7 @@ class ArticuloController extends Controller
 
                                     ]);
          }
-      $overflow =  $calendario->user->articulos->count() >= count($articulos);
+      $overflow =  $calendario->user->articulos->count() >= count($articulos_arr);
 
       return response()->json(['articulos' => $articulos_arr,'overflow' => $overflow],200);
     }

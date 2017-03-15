@@ -120,12 +120,6 @@ class CalendarioController extends Controller
         //
     }
    
-    public function inhabilitar_fecha(Request $request)
-    {
-        $token = JWTAuth::getToken();
-        $user = JWTAuth::toUser($token);
-       return $user->calendario->inhabilitar_fecha($fechas);
-    }
 
     /**
      * Obtiene los días habiles así como también las horas de servicio de cada día habil
@@ -171,9 +165,25 @@ class CalendarioController extends Controller
   * @return json con código de estado 200 cuando el proceso se llevó acabo de manera exitosa
  */
 
-  
     public function setDiasHabiles(Request $request)
     {
+        /*
+            [
+    "dias" =>
+                [
+                    ["nombre" => "Lunes","dia" => 1,"laboral" => true,"horas" => [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23]],
+                    ["nombre" => "Martes","dia" => 2,"laboral" => true,"horas" => [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23]],
+                    ["nombre" => "Miercoles","dia" => 3,"laboral" => true,"horas" => [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23]],
+                    ["nombre" => "Jueves","dia" => 4,"laboral" => true,"horas" => [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23]],
+                    ["nombre" => "Viernes","dia" => 5,"laboral" => true,"horas" => [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23]],
+                    ["nombre" => "Sábado","dia" => 6,"laboral" => true,"horas" => [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23]],
+                    ["nombre" => "Domingo","dia" => 7,"laboral" => true,"horas" => [8,9,10,11]]
+                ],
+    "hora_inicio" => 0,
+    "hora_final" => 24
+]
+
+        */
         $dias_habiles_request = $request->get('dias');
         $hora_inicio = $request->get('hora_inicio');
         $hora_final = $request->get('hora_final');
@@ -182,26 +192,11 @@ class CalendarioController extends Controller
         $user = JWTAuth::toUser($token);
         $dias_habiles = array();
 
-
-        //recorro cada uno de los días hábiles que he obtenido desde el cliente
-        foreach ($dias_habiles_request as $dia_habil) {
-            $horas = array();
-
-            //voy recorriendo cada una de las horas
-            foreach ($dia_habil['horas'] as $hora) {
-                //cada hora tiene está marcado como disponible o no disponible (true | false)
-                 if ($hora['disponible']) {
-                     array_push($horas, $hora['hora']);
-                 }
-            }
-            // se agregan en este array con la estructura de datos que la clase calendario puede interpretar
-            array_push($dias_habiles, ['dia' => $dia_habil['dia'] , 'horas' => $horas , 'laboral' => $dia_habil['laboral'] ]);
-        }
         //el calendario tiene 2 atributos (hora inicio,hora final) el cual solo contiene el rango de la hora inicio a la hora final
         $user->calendario->hora_inicio = $hora_inicio;
         $user->calendario->hora_final = $hora_final;
         $user->push();
-       return  $user->calendario->asignar_horario($dias_habiles);
+       return  $user->calendario->asignar_horario($dias_habiles_request);
 
     }
 
@@ -237,6 +232,14 @@ class CalendarioController extends Controller
  */
     public function setDiasHorasInhabiles(Request $request)
     {
+        /*
+            cuando NO es completo ...
+            ["fecha":"2017-03-24","completo":false,"horas":[9,10,11,12]]
+
+            cuando SI es completo ...
+
+            ["fecha":"2017-03-31","completo":true,"horas":[]]
+        */
         $token = JWTAuth::getToken();
         $user = JWTAuth::toUser($token);
         $rules = array(
