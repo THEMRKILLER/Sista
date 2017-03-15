@@ -86,7 +86,7 @@ class CitaUnitTest extends TestCase
 
         $this->assertEquals(2, count($horas), json_encode($horas));
     }
-
+    
     public function revisar_si_la_fecha_esta_inhabilitada()
     {
         $datoscita['fecha_inicio']='2017-03-24';

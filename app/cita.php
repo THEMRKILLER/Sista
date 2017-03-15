@@ -40,19 +40,19 @@ class cita extends Model
      *notifica al usuario por sms y email
      * @param datosCita estructura con nombre,telefono,email,fecha y hora de la cita
      */
-    public static function crear($datosCita, $codigo,$calendario,$servicio)
+    public static function crear($datosCita, $codigo, $calendario, $servicio)
     {
-            $duracion_servicio=$servicio->duracion;
-            $nuevaCita = new cita();
-            $nuevaCita->fecha_inicio = $datosCita['fecha_inicio'];
-            $nuevaCita->fecha_final = carbon::parse($datosCita['fecha_inicio'])->addMinutes($duracion_servicio)->subMinute()->toDateTimeString();
-            $nuevaCita->cliente_nombre = $datosCita['cliente_nombre'];
-            $nuevaCita->cliente_telefono = $datosCita['cliente_telefono'];
-            $nuevaCita->cliente_email = $datosCita['cliente_email'];
-            $nuevaCita->codigo = $codigo;
-            $nuevaCita->costo = $datosCita['costo_total'];
-            $nuevaCita->tipo()->associate($servicio);
-            $citaGuardada=$calendario->citas()->save($nuevaCita);
+        $duracion_servicio=$servicio->duracion;
+        $nuevaCita = new cita();
+        $nuevaCita->fecha_inicio = $datosCita['fecha_inicio'];
+        $nuevaCita->fecha_final = carbon::parse($datosCita['fecha_inicio'])->addMinutes($duracion_servicio)->subMinute()->toDateTimeString();
+        $nuevaCita->cliente_nombre = $datosCita['cliente_nombre'];
+        $nuevaCita->cliente_telefono = $datosCita['cliente_telefono'];
+        $nuevaCita->cliente_email = $datosCita['cliente_email'];
+        $nuevaCita->codigo = $codigo;
+        $nuevaCita->costo = $datosCita['costo_total'];
+        $nuevaCita->tipo()->associate($servicio);
+        $citaGuardada=$calendario->citas()->save($nuevaCita);
         //si la cita es guardada correctamente se manda una notificacion al usuario
         //en caso de que no se manda un codigo de error al cliente
         if ($citaGuardada) {
@@ -74,7 +74,6 @@ class cita extends Model
                     'message' => 'Ocurrio un error inesperado al guardar la cita'
                 ], 500);
         }
-        
     }
     /*
     *  busca y elimina la cita por id, si no se encuentra se manda un error
@@ -102,14 +101,14 @@ class cita extends Model
      * @param datosCita estructura con fecha y hora
      */
 
-    public static function reagendar($datosCita,$cita,$servicio)
+    public static function reagendar($datosCita, $cita, $servicio)
     {
-            $duracion= $servicio->duracion;
-            $fecha_final = carbon::parse($datosCita['fecha_inicio'])->addMinutes($duracion)->subMinute();
-            $cita->fecha_inicio = $datosCita['fecha_inicio'];
-            $cita->fecha_final = $fecha_final;
-            $cita->tipo_id = $datosCita['tipo_id'];
-            $citaGuardada=$cita->save();
+        $duracion= $servicio->duracion;
+        $fecha_final = carbon::parse($datosCita['fecha_inicio'])->addMinutes($duracion)->subMinute();
+        $cita->fecha_inicio = $datosCita['fecha_inicio'];
+        $cita->fecha_final = $fecha_final;
+        $cita->tipo_id = $datosCita['tipo_id'];
+        $citaGuardada=$cita->save();
         //si la cita es guardada correctamente se manda una notificacion al usuario
         //en caso de que no se manda un codigo de error al cliente
         if ($citaGuardada) {
@@ -142,7 +141,6 @@ class cita extends Model
                     'message' => 'Ocurrio un error inesperado'
                 ], 500);
         }
-        
     }
  /**
   * Function fechaDisponible
@@ -150,26 +148,19 @@ class cita extends Model
   * @param (2 fechas en un arreglo) inicial,final de una cita
   * @return (bool) verdadero cuando la fecha este disponible
   */
-    public static function fechaDisponible($datosCita)
+    public static function fechaDisponible($fecha, $servicio)
     {
-        if (tipo::find(intval($datosCita['tipo_id']))===null) {
-            return response()->json([
-                    'error' => true,
-                    'message' => 'se ah tratado de acceder a un recurso que no existe'
-                ], 404);
-        } else {
-            $duracionServicio= tipo::find(intval($datosCita['tipo_id']))->duracion;
+        $duracionServicio=$servicio->duracion;
         //añade la duracion del servicio a la fecha inicial para calcular la fecha final
-        $FechaProcesada=carbon::parse($datosCita['fecha_inicio'])->addMinutes($duracionServicio)->subMinute()->toDateTimeString();
-            $fechaInicial = new DateTime($datosCita['fecha_inicio']);
-            $fechaFinal = new DateTime($FechaProcesada);
+        $FechaProcesada=carbon::parse($fecha)->addMinutes($duracionServicio)->subMinute()->toDateTimeString();
+        $fechaInicial = new DateTime($fecha);
+        $fechaFinal = new DateTime($FechaProcesada);
         //se hace una consulta que regresa la cita que esten en el rango de horas propuesto
         $Dates = cita::whereBetween('fecha_inicio', [$fechaInicial, $fechaFinal])->orwhereBetween('fecha_final', [$fechaInicial, $fechaFinal])->first();
-            if (count($Dates)<=0) {
-                return true;
-            } else {
-                return false;
-            }
+        if (count($Dates)<=0) {
+            return true;
+        } else {
+            return false;
         }
     }
  /**
@@ -197,32 +188,33 @@ class cita extends Model
   * @param (int)($calendario_id)
   * @return objeto json con fechas y su disponibilidad alta=1,media=2,baja=3
  */
-    public static function disponibilidadCal($tipo, $calendario,$mes)
+    public static function disponibilidadCal($tipo, $calendario, $mes)
     {
         $disponibilidad=0;
         $inicial = carbon::now();
         $ocupado=array();
         
-;        $Citas=$calendario->citas()->distinct()->select(DB::raw('DATE_FORMAT(fecha_inicio, \'%Y-%m-%d\') AS fecha_inicio'))
+        ;
+        $Citas=$calendario->citas()->distinct()->select(DB::raw('DATE_FORMAT(fecha_inicio, \'%Y-%m-%d\') AS fecha_inicio'))
             ->whereMonth('fecha_inicio', $mes)
             ->where('fecha_inicio', '>=', $inicial->toDateTimeString())
             ->pluck('fecha_inicio');
 
             //$diasHabiles=  $calendario->diasHabiles()->where('dia', $dia)->first();
             $diasHabiles=$calendario->diasHabiles()->with('horasHabiles')->get();
-            $diaInhabil=$calendario->fechasInhabiles()->with('horasInhabiles')->get();
+        $diaInhabil=$calendario->fechasInhabiles()->with('horasInhabiles')->get();
 
            
         foreach ($Citas as $fecha) {
-            $espacios= cita::timeslot($fecha, $tipo, $calendario,$diasHabiles,$diaInhabil);
+            $espacios= cita::timeslot($fecha, $tipo, $calendario, $diasHabiles, $diaInhabil);
             $disponibilidad=cita::espaciosPorFecha(count($espacios));
             array_push($ocupado, ['fecha' => $fecha, 'disponibilidad' => $disponibilidad]);
         }
         
         $diasInhabiles=$calendario->fechasInhabiles()->pluck('fecha');
         ///agrega las fechas inhabiles con disponibilidad de 0
-        foreach ($diasInhabiles as $diainhabil ){
-             array_push($ocupado, ['fecha' => $diainhabil, 'disponibilidad' => 0]);
+        foreach ($diasInhabiles as $diainhabil) {
+            array_push($ocupado, ['fecha' => $diainhabil, 'disponibilidad' => 0]);
         }
 
 
@@ -258,20 +250,18 @@ class cita extends Model
    */
     public static function horasDelDia($fecha, $calendario)
     {
-            
-            $dia=carbon::parse($fecha)->dayOfWeek;
+        $dia=carbon::parse($fecha)->dayOfWeek;
           
-            $diasHabiles=  $calendario->diasHabiles()->where('dia', $dia)->first();
-            $horasHabiles = array();
-            if ($diasHabiles!=null) {
-                $horas=$diasHabiles->horasHabiles;
-                foreach ($horas as $hora) {
-                    array_push($horasHabiles, $hora['hora']);
-                }
-            } else {
+        $diasHabiles=  $calendario->diasHabiles()->where('dia', $dia)->first();
+        $horasHabiles = array();
+        if ($diasHabiles!=null) {
+            $horas=$diasHabiles->horasHabiles;
+            foreach ($horas as $hora) {
+                array_push($horasHabiles, $hora['hora']);
             }
-            return $horasHabiles;
-        
+        } else {
+        }
+        return $horasHabiles;
     }
   /**
    * Function filtroHorasInhabiles
@@ -282,22 +272,20 @@ class cita extends Model
    */
     public static function filtroHorasInhabiles($fecha, $diasInhabiles)
     {
-         
-            $diaInhabil=$diasInhabiles->keyBy('fecha')->get($fecha);
-            $horasInhabiles =array();
-            if ($diaInhabil!=null) {
-                if ($diaInhabil->completo==1) {
-                    //todo el dia es inhabil regresa un arreglo con todas las horas
+        $diaInhabil=$diasInhabiles->keyBy('fecha')->get($fecha);
+        $horasInhabiles =array();
+        if ($diaInhabil!=null) {
+            if ($diaInhabil->completo==1) {
+                //todo el dia es inhabil regresa un arreglo con todas las horas
             return range(0, 23);
-                } else {
-                    //regresa un arreglo con las horas inhabiles del dia
-          $horasInhabiles=$diaInhabil->horasInhabiles()->pluck('hora')->toArray();
-                    return $horasInhabiles;
-                }
             } else {
+                //regresa un arreglo con las horas inhabiles del dia
+          $horasInhabiles=$diaInhabil->horasInhabiles()->pluck('hora')->toArray();
+                return $horasInhabiles;
             }
-            return array();
-        
+        } else {
+        }
+        return array();
     }
   /**
    * Function rellenarHoras
@@ -403,38 +391,36 @@ class cita extends Model
    * @param ([])(int)($calendario_id)
    * @return arreglo con todos los huecos libres del dia
    */
-    public static function timeslot($fecha, $tipo, $calendario,$diasHabiles,$diasInhabiles)
+    public static function timeslot($fecha, $tipo, $calendario, $diasHabiles, $diasInhabiles)
     {
-            //se declara arreglo para llenarlo mas adelante
+        //se declara arreglo para llenarlo mas adelante
         $horas_propuestas = array();
-            $duracion_servicio= $tipo->duracion;
-            $dia=carbon::parse($fecha)->dayOfWeek;
-            $dia=($dia== 0 ? 7 :$dia);
-            $horas_habiles;
+        $duracion_servicio= $tipo->duracion;
+        $dia=carbon::parse($fecha)->dayOfWeek;
+        $dia=($dia== 0 ? 7 :$dia);
+        $horas_habiles;
 
-            if($diasHabiles->keyBy('dia')->get($dia)==null){
-              $horas_habiles=array();
-            }else{
-
-              $horas_habiles=$diasHabiles->keyBy('dia')->get($dia)->horasHabiles()->pluck('hora')->toArray();
-              sort($horas_habiles);
-            }
+        if ($diasHabiles->keyBy('dia')->get($dia)==null) {
+            $horas_habiles=array();
+        } else {
+            $horas_habiles=$diasHabiles->keyBy('dia')->get($dia)->horasHabiles()->pluck('hora')->toArray();
+            sort($horas_habiles);
+        }
             
-            $horas_inhabiles = cita::filtroHorasInhabiles($fecha, $diasInhabiles);
-             sort($horas_inhabiles);
+        $horas_inhabiles = cita::filtroHorasInhabiles($fecha, $diasInhabiles);
+        sort($horas_inhabiles);
 
         //el producto final, despues de haber pasado por todos los filtros
         $horas_filtrado=array_diff($horas_habiles, $horas_inhabiles);
-            if ($horas_filtrado==null) {
-                return array();
-            } else {
-                $horas_filtrado=cita::hourtoDateTime($fecha, $horas_filtrado);
-                $hora_inicial = reset($horas_filtrado);
-                $hora_final_dia = end($horas_filtrado);
-                $horas_propuestas = cita::rellenarHoras($fecha, $horas_filtrado, $duracion_servicio, $hora_inicial, $horas_propuestas, $hora_final_dia);
-                return cita::ConversionArray($horas_propuestas);
-            }
-        
+        if ($horas_filtrado==null) {
+            return array();
+        } else {
+            $horas_filtrado=cita::hourtoDateTime($fecha, $horas_filtrado);
+            $hora_inicial = reset($horas_filtrado);
+            $hora_final_dia = end($horas_filtrado);
+            $horas_propuestas = cita::rellenarHoras($fecha, $horas_filtrado, $duracion_servicio, $hora_inicial, $horas_propuestas, $hora_final_dia);
+            return cita::ConversionArray($horas_propuestas);
+        }
     }
   /**
    * Function ConversionArray
@@ -459,16 +445,16 @@ class cita extends Model
    */
     public static function diasNoHabiles($calendario)
     {
-            $diasHabiles=$calendario->diasHabiles()->get();
-            $diasNohabiles= array();
-            $dias_semana= [1,2,3,4,5,6,7];
-            foreach ($diasHabiles as $dia) {
-                $dia_id= $dia->horasHabiles()->distinct()->select('diahabil_id')->get();
-                if (count($dia_id)>0) {
-                    array_push($diasNohabiles, $dia_id->first()->diahabil_id);
-                }
-            }      
-            return array_values(array_diff($dias_semana, $diasNohabiles));
+        $diasHabiles=$calendario->diasHabiles()->get();
+        $diasNohabiles= array();
+        $dias_semana= [1,2,3,4,5,6,7];
+        foreach ($diasHabiles as $dia) {
+            $dia_id= $dia->horasHabiles()->distinct()->select('diahabil_id')->get();
+            if (count($dia_id)>0) {
+                array_push($diasNohabiles, $dia_id->first()->diahabil_id);
+            }
+        }
+        return array_values(array_diff($dias_semana, $diasNohabiles));
     }
 
 
@@ -477,19 +463,12 @@ class cita extends Model
    * obtiene las horas inhabiles del dia
    * @param (Datetime)($fecha)
    * @param (int)($calendario_id)
-   * @return 
+   * @return
    */
-    public static function revisarDiasInhabiles($datosCita)
+    public static function revisarDiasInhabiles($fecha, $calendario)
     {
-        if (calendario::find($datosCita['calendario_id'])===null) {
-            return response()->json([
-                    'error' => true,
-                    'message' => 'se ah tratado de acceder a un recurso que no existe'
-                ], 404);
-        } else {
-            $calendario = calendario::find($datosCita['calendario_id']);
-            $diasInhabiles=$calendario->fechasInhabiles()->pluck('fecha')->toArray();
-            $fechaAgendar = $fecha= carbon::parse($datosCita['fecha_inicio']);
+        $diasInhabiles=$calendario->fechasInhabiles()->pluck('fecha')->toArray();
+        $fechaAgendar = $fecha= carbon::parse($fecha);
         //se hace una consulta que regresa la cita que esten en el rango de horas propuesto
         //saco el numero de elementos
         $longitud = count($diasInhabiles);
@@ -507,8 +486,7 @@ class cita extends Model
         } else {
             return true;
         }
-            return true;
-        }
+        return true;
     }
   /**
    * Function sms
@@ -542,5 +520,4 @@ class cita extends Model
         $destinatario=$cita->cliente_email;
         \Mail::to($destinatario)->send(new NotificacionNCita($cita, $medico, $opcionMensaje));
     }
-
 }
