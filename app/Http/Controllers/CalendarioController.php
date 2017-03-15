@@ -299,7 +299,7 @@ class CalendarioController extends Controller
         $user = JWTAuth::toUser($token);
         $fecha_inhabil_id = $request->get('fecha_inhabil_id');
 
-        $fecha_inhabil = $user->fechasInhabiles->where('id',$fecha_inhabil_id)->first();
+        $fecha_inhabil = $user->calendario->fechasInhabiles->where('id',$fecha_inhabil_id)->first();
 
         if ($fecha_inhabil) {
             $fecha_inhabil->delete();
