@@ -190,13 +190,8 @@ class CalendarioController extends Controller
         $dias_habiles_request = $request->get('dias');
         $hora_inicio = $request->get('hora_inicio');
         $hora_final = $request->get('hora_final');
-        if($dias_habiles_request == [] || $dias_habiles_request == null 
-            ||  $hora_inicio == [] || $hora_inicio == null ||
-            $hora_final == [] || $hora_final == null ) 
-        {
-
-            return response()->json(['errors' => ['sin_datos_enviados' => ['No se enviaron datos']]],404); 
-        }
+        
+        
         $token = JWTAuth::getToken();
         $user = JWTAuth::toUser($token);
         $dias_habiles = array();
