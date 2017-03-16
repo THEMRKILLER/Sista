@@ -47,7 +47,9 @@ class CitaController extends Controller
                                             ),
                                 400); // 400 being the HTTP code for an invalid request.
                 }
-                $val = cita::fechaDisponible($request->all())&&cita::revisarDiasInhabiles($request->all());
+
+            $fecha=$request->get('fecha_inicio');
+                $val = cita::fechaDisponible($fecha,$servicio)&&cita::revisarDiasInhabiles($fecha,$calendario);
                 if ($val) {
                     $cupon_descuento = $request->get('cupon_descuento');
                     $costo_total = $request->get('costo_total');
@@ -89,7 +91,6 @@ class CitaController extends Controller
         $idTipo=intval($request->get('tipo_id'));
         $idCita=intval($request->get('id_cita'));
         $verificarId=$this->verificarIdentificadoresR($idCalendario, $idTipo, $idCita);
-        
         if ($verificarId) {
             $revisarServicio= $this->verificarServicio($idCalendario, $idTipo, $idCita);
             if ($revisarServicio) {

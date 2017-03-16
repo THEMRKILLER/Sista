@@ -13,7 +13,7 @@ class CitaTest extends TestCase
    
 
     
-          
+          /** @test */
     public function creacion_de_citas()
     {
         //simulando datos de entrada de una cita
@@ -83,7 +83,7 @@ class CitaTest extends TestCase
         $conflictos = $this->action('Post', 'CitaController@store', $datosCita);
         $this->assertEquals(404, $conflictos->getStatusCode(), ''.$conflictos);
     }
-            /** @test */
+            
     public function Reagendar_citas()
     {
         $datosCita['tipo_id']=2;
