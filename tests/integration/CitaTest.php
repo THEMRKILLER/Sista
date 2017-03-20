@@ -13,7 +13,7 @@ class CitaTest extends TestCase
    
 
     
-          /** @test */
+          
     public function creacion_de_citas()
     {
         //simulando datos de entrada de una cita
