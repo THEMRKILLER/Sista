@@ -56,7 +56,7 @@ return [
     */
 
     'from' => [
-        'address' => env('MAIL_FROM_ADDRESS', 'nyhedgg@gmail.com'),
+        'address' => env('MAIL_FROM_ADDRESS', 'ContactoClientes@creatver.com'),
         'name' => env('MAIL_FROM_NAME', 'ContactoClientes'),
     ],
 
