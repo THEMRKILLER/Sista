@@ -13,7 +13,7 @@ class CitaTest extends TestCase
    
 
     
-          
+          /*** @test*/
     public function creacion_de_citas()
     {
         //simulando datos de entrada de una cita
@@ -22,7 +22,7 @@ class CitaTest extends TestCase
         $datosCita['fecha_inicio']='2018-02-21 08:00:00';
         $datosCita['cliente_nombre']='Metatron';
         $datosCita['cliente_telefono']='6665360022';
-        $datosCita['cliente_email']='ArcMet@gmail.com';
+        $datosCita['cliente_email']='nyhedgg@gmail.com';
         $datosCita['costo_total']=500;
         $datosCita['cupon_descuento']='';
         
