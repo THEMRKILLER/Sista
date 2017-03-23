@@ -11,5 +11,5 @@ Route::get('/home', function () {
 })->name('home');
 
 
-Route::post('login','UserController@login');
+
 

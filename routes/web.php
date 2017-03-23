@@ -28,7 +28,7 @@ Route::group(['prefix' => 'admin'], function () {
 
 
 
-Route::post('loginuser', 'Auth\AuthController@postLogin');
+//Route::post('loginuser', 'Auth\AuthController@postLogin');
 Route::any('testcreate','Auth\RegisterController@createTest');
 Route::any('authtest','ValidacionController@authenticate');
 
