@@ -193,7 +193,7 @@ class cita extends Model
         $ocupado=array();
         
         ;
-        $Citas=$calendario->citas()->distinct()->select(DB::raw('DATE_FORMAT(fecha_inicio, \'%Y-%m-%d\') AS fecha_inicio'))
+        $Citas=$calendario->citas()->distinct()->select(DB::raw('to_char(fecha_inicio, \'YYYY-MM-DD\') AS fecha_inicio'))
             ->whereMonth('fecha_inicio', $mes)
             ->where('fecha_inicio', '>=', $inicial->toDateTimeString())
             ->pluck('fecha_inicio');
