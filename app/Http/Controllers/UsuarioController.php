@@ -110,29 +110,30 @@ class UsuarioController extends Controller
 
         Storage::disk('s3')->put('avatars/' . $safeName, $data);
 
-        return;
-
-        if (!file_exists($folderName)) {
-                mkdir($folderName, 0777, true);
-        }
-        file_put_contents($folderName.$safeName, $data);
 
         $token = JWTAuth::getToken();
         $user = JWTAuth::toUser($token);
+
         if($user->avatar != null)
         {
         $file_name_actual = explode('/', $user->avatar);
         try{
-        if(file_exists($folderName.$file_name_actual[count($file_name_actual)-1]) && $file_name_actual != 'default.png')
-            unlink($folderName.$file_name_actual[count($file_name_actual)-1]);
+
+        if($file_name_actual != 'default.png')
+            {
+                $exists = Storage::disk('s3')->exists('avatar/'.$file_name_actual);
+
+                if($exists)Storage::disk('s3')->delete('avatar/'.$file_name_actual);
+                
+            }
         }
         catch(\Exception $e){}
         }
-        $url = URL::asset('api/v1/foto_perfil/'.$safeName);
-        $user->avatar = $safeName;
+
+        $url = Storage::disk('s3')->url('avatars/' . $safeName);
+        $user->avatar = $url;
         $user->save();
         
-
         return response()->json(['success' => true,'avatar' => $url],200);
 
 
