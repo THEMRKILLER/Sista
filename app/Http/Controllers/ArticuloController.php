@@ -10,6 +10,8 @@ use App\calendario;
 use Image;
 use Json;
 use Exception;
+use Illuminate\Support\Facades\Storage;
+
 class ArticuloController extends Controller
 {
     /**
@@ -44,7 +46,7 @@ class ArticuloController extends Controller
        $user = JWTAuth::toUser($token);
 
        try {
-       $caratula_path = $request->file('caratula')->store('images');
+       $caratula_path = $request->file('caratula')->store('art_caratulas','s3');
 
        } catch (Exception $e) {
        	return response()->json(null,500);
@@ -101,10 +103,11 @@ class ArticuloController extends Controller
        try {
         if($request->hasFile('caratula')) {
           //el archivo es eliminado del servidor en caso de existir
-          if(file_exists(storage_path('app/').$articulo->caratula))
-            unlink(storage_path('app/').$articulo->caratula);
+          $exists = Storage::disk('s3')->exists('art_caratulas/'.$articulo->caratula);
+          if($exists)
+            Storage::disk('s3')->delete('art_caratulas/'.$articulo->caratula);
           
-          $caratula_path = $request->file('caratula')->store('images');
+          $caratula_path = $request->file('caratula')->store('art_caratulas','s3');
 
         }
         else $caratula_path = $articulo->caratula;
@@ -174,8 +177,6 @@ class ArticuloController extends Controller
       $articulos_arr = array();
       foreach ($articulos_models as $articulo_m) array_push($articulos_arr, $articulo_m->id);
       //modifica la url para tener acceso a la caratula a nivel de objeto (no lo guarda en la BD)
-      $articulo->caratula  = url('api/v1/'.$articulo->caratula);
-      $autor->avatar = url()->asset('api/v1/foto_perfil/'.$autor->avatar);
     	return response()->json(['articulo' => $articulo ,'articulos' => $articulos_arr ,'autor' => $autor],200);
     }
      /**
@@ -216,7 +217,6 @@ class ArticuloController extends Controller
         $articulos_arr = array();
          foreach ($articulos as $articulo)
          {
-          $articulo->caratula =  url('api/v1/'.$articulo->caratula);
           array_push($articulos_arr,['caratula' => $articulo->caratula ,'id' => $articulo->id, 'resumen' => $articulo->resumen,
                                      'titulo' => $articulo->titulo, 'autor' => $articulo->user->name,
                                      'fecha' => $articulo->updated_at,

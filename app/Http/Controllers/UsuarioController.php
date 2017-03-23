@@ -18,7 +18,6 @@ class UsuarioController extends Controller
     {
         $token = JWTAuth::getToken();
         $user = JWTAuth::toUser($token);
-        $user->avatar = URL::asset('api/v1/foto_perfil/'.$user->avatar);
         $calendario_id = $user->calendario->id;
         return response()->json(['user' => $user,'calendario_id' => $calendario_id],200);
     }
@@ -105,7 +104,6 @@ class UsuarioController extends Controller
         list(, $data)      = explode(',', $data);
         $data = base64_decode($data);
 
-        $folderName =  storage_path('app').'/profile_images/';
         $safeName = str_random(10). uniqid().time()  .'.'.'png';
 
         Storage::disk('s3')->put('avatars/' . $safeName, $data);
@@ -176,7 +174,6 @@ class UsuarioController extends Controller
         $user->informacion_profesional_resumen = $request->get('informacion_profesional_resumen');
         $user->informacion_profesional_completo = $request->get('informacion_profesional_completo');
         $user->save();
-        $user->avatar = URL::asset('api/v1/foto_perfil/'.$user->avatar);
         return response()->json(['user' => $user],200);
 
 
