@@ -13,6 +13,7 @@
         "intervention/imagecache": "2.*",
         "laracasts/generators": "^1.1",
         "laravel/framework": "5.3.*",
+        "league/flysystem-aws-s3-v3": "~1.0",
         "nexmo/client": "@beta",
         "nexmo/laravel": "1.0.0-beta3",
         "tymon/jwt-auth": "0.5.*"
