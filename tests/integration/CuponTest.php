@@ -12,7 +12,7 @@ class CuponTest extends TestCase
 {
     use DatabaseTransactions;
 
-   /** @test */
+  
     public function crear_cupon()
     {
 

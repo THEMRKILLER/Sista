@@ -171,6 +171,7 @@ class CalendarioController extends Controller
         if(!($request->has('dias') && $request->has('hora_inicio') && $request->has('hora_final')))
             return response()->json(['errors' => ['sin_datos_enviados' => ['No se enviaron datos']]],404); 
 
+
         $dias_habiles_request = $request->get('dias');
         $hora_inicio = $request->get('hora_inicio');
         $hora_final = $request->get('hora_final');
