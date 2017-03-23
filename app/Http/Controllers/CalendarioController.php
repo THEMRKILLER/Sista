@@ -167,23 +167,7 @@ class CalendarioController extends Controller
 
     public function setDiasHabiles(Request $request)
     {
-        /*
-            [
-    "dias" =>
-                [
-                    ["nombre" => "Lunes","dia" => 1,"laboral" => true,"horas" => [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23]],
-                    ["nombre" => "Martes","dia" => 2,"laboral" => true,"horas" => [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23]],
-                    ["nombre" => "Miercoles","dia" => 3,"laboral" => true,"horas" => [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23]],
-                    ["nombre" => "Jueves","dia" => 4,"laboral" => true,"horas" => [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23]],
-                    ["nombre" => "Viernes","dia" => 5,"laboral" => true,"horas" => [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23]],
-                    ["nombre" => "Sábado","dia" => 6,"laboral" => true,"horas" => [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23]],
-                    ["nombre" => "Domingo","dia" => 7,"laboral" => true,"horas" => [8,9,10,11]]
-                ],
-    "hora_inicio" => 0,
-    "hora_final" => 24
-]
-
-        */
+      
         if(!($request->has('dias') && $request->has('hora_inicio') && $request->has('hora_final')))
             return response()->json(['errors' => ['sin_datos_enviados' => ['No se enviaron datos']]],404); 
 
@@ -191,7 +175,7 @@ class CalendarioController extends Controller
         $hora_inicio = $request->get('hora_inicio');
         $hora_final = $request->get('hora_final');
         
-        
+
         $token = JWTAuth::getToken();
         $user = JWTAuth::toUser($token);
         $dias_habiles = array();

@@ -10,6 +10,7 @@ use JWTAuth;
 use URL;
 use Redirect;
 use Hash;
+use Illuminate\Support\Facades\Storage;
 class UsuarioController extends Controller
 {
     
@@ -106,6 +107,11 @@ class UsuarioController extends Controller
 
         $folderName =  storage_path('app').'/profile_images/';
         $safeName = str_random(10). uniqid().time()  .'.'.'png';
+
+        Storage::disk('s3')->put('avatars/' . $safeName, $data);
+
+        return;
+
         if (!file_exists($folderName)) {
                 mkdir($folderName, 0777, true);
         }
