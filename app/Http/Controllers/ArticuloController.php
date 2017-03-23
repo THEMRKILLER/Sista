@@ -46,8 +46,8 @@ class ArticuloController extends Controller
        $user = JWTAuth::toUser($token);
 
        try {
-       $caratula_path = $request->file('caratula')->store('art_caratulas','s3');
-
+       $path = $request->file('caratula')->store('art_caratulas','s3');
+       $caratula_path = Storage::disk('s3')->url($path);
        } catch (Exception $e) {
        	return response()->json(null,500);
        	
@@ -103,12 +103,14 @@ class ArticuloController extends Controller
        try {
         if($request->hasFile('caratula')) {
           //el archivo es eliminado del servidor en caso de existir
-          $exists = Storage::disk('s3')->exists('art_caratulas/'.$articulo->caratula);
+          $file_name_actual = explode('/', $articulo->caratula);
+          $file_name_actual = $file_name_actual[count($file_name_actual)-1];
+          $exists = Storage::disk('s3')->exists('art_caratulas/'.$file_name_actual);
           if($exists)
-            Storage::disk('s3')->delete('art_caratulas/'.$articulo->caratula);
+            Storage::disk('s3')->delete('art_caratulas/'.$file_name_actual);
           
-          $caratula_path = $request->file('caratula')->store('art_caratulas','s3');
-
+          $path = $request->file('caratula')->store('art_caratulas','s3');
+          $caratula_path = Storage::disk('s3')->url($path);
         }
         else $caratula_path = $articulo->caratula;
        } catch (Exception $e) {
@@ -194,7 +196,6 @@ class ArticuloController extends Controller
          $articulos_arr = array();
          foreach ($articulos as $articulo)
          {
-          $articulo->caratula =  url('api/v1/'.$articulo->caratula);
           array_push($articulos_arr,['caratula' => $articulo->caratula ,'id' => $articulo->id, 'resumen' => $articulo->resumen,
                                      'titulo' => $articulo->titulo, 'autor' => $articulo->user->name,
                                      'fecha' => $articulo->updated_at,

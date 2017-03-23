@@ -115,6 +115,7 @@ class UsuarioController extends Controller
         if($user->avatar != null)
         {
         $file_name_actual = explode('/', $user->avatar);
+        $file_name_actual = $file_name_actual[count($file_name_actual)-1];
         try{
 
         if($file_name_actual != 'default.png')
