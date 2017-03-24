@@ -56,8 +56,8 @@ return [
 
         's3' => [
             'driver' => 's3',
-            'key' => 'AKIAJHFBFWWXPCCRIZCA',
-            'secret' => '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',
+            'key' => env('S3_KEY'),
+            'secret' => env('S3_SECRET'),
             'region' => 'us-west-2',
             'bucket' => 'sista',
         ],
