@@ -33,7 +33,7 @@ class CalendarioController extends Controller
                 ->get();
        
         $events=array();
-          $DiasnoHabiles=$calendario->citas()->diasNoHabiles($calendario);
+          $DiasnoHabiles=$calendario->citas->diasNoHabiles($calendario);
         
         $diasInhabiles=$calendario->fechasInhabiles()->pluck('fecha')->toArray();
 
