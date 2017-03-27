@@ -32,17 +32,7 @@ class CalendarioController extends Controller
                 ->get();
        
         $events=array();
-        $diasHabiles=$calendario->diasHabiles()->get();
-        $diasNohabiles= array();
-        $dias_semana= [1,2,3,4,5,6,7];
-        foreach ($diasHabiles as $dia) {
-            $dia_id= $dia->horasHabiles()->distinct()->select('diahabil_id')->get();
-            if (count($dia_id)>0) {
-                array_push($diasNohabiles, $dia_id->first()->diahabil_id);
-            }
-        }
-            
-        $DiasnoHabiles= array_values(array_diff($dias_semana, $diasNohabiles));
+        $DiasnoHabiles=App\cita::diasNoHabiles($calendario);
         $diasInhabiles=$calendario->fechasInhabiles()->pluck('fecha')->toArray();
 
         foreach ($citas as $cita) {
