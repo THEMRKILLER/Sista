@@ -103,7 +103,7 @@ class CalendarioTest extends TestCase
         $response = $this->call('delete', '/api/v1/fecha_inhabil', $datos, [], [], ['HTTP_Authorization' => 'Bearer ' . $credentials], []);
         $this->assertEquals(404, $response->getStatusCode(), "".$response);
     }
-    /** @test */
+    
     public function probar_asignar_horarios()
     {
         $credentials = JWTAuth::attempt(['email' => 'cristianrocker93@gmail.com', 'password' => 'nomeacuerdo']);

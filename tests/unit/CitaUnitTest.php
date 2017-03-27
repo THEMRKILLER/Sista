@@ -77,11 +77,11 @@ class CitaUnitTest extends TestCase
 
         $this->assertEquals(10, count($horas), json_encode($horas));
     }
-    
+           /** @test */
     public function dias_no_habiles_del_calendario()
     {
-        $calendario_id=2;
-        $horas=cita::diasNoHabiles($calendario_id);
+        $calendario=App\calendario::find(3);
+        $horas=cita::diasNoHabiles($calendario);
         $this->assertInternalType('array', $horas);
 
         $this->assertEquals(2, count($horas), json_encode($horas));
