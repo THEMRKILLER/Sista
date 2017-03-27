@@ -106,7 +106,8 @@ class CitaController extends Controller
                      $calendario = calendario::find($idCalendario);
                     $cita = cita::find($idCita);
                     $servicio = tipo::find($idTipo);
-                    if (cita::fechaDisponible($request->all(),$servicio)&&cita::revisarDiasInhabiles($request->all(),$calendario)) {
+                     $fecha=$request->get('fecha_inicio');
+                    if (cita::fechaDisponible($fecha,$servicio)&&cita::revisarDiasInhabiles($fecha,$calendario)) {
                         return cita::reagendar($request->all(), $cita, $servicio);
                     } else {
                         return response()->json(array(
