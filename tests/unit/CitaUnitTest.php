@@ -77,7 +77,7 @@ class CitaUnitTest extends TestCase
 
         $this->assertEquals(10, count($horas), json_encode($horas));
     }
-           /** @test */
+     
     public function dias_no_habiles_del_calendario()
     {
         $calendario=App\calendario::find(3);
