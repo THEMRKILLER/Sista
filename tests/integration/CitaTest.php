@@ -180,24 +180,24 @@ class CitaTest extends TestCase
         $horasDisponible=$this->action('get', 'CitaController@horasDisponibles', $datosCita);
         $this->assertEquals(404, $horasDisponible->getStatusCode(), ''.$horasDisponible);
     }
-        
         public function disponibilidadCalendario()
         {
             ////OK
 
-            $datosCita['tipo_id']=1;
-            $datosCita['calendario_id']=2;
+            $datosCita['tipo_id']=3;
+            $datosCita['calendario_id']=1;
+            $datosCita['mes']=03;
             $dispCal=$this->action('get', 'CitaController@disponibilidadCalendario', $datosCita);
             $this->assertEquals(200, $dispCal->getStatusCode(), ''.$dispCal);
             ////acceso restringido
-            $datosCita['tipo_id']=1;
-            $datosCita['calendario_id']=2;
+            $datosCita['tipo_id']=3;
+            $datosCita['calendario_id']=1;
             $dispCal=$this->action('get', 'CitaController@disponibilidadCalendario', $datosCita);
             $this->assertEquals(200, $dispCal->getStatusCode(), ''.$dispCal);
             ////acceso restringido
-            $datosCita['tipo_id']=1;
+            $datosCita['tipo_id']=3;
 
-            $datosCita['calendario_id']=3;
+            $datosCita['calendario_id']=2;
             $dispCal=$this->action('get', 'CitaController@disponibilidadCalendario', $datosCita);
             $this->assertEquals(403, $dispCal->getStatusCode(), ''.$dispCal);
            ////recurso no disponible

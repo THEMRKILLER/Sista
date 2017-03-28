@@ -13,14 +13,14 @@ class CalendarioTest extends TestCase
 {
     use DatabaseTransactions;
 
-       
+              /** @test */
     public function probarindex()
     {
         ////sin token 400
         $response = $this->call('get', '/api/v1/dashboard', [], [], [], [], []);
         $this->assertEquals(400, $response->getStatusCode(), ''.$response);
         //con token
-        $credentials = JWTAuth::attempt(['email' => 'cristianrocker93@gmail.com', 'password' => 'nomeacuerdo']);
+        $credentials = JWTAuth::attempt(['email' => 'michel_cristian@hotmail.com', 'password' => 'nomeacuerdo1993']);
         $response = $this->call('get', '/api/v1/dashboard', [], [], [], ['HTTP_Authorization' => 'Bearer ' . $credentials], []);
         $this->assertEquals(200, $response->getStatusCode(), ''.$response);
     }
@@ -103,7 +103,7 @@ class CalendarioTest extends TestCase
         $response = $this->call('delete', '/api/v1/fecha_inhabil', $datos, [], [], ['HTTP_Authorization' => 'Bearer ' . $credentials], []);
         $this->assertEquals(404, $response->getStatusCode(), "".$response);
     }
-    /** @test */
+    
     public function probar_asignar_horarios()
     {
         $credentials = JWTAuth::attempt(['email' => 'cristianrocker93@gmail.com', 'password' => 'nomeacuerdo']);

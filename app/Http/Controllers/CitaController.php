@@ -103,9 +103,11 @@ class CitaController extends Controller
                                             ),
                                 400); // 400 being the HTTP code for an invalid request.
                 } else {
+                     $calendario = calendario::find($idCalendario);
                     $cita = cita::find($idCita);
                     $servicio = tipo::find($idTipo);
-                    if (cita::fechaDisponible($request->all())&&cita::revisarDiasInhabiles($request->all())) {
+                     $fecha=$request->get('fecha_inicio');
+                    if (cita::fechaDisponible($fecha,$servicio)&&cita::revisarDiasInhabiles($fecha,$calendario)) {
                         return cita::reagendar($request->all(), $cita, $servicio);
                     } else {
                         return response()->json(array(

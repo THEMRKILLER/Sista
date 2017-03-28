@@ -79,6 +79,7 @@ class calendario extends Model
                   {
                     $d_l = $this->diasHabiles()->where('dia',$dia_habil['dia'])->first();
                     if($d_l)$d_l->delete();  
+                    return response()->json(null,200);
                   }
                   else
                   {
