@@ -75,12 +75,19 @@ class calendario extends Model
             return response()->json(['errors' => ['horas_no_especificadas' => ['Las horas de algún día habil no se especificaron']]],404);
 
         foreach ($dias_habiles as $dia_habil) {
+                  if(!$dia_habil['laboral'])
+                  {
+                    $d_l = $this->diasHabiles()->where('dia',$dia_habil['dia'])->first();
+                    if($d_l)$d_l->delete();  
+                  }
+                  else
+                  {
+                    $dia_habil_model = dia_habil::firstOrNew(['dia' => $dia_habil['dia'],'calendario_id' => $this->id]);
+                    $this->diasHabiles()->save($dia_habil_model);
+                    $dia_habil_model->save();
+                    $dia_habil_model->asignar_horas($dia_habil['horas']);
+                  }
                 
-                $dia_habil_model = dia_habil::firstOrNew(['dia' => $dia_habil['dia'],'calendario_id' => $this->id]);
-                $this->diasHabiles()->save($dia_habil_model);
-                $dia_habil_model->save();
-                if($dia_habil['laboral'])$dia_habil_model->asignar_horas($dia_habil['horas']);
-                else $dia_habil_model->asignar_horas(null);
                 
         }
       
