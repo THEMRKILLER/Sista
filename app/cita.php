@@ -406,7 +406,7 @@ class cita extends Model
             sort($horas_habiles);
          
         }
-            dd($fecha);
+            
         $horas_inhabiles = cita::filtroHorasInhabiles($fecha, $diasInhabiles);
 
         sort($horas_inhabiles);
