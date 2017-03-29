@@ -156,7 +156,7 @@ class CitaController extends Controller
                 $tipo=tipo::find($idTipo);
                 $diasHabiles=$calendario->diasHabiles()->with('horasHabiles')->get();
                 $diaInhabil=$calendario->fechasInhabiles()->with('horasInhabiles')->get();
-                dd($diaInhabil);
+               
                 $horasDisponibles= cita::timeslot($dia, $tipo, $calendario, $diasHabiles, $diaInhabil);
                 $fechaActual=carbon::now();
                 foreach ($horasDisponibles as $key => $hora) {
