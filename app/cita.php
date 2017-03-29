@@ -271,7 +271,7 @@ class cita extends Model
     public static function filtroHorasInhabiles($fecha, $diasInhabiles)
     {
         $diaInhabil=$diasInhabiles->keyBy('fecha')->get($fecha);
-        dd($diaInhabil);
+        dd($diasInhabiles);
         $horasInhabiles =array();
         if ($diaInhabil!=null) {
             if ($diaInhabil->completo==1) {
