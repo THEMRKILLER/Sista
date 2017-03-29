@@ -75,11 +75,10 @@ class calendario extends Model
             return response()->json(['errors' => ['horas_no_especificadas' => ['Las horas de algún día habil no se especificaron']]],404);
 
         foreach ($dias_habiles as $dia_habil) {
-                  if(!$dia_habil['laboral'])
+                  if($dia_habil['laboral'] == false)
                   {
-                    $d_l = $this->diasHabiles()->where('dia',$dia_habil['dia'])->first();
-                    if($d_l)$d_l->delete();  
-                    return response()->json(null,200);
+                    $d_l = $this->diasHabiles()->where('dia',$dia_habil['dia'])->get();
+                    if(count($d_l) > 0 )$d_l->delete();  
                   }
                   else
                   {

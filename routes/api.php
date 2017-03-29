@@ -34,7 +34,7 @@ Route::group(['middleware' => ['cors'], 'prefix' => 'v1'], function () {
 
     Route::get('images/{image_name}', 'ArticuloController@getImage');
     Route::get('articulo/{id}', 'ArticuloController@getArticulo');
-
+    Route::get('resolve_articulo/{id}','ArticuloController@resolveArticulo');
     Route::get('/tipo', 'TipoController@index');
 
 

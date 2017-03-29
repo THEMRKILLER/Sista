@@ -228,4 +228,11 @@ class ArticuloController extends Controller
 
       return response()->json(['articulos' => $articulos_arr,'overflow' => $overflow],200);
     }
+
+    public function resolveArticulo($id)
+    {
+      $articulo = Articulo::find($id);
+      if(!$articulo) return response()->json(['Articulo' => "Articulo no encontrado"],404);
+      return view('resolve_articulo')->with('articulo',$articulo);
+    }
 }
