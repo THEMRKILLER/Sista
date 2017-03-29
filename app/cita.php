@@ -404,6 +404,7 @@ class cita extends Model
         } else {
             $horas_habiles=$diasHabiles->keyBy('dia')->get($dia)->horasHabiles()->pluck('hora')->toArray();
             sort($horas_habiles);
+            dd($diasHabiles);
         }
             
         $horas_inhabiles = cita::filtroHorasInhabiles($fecha, $diasInhabiles);
