@@ -209,7 +209,7 @@ class cita extends Model
             array_push($ocupado, ['fecha' => $fecha, 'disponibilidad' => $disponibilidad]);
         }
         
-        $diasInhabiles=$calendario->fechasInhabiles()->where('completo','=',0)->pluck('fecha');
+        $diasInhabiles=$calendario->fechasInhabiles()->where('completo','=',1)->pluck('fecha');
         ///agrega las fechas inhabiles con disponibilidad de 0
         foreach ($diasInhabiles as $diainhabil) {
             array_push($ocupado, ['fecha' => $diainhabil, 'disponibilidad' => 0]);
