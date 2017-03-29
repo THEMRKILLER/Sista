@@ -180,6 +180,7 @@ class CitaTest extends TestCase
         $horasDisponible=$this->action('get', 'CitaController@horasDisponibles', $datosCita);
         $this->assertEquals(404, $horasDisponible->getStatusCode(), ''.$horasDisponible);
     }
+     
         public function disponibilidadCalendario()
         {
             ////OK
