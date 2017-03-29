@@ -7,6 +7,8 @@ use Illuminate\Database\Seeder;
 use Illuminate\Http\Response as HttpResponse;
 use App\User;
 use App\cita;
+use App\calendario;
+use App\tipo;
 use App\fechahora_inhabil;
 
 class CitaUnitTest extends TestCase
@@ -94,17 +96,19 @@ class CitaUnitTest extends TestCase
         $dia=cita::revisarDiasInhabiles($datoscita);
         $this->assertFalse($dia);
     }
-   
+    /** @test */
     public function verificar_funcionamiento_de_timeslot()
     {
         ////todo esto es asumiendo un dia de 9 horas
-        $fecha='2017-07-24';
+        $fecha='2017-04-12 ';
         ///60 mins
-        $tipo_id=1;
-        $calendario_id=2;
-        $horasdeldia=cita::timeslot($fecha, $tipo_id, $calendario_id);
+        $calendario=calendario::find(2);
+        $tipo=tipo::find(8);
+        $diasHabiles=$calendario->diasHabiles()->with('horasHabiles')->get();
+        $diaInhabil=$calendario->fechasInhabiles()->with('horasInhabiles')->get();
+        $horasdeldia=cita::timeslot($fecha, $tipo, $calendario, $diasHabiles, $diaInhabil);
         $this->assertEquals(9, count($horasdeldia), json_encode($horasdeldia));
-         /////horas del dia
+         /*////horas del dia
         $fecha='2017-07-24';
         ///120 mins
         $tipo_id=2;
@@ -121,6 +125,7 @@ class CitaUnitTest extends TestCase
         $calendario_id=2;
         $horasdeldia=cita::timeslot($fecha, $tipo_id, $calendario_id);
         $this->assertEquals(540, count($horasdeldia), json_encode($horasdeldia));
+        */
     }
      
     public function tiempo_ejecucion_caldisp()

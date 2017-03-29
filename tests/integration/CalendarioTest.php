@@ -13,7 +13,7 @@ class CalendarioTest extends TestCase
 {
     use DatabaseTransactions;
 
-              /** @test */
+              
     public function probarindex()
     {
         ////sin token 400
