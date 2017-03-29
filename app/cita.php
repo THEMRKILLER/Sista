@@ -282,8 +282,9 @@ class cita extends Model
                 return $horasInhabiles;
             }
         } else {
+          return array();
         }
-        return array();
+        
     }
   /**
    * Function rellenarHoras
