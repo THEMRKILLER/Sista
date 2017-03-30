@@ -271,6 +271,7 @@ class cita extends Model
     public static function filtroHorasInhabiles($fecha, $diasInhabiles)
     {
         $diaInhabil=$diasInhabiles->keyBy('fecha')->get($fecha);
+            
         $horasInhabiles =array();
         if ($diaInhabil!=null) {
             if ($diaInhabil->completo==1) {
@@ -282,9 +283,8 @@ class cita extends Model
                 return $horasInhabiles;
             }
         } else {
-          return array();
         }
-        
+        return array();
     }
   /**
    * Function rellenarHoras
@@ -404,10 +404,11 @@ class cita extends Model
         } else {
             $horas_habiles=$diasHabiles->keyBy('dia')->get($dia)->horasHabiles()->pluck('hora')->toArray();
             sort($horas_habiles);
+         
         }
             
         $horas_inhabiles = cita::filtroHorasInhabiles($fecha, $diasInhabiles);
-        dd($horas_inhabiles);
+
         sort($horas_inhabiles);
 
         //el producto final, despues de haber pasado por todos los filtros
