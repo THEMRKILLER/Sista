@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 @if(isset($articulo))
-	<meta property="og:url" content="https://www.creatver.com/sistacrimi/articulo/{{$articulo->id}}">
+	
 	<meta property="og:type"   content="article" />
 	<meta property="og:title" content="{{$articulo->titulo}}">
 	<meta property="og:description" content="{{$articulo->resumen}}">
@@ -15,8 +15,15 @@
 
 <body>
 </body>
+<script
+  src="https://code.jquery.com/jquery-3.2.1.js"
+  integrity="sha256-DZAnKJ/6XZ9si04Hgrsxu/8s717jcIzLy3oi35EouyE="
+  crossorigin="anonymous"></script>
 <script>
- window.location.assign("https://www.creatver.com/sistacrimi/articulo/{{$articulo->id}}");
+ 
+ $(document).ready(function(){
+ 	window.location.assign("https://www.creatver.com/sistacrimi/articulo/{{$articulo->id}}");
+ });
 
 </script>
 
