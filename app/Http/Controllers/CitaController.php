@@ -50,7 +50,7 @@ class CitaController extends Controller
 
             $fecha=$request->get('fecha_inicio');
                 $val = cita::fechaDisponible($fecha,$servicio)&&cita::revisarDiasInhabiles($fecha,$calendario);
-               echo cita::revisarDiasInhabiles($fecha,$calendario);
+             return \Response::json(''.cita::revisarDiasInhabiles($fecha,$calendario), 400);
                 if ($val) {
                     $cupon_descuento = $request->get('cupon_descuento');
                     $costo_total = $request->get('costo_total');
