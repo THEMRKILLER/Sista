@@ -473,22 +473,17 @@ class cita extends Model
                 $disponibilidad= $fechaAgendar->between($inicioDiaInhabil, $finDiaInhabil);
                 return $disponibilidad;
             } else {
-              var_dump($diasInhabiles->horasInhabiles()->pluck('hora')->toArray());
+              $horasInhabiles= $diasInhabiles->horasInhabiles()->pluck('hora')->toArray();
+              foreach ($horasInhabiles as $hora) {
+                $inicioHoraInhabil=carbon::parse($fecha);
+                $inicioHoraInhabil->hour=$hora;
+                $inicioHoraInhabil->minute=0;
+                $finHoraInhabil=carbon::parse($inicioHoraInhabil)->addHour()->subSecond();
+                $disponibilidad= $fechaAgendar->between($inicioHoraInhabil, $finHoraInhabil);
+                return $disponibilidad;
+              }
             }
         }
-        $longitud = count($diasInhabiles);
-        
-        //Recorro todos los elementos
-        if ($longitud>0) {
-            for ($i=0; $i<$longitud; $i++) {
-                if ($disponibilidad) {
-                    return false;
-                }
-            }
-        } else {
-            return true;
-        }
-        return true;
     }
   /**
    * Function sms
