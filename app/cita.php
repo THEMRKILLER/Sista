@@ -483,7 +483,10 @@ class cita extends Model
                 $disponibilidad= $fechaAgendar->between($inicioHoraInhabil, $finHoraInhabil);
                 var_dump($inicioHoraInhabil);
                 var_dump($finHoraInhabil);
-                return $disponibilidad;
+                ///fecha esta entre la hora inhabil
+                if($disponibilidad==true){
+                  return false;
+                }
               }
             }
         }else{
