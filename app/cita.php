@@ -484,6 +484,8 @@ class cita extends Model
                 return $disponibilidad;
               }
             }
+        }else{
+          return true;
         }
     }
   /**
