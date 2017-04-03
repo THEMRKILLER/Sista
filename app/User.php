@@ -49,7 +49,26 @@ class User extends Authenticatable
             'nombre' => $user->name, 
             'correo_electronico' => $user->email,
             'cedula_profesional' => $user->cedula_profesional,
-            'avatar' => $user->avatar
+            'avatar' => $user->avatar,
+            'informacion_profesional_completo' => $user->informacion_profesional_completo
+            ],200);
+        }
+        else return response()->json(null,404);
+    }
+    public static function userCVInfo($calendario_id)
+    {
+        
+        $calendario = calendario::find($calendario_id);
+        if($calendario)
+        { 
+            $user = $calendario->user;
+            
+            return response()->json([
+            'nombre' => $user->name, 
+            'correo_electronico' => $user->email,
+            'cedula_profesional' => $user->cedula_profesional,
+            'avatar' => $user->avatar,
+            'informacion_profesional_completo' => $user->informacion_profesional_completo
             ],200);
         }
         else return response()->json(null,404);

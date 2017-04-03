@@ -48,6 +48,8 @@ Route::group(['middleware' => ['cors'], 'prefix' => 'v1'], function () {
 
     Route::get('user_info', 'UsuarioController@getPerfilInfo');
 
+    Route::get('user_cv','UsuarioController@getCv');
+    
     Route::get('foto_perfil/{image_name}', 'UsuarioController@getProfilePicture');
 
     Route::post('cita', 'CitaController@store');

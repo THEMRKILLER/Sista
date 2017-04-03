@@ -89,6 +89,11 @@ class UsuarioController extends Controller
         return User::userInfo($user_id);
 
     }
+    public function getCv(Request $request)
+    {
+        $calendario_id = $request->get('calendario_id');
+        return User::userCVInfo($calendario_id);
+    }
     public function logout2()
     {
 
