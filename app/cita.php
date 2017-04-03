@@ -462,12 +462,12 @@ class cita extends Model
     public static function revisarDiasInhabiles($fecha, $calendario)
     {
         $YMD = carbon::parse($fecha)->toDateTimeString();
-        $diasInhabiles=$calendario->fechasInhabiles()->where('fecha','=',$YMD)->
-        pluck('fecha')->toArray();
+        $diasInhabiles=$calendario->fechasInhabiles()->where('fecha','=',$YMD)->pluck('fecha')->toArray();
         $fechaAgendar = $fecha= carbon::parse($fecha);
         //se hace una consulta que regresa la cita que esten en el rango de horas propuesto
         //saco el numero de elementos
-        print_r($diasInhabiles) ;
+        echo "llega lel";
+        echo $diasInhabiles ;
         $longitud = count($diasInhabiles);
         
         //Recorro todos los elementos
