@@ -58,7 +58,7 @@ class cita extends Model
         if ($citaGuardada) {
             $medico= $calendario->user->name;
             //cita::sms($nuevaCita,$medico);
-            cita::mail($nuevaCita, $medico,'agendada');
+            cita::mail($nuevaCita, $medico, 'agendada');
             
          //   cita::mail($nuevaCita, $medico, "agendada");
                     return response()->json([
@@ -209,7 +209,7 @@ class cita extends Model
             array_push($ocupado, ['fecha' => $fecha, 'disponibilidad' => $disponibilidad]);
         }
         
-        $diasInhabiles=$calendario->fechasInhabiles()->where('completo','=',1)->pluck('fecha');
+        $diasInhabiles=$calendario->fechasInhabiles()->where('completo', '=', 1)->pluck('fecha');
         ///agrega las fechas inhabiles con disponibilidad de 0
         foreach ($diasInhabiles as $diainhabil) {
             array_push($ocupado, ['fecha' => $diainhabil, 'disponibilidad' => 0]);
@@ -404,7 +404,6 @@ class cita extends Model
         } else {
             $horas_habiles=$diasHabiles->keyBy('dia')->get($dia)->horasHabiles()->pluck('hora')->toArray();
             sort($horas_habiles);
-         
         }
             
         $horas_inhabiles = cita::filtroHorasInhabiles($fecha, $diasInhabiles);
@@ -461,26 +460,31 @@ class cita extends Model
    */
     public static function revisarDiasInhabiles($fecha, $calendario)
     {
-        $diasInhabiles=$calendario->fechasInhabiles()->pluck('fecha')->toArray();
+        $YMD = carbon::parse($fecha)->toDateTimeString();
+        $diasInhabiles=$calendario->fechasInhabiles()->where('fecha', '=', $YMD)->first();
         $fechaAgendar = $fecha= carbon::parse($fecha);
         //se hace una consulta que regresa la cita que esten en el rango de horas propuesto
         //saco el numero de elementos
-        $longitud = count($diasInhabiles);
-        
-        //Recorro todos los elementos
-        if ($longitud>0) {
-            for ($i=0; $i<$longitud; $i++) {
-                $inicioDiaInhabil=carbon::parse($diasInhabiles[$i]);
-                $finDiaInhabil=carbon::parse($diasInhabiles[$i])->addDay()->subSecond();
+
+        if ($diasInhabiles!=null) {
+            if ($diasInhabiles->completo==1) {
+                $inicioDiaInhabil=carbon::parse($diasInhabiles->fecha);
+                $finDiaInhabil=carbon::parse($diasInhabiles->fecha)->addDay()->subSecond();
                 $disponibilidad= $fechaAgendar->between($inicioDiaInhabil, $finDiaInhabil);
-                if ($disponibilidad) {
-                    return false;
-                }
+                return $disponibilidad;
+            } else {
+              $horasInhabiles= $diasInhabiles->horasInhabiles()->pluck('hora')->toArray();
+              foreach ($horasInhabiles as $hora) {
+                $inicioHoraInhabil=carbon::parse($fecha);
+                $inicioHoraInhabil->hour=$hora;
+                $inicioHoraInhabil->minute=0;
+                $finHoraInhabil=carbon::parse($inicioHoraInhabil)->addHour()->subSecond();
+                $disponibilidad= $fechaAgendar->between($inicioHoraInhabil, $finHoraInhabil);
+                var_dump($disponibilidad);
+                return $disponibilidad;
+              }
             }
-        } else {
-            return true;
         }
-        return true;
     }
   /**
    * Function sms
