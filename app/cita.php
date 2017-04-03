@@ -468,7 +468,6 @@ class cita extends Model
 
         if ($diasInhabiles!=null) {
             if ($diasInhabiles->completo==1) {
-              var_dump(false);
                 return false;
             } else {
               $horasInhabiles= $diasInhabiles->horasInhabiles()->pluck('hora')->toArray();
@@ -478,8 +477,6 @@ class cita extends Model
                 $inicioHoraInhabil->minute=0;
                 $finHoraInhabil=carbon::parse($inicioHoraInhabil)->addHour()->subSecond();
                 $disponibilidad= $fechaAgendar->between($inicioHoraInhabil, $finHoraInhabil);
-                var_dump($inicioHoraInhabil);
-                var_dump($finHoraInhabil);
                 ///fecha esta entre la hora inhabil
                 if($disponibilidad==true){
                   return false;
