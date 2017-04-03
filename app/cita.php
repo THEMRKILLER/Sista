@@ -468,11 +468,8 @@ class cita extends Model
 
         if ($diasInhabiles!=null) {
             if ($diasInhabiles->completo==1) {
-                $inicioDiaInhabil=carbon::parse($diasInhabiles->fecha);
-                $finDiaInhabil=carbon::parse($diasInhabiles->fecha)->addDay()->subSecond();
-                $disponibilidad= $fechaAgendar->between($inicioDiaInhabil, $finDiaInhabil);
-                var_dump($disponibilidad);
-                return $disponibilidad;
+              var_dump(false);
+                return false;
             } else {
               $horasInhabiles= $diasInhabiles->horasInhabiles()->pluck('hora')->toArray();
               foreach ($horasInhabiles as $hora) {
