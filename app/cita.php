@@ -487,6 +487,7 @@ class cita extends Model
         }else{
           return true;
         }
+        return true;
     }
   /**
    * Function sms
