@@ -466,8 +466,7 @@ class cita extends Model
         $fechaAgendar = $fecha= carbon::parse($fecha);
         //se hace una consulta que regresa la cita que esten en el rango de horas propuesto
         //saco el numero de elementos
-        echo "llega lel";
-        echo "".$diasInhabiles ;
+        var_dump($diasInhabiles);
         $longitud = count($diasInhabiles);
         
         //Recorro todos los elementos
