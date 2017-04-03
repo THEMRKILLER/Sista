@@ -481,8 +481,8 @@ class cita extends Model
                 $inicioHoraInhabil->minute=0;
                 $finHoraInhabil=carbon::parse($inicioHoraInhabil)->addHour()->subSecond();
                 $disponibilidad= $fechaAgendar->between($inicioHoraInhabil, $finHoraInhabil);
-                var_dump($disponibilidad);
-                var_dump($disponibilidad);
+                var_dump($inicioHoraInhabil);
+                var_dump($finHoraInhabil);
                 return $disponibilidad;
               }
             }
