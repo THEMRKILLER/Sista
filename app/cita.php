@@ -473,7 +473,7 @@ class cita extends Model
                 $disponibilidad= $fechaAgendar->between($inicioDiaInhabil, $finDiaInhabil);
                 return $disponibilidad;
             } else {
-              var_dump($diasInhabiles->horasInhabiles());
+              var_dump($diasInhabiles->horasInhabiles()->pluck('hora'));
             }
         }
         $longitud = count($diasInhabiles);
