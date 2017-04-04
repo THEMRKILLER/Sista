@@ -32,6 +32,8 @@
                                         @foreach($users as $user)
                                             <tr>
                                                 <form action="completar" method="post">
+                                                     {{ csrf_field() }}
+                                                    <input type="hidden" name="calendario" value="{{$user->calendario->id}}">
                                                 <td>
                                                     {{$user->id}}
                                                 </td>
@@ -48,7 +50,8 @@
                                                     @if(isset($user->extra->completo))
                                                         <button type="submit">Completar Proceso Registro</button>
                                                     @else
-                                                        <label>Proceso completado</label>
+                                                        <button type="submit" class="btn btn-danger">Completar Proceso Registro</button>
+
                                                     @endif
                                                     
                                                 </td>

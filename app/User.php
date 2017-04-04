@@ -86,13 +86,18 @@ class User extends Authenticatable
     }
     public function MailAndChangePassword()
     {
-       $user= $this->find(2);
-       
+     
+       try{
         $new_pass=$this->generateNewPassword();
-        $user->password = bcrypt($new_pass);
-         $destinatario=$user->email;
-        \Mail::to($destinatario)->send(new PasswordChanged($user, $new_pass));
-        return $user;
+        $this->password = bcrypt($new_pass);
+         $destinatario=$this->email;
+        \Mail::to($destinatario)->send(new PasswordChanged($this, $new_pass));
+        }
+        catch(Exception $e)
+        {
+            throw new Exception("Ocurrió un error al cambiar contraseña", 1);
+            
+        }
     }
 
 }
