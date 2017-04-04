@@ -47,8 +47,12 @@
                                                     {{$user->email}}
                                                 </td>
                                                 <td>
-                                                    @if($user->extra->completo)
-                                                        <button type="submit">Completar Proceso Registro</button>
+                                                    @if(isset($user->extra->completo))
+                                                        @if($user->extra->completo)
+                                                            <label>Proceso Completado</label>
+                                                        @else
+                                                            <button type="submit">Completar Proceso Registro</button>
+                                                        @endif
                                                     @else
                                                         <label>Proceso Completado</label>
                                                     @endif
