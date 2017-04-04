@@ -13,7 +13,8 @@ class CreateCita extends Migration
      */
     public function up()
     {
-        Schema::create('cita', function (Blueprint $table) {
+        if (!Schema::hasTable('cita')) {
+             Schema::create('cita', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('calendario_id')->unsigned()->index();
             $table->foreign('calendario_id')->references('id')->on('calendario')->onDelete('cascade');
@@ -28,6 +29,8 @@ class CreateCita extends Migration
             $table->decimal('costo',10,4);
             $table->timestamps();
         });
+}
+
     }
 
     /**

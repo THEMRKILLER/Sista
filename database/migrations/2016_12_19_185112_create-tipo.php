@@ -13,7 +13,8 @@ class CreateTipo extends Migration
      */
     public function up()
     {
-        Schema::create('tipo', function (Blueprint $table) {
+        if (!Schema::hasTable('tipo')) {
+           Schema::create('tipo', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('calendario_id')->unsigned()->index();
             $table->foreign('calendario_id')->references('id')->on('calendario')->onDelete('cascade');
@@ -23,6 +24,8 @@ class CreateTipo extends Migration
             $table->string('denominacion');
             $table->timestamps();
         });
+}
+
     }
 
     /**

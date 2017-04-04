@@ -13,7 +13,8 @@ class CreateArticuloTable extends Migration
      */
     public function up()
     {
-         Schema::create('articulo', function (Blueprint $table) {
+        if (!Schema::hasTable('articulo')) {
+             Schema::create('articulo', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('user_id')->unsigned()->index();
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
@@ -23,6 +24,8 @@ class CreateArticuloTable extends Migration
             $table->text('contenido');
             $table->timestamps();
         });
+}
+
     }
 
     /**

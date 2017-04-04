@@ -13,13 +13,16 @@ class CreateHoraHabil extends Migration
      */
     public function up()
     {
-        Schema::create('hora_habil', function (Blueprint $table) {
+        if (!Schema::hasTable('hora_habil')) {
+            Schema::create('hora_habil', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('diahabil_id')->unsigned()->index();
             $table->foreign('diahabil_id')->references('id')->on('dia_habil')->onDelete('cascade');
             $table->integer('hora');
             $table->timestamps();
         });
+}
+
     }
 
     /**

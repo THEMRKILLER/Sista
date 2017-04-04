@@ -13,13 +13,16 @@ class CreateDiaHabil extends Migration
      */
     public function up()
     {
-        Schema::create('dia_habil', function (Blueprint $table) {
+        if (!Schema::hasTable('dia_habil')) {
+            Schema::create('dia_habil', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('calendario_id')->unsigned()->index();
             $table->foreign('calendario_id')->references('id')->on('calendario')->onDelete('cascade');
             $table->integer('dia');
             $table->timestamps();
         });
+}
+
     }
 
     /**

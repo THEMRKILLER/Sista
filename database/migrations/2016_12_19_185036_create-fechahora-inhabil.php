@@ -13,13 +13,16 @@ class CreateFechahoraInhabil extends Migration
      */
     public function up()
     {
-        Schema::create('fechahora_inhabil', function (Blueprint $table) {
+        if (!Schema::hasTable('fechahora_inhabil')) {
+           Schema::create('fechahora_inhabil', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('fechainhabil_id')->unsigned()->index();
             $table->foreign('fechainhabil_id')->references('id')->on('fecha_inhabil')->onDelete('cascade');
             $table->integer('hora');
             $table->timestamps();
         });
+}
+
     }
 
     /**
