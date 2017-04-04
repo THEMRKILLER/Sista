@@ -30,7 +30,10 @@ class User extends Authenticatable
     public function calendario()
     {
               return $this->hasOne('App\calendario');
-
+    }
+        public function extra()
+    {
+              return $this->hasOne('App\informacion_extra');
     }
 
     public function articulos()
