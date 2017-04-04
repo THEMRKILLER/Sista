@@ -11,6 +11,7 @@ use URL;
 use Redirect;
 use Hash;
 use Illuminate\Support\Facades\Storage;
+use App\informacion_extra;
 class UsuarioController extends Controller
 {
 
@@ -39,22 +40,34 @@ class UsuarioController extends Controller
 
          
          $user = new User();
+         $user_extra_info = new informacion_extra();
          $user->name = $data['name'];
          $user->email = $data['email'];
          $user->password = bcrypt($data['password']);
-         $user->extra->dominio = $data['dominio'];
-         $user->extra->completo = false;
          $user->avatar = 'default.png';
          $user->informacion_profesional_resumen = "";
          $user->informacion_profesional_completo = "";
          $user->cedula_profesional = $data['cedula'];
+         $user_extra_info->dominio = $data['dominio'];
+         $user_extra_info->completo = false;
          $user->save();
+         $user->extra()->save($user_extra_info);
          $calendario = new calendario();
          $user->calendario()->save($calendario);
 
            return redirect()->route('syshome');
 
 
+
+    }
+    public function delete_user(Request $request)
+    {
+        $user_id = $request->get('user_id');
+        $user = User::find($user_id);
+        if(!$user) return "No existe usuario";
+        $user->delete();
+        return redirect()->route('syshome');
+  
 
     }
     public function showForm()
@@ -242,6 +255,7 @@ class UsuarioController extends Controller
         $user = $calendario->user;
         $user->MailAndChangePassword();
         $user->extra->completo = true;
+        $user->extra->save();
         return redirect()->route('syshome');
 
 

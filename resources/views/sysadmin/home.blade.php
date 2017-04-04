@@ -31,9 +31,7 @@
                                     <tbody>
                                         @foreach($users as $user)
                                             <tr>
-                                                <form action="completar" method="post">
-                                                     {{ csrf_field() }}
-                                                    <input type="hidden" name="calendario" value="{{$user->calendario->id}}">
+                                                     
                                                 <td>
                                                     {{$user->id}}
                                                 </td>
@@ -51,14 +49,24 @@
                                                         @if($user->extra->completo)
                                                             <label>Proceso Completado</label>
                                                         @else
-                                                            <button type="submit">Completar Proceso Registro</button>
+                                                            <form action="completar" method="post">
+                                                                {{ csrf_field() }}
+                                                                <input type="hidden" name="calendario" value="{{$user->calendario->id}}">
+                                                                <button type="submit">Completar Proceso Registro</button>
+                                                            </form>
                                                         @endif
                                                     @else
                                                         <label>Proceso Completado</label>
                                                     @endif
+                                                        <form action="borrar" method="post">
+                                                            {{ csrf_field() }}
+                                                            <input type="hidden" name="user_id" value="{{$user->id}}">
+                                                            <button class="btn btn-danger" type="submit">Borrar</button>
+                                                        </form>
+
+
                                                     
                                                 </td>
-                                                </form>
                                             </tr>
                                     
                                         @endforeach
