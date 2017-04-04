@@ -77,8 +77,8 @@ class calendario extends Model
         foreach ($dias_habiles as $dia_habil) {
                   if($dia_habil['laboral'] == false)
                   {
-                    $d_l = $this->diasHabiles()->where('dia',$dia_habil['dia'])->get();
-                    if(count($d_l) > 0 )$d_l->delete();  
+                    $d_l = $this->diasHabiles()->where('dia',$dia_habil['dia'])->first();
+                    if($d_l)$d_l->delete();  
                   }
                   else
                   {
