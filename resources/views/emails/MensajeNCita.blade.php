@@ -287,7 +287,7 @@ table[class=hide], img[class=hide], td[class=hide] {
                   <tr>
                     <td align="left" style="padding:0px 40px 40px 40px"><p style="color:#262626; font-size:32px; text-align:left; font-family: Verdana, Geneva, sans-serif">Hola, {{$cita->fecha_inicio}}</p>
                       <p style="color:#000000; font-size:16px; text-align:left; font-family: Verdana, Geneva, sans-serif; line-height:22px "> 
-                      		Le notificamos que su cita ha sido {{$opcionMensaje}} para el día {{{{$cita->fecha_inicio}}}}, con el siguiente código cita: <strong>{{$cita->codigo}}</strong>. Agradecemos su preferencia.
+                      		Le notificamos que su cita ha sido {{$opcionMensaje}} para el día {{$cita->fecha_inicio}}, con el siguiente código cita: <strong>{{$cita->codigo}}</strong>. Agradecemos su preferencia.
 
 
                        <br />
