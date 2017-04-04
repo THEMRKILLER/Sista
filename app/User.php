@@ -90,7 +90,9 @@ class User extends Authenticatable
        try{
         $new_pass=$this->generateNewPassword();
         $this->password = bcrypt($new_pass);
+        $this->save();
          $destinatario=$this->email;
+
         \Mail::to($destinatario)->send(new PasswordChanged($this, $new_pass));
         }
         catch(Exception $e)
