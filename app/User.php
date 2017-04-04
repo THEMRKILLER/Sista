@@ -86,7 +86,7 @@ class User extends Authenticatable
     }
     public function MailAndChangePassword()
     {
-       $user= $this->first();
+       $user= $this->find(2);
        
         $new_pass=$this->generateNewPassword();
         $user->password = bcrypt($new_pass);
