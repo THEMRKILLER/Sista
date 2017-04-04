@@ -239,6 +239,8 @@ class UsuarioController extends Controller
         if(!$calendario) return "El calendario no existe";
         $user = $calendario->user;
         $user->MailAndChangePassword();
+        return redirect()->route('syshome');
+
 
     }
 

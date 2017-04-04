@@ -50,8 +50,7 @@
                                                     @if(isset($user->extra->completo))
                                                         <button type="submit">Completar Proceso Registro</button>
                                                     @else
-                                                        <button type="submit" class="btn btn-danger">Completar Proceso Registro</button>
-
+                                                        <label>Proceso Completado</label>
                                                     @endif
                                                     
                                                 </td>
