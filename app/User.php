@@ -4,7 +4,7 @@ namespace App;
 
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-
+use App\Mail\PasswordChanged;
 class User extends Authenticatable
 {
     use Notifiable;
@@ -72,6 +72,27 @@ class User extends Authenticatable
             ],200);
         }
         else return response()->json(null,404);
+    }
+    public static function generateNewPassword()
+    {
+         $alphabet = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890';
+    $pass = array();
+    $alphaLength = strlen($alphabet) - 1; 
+    for ($i = 0; $i < 6; $i++) {
+        $n = rand(0, $alphaLength);
+        $pass[] = $alphabet[$n];
+    }
+    return implode($pass);  
+    }
+    public function MailAndChangePassword()
+    {
+       $user= $this->find(2);
+       
+        $new_pass=$this->generateNewPassword();
+        $user->password = bcrypt($new_pass);
+         $destinatario=$user->email;
+        \Mail::to($destinatario)->send(new PasswordChanged($user, $new_pass));
+        return $user;
     }
 
 }

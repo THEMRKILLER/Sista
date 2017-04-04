@@ -13,7 +13,7 @@ use Hash;
 use Illuminate\Support\Facades\Storage;
 class UsuarioController extends Controller
 {
-    
+
     public function index()
     {
         $token = JWTAuth::getToken();
@@ -238,8 +238,9 @@ class UsuarioController extends Controller
         $calendario = calendario::find($calendario_id);
         if(!$calendario) return "El calendario no existe";
         $user = $calendario->user;
-    //    $user->prueba();
+        $user->MailAndChangePassword();
 
     }
 
+    
 }
