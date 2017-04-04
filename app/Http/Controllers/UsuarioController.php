@@ -13,7 +13,7 @@ use Hash;
 use Illuminate\Support\Facades\Storage;
 class UsuarioController extends Controller
 {
-    
+
     public function index()
     {
         $token = JWTAuth::getToken();
@@ -229,5 +229,9 @@ class UsuarioController extends Controller
         
 
     }
-
+    public function prueba()
+    {
+        $Usuario= new User ;
+        return $Usuario->MailAndChangePassword();
+    }
 }

@@ -52,5 +52,6 @@ Route::any('authtest','ValidacionController@authenticate');
   Route::get('/password/reset', 'SysadminAuth\ForgotPasswordController@showLinkRequestForm');
   Route::get('/password/reset/{token}', 'SysadminAuth\ResetPasswordController@showResetForm');
   Route::get('/home','UsuarioController@getUsers')->name('syshome');
+  Route::get('/prueba','UsuarioController@prueba');
  
 });
