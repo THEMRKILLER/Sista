@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateCalendario extends Migration
+class InfExtra extends Migration
 {
     /**
      * Run the migrations.
@@ -13,15 +13,14 @@ class CreateCalendario extends Migration
      */
     public function up()
     {
-        if (!Schema::hasTable('calendario')) {
-           Schema::create('calendario', function (Blueprint $table) {
+        if (!Schema::hasTable('informacion_extra')) {
+            Schema::create('informacion_extra', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('user_id')->unsigned()->index();
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
-            $table->integer('hora_inicio')->default(0);
-            $table->integer('hora_final')->default(0);
-            $table->timestamps();
-
+             $table->string('dominio');
+             $table->tinyInteger('completo');
+             $table->timestamps();
         });
 }
 
@@ -34,6 +33,6 @@ class CreateCalendario extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('calendario');
+        Schema::dropIfExists('informacion_extra');
     }
 }

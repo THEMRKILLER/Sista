@@ -12,7 +12,8 @@ class CreateSysadminsTable extends Migration
      */
     public function up()
     {
-        Schema::create('sysadmins', function (Blueprint $table) {
+        if (!Schema::hasTable('sysadmins')) {
+            Schema::create('sysadmins', function (Blueprint $table) {
             $table->increments('id');
             $table->string('name');
             $table->string('email')->unique();
@@ -20,6 +21,8 @@ class CreateSysadminsTable extends Migration
             $table->rememberToken();
             $table->timestamps();
         });
+}
+
     }
 
     /**
@@ -29,6 +32,6 @@ class CreateSysadminsTable extends Migration
      */
     public function down()
     {
-        Schema::drop('sysadmins');
+        Schema::dropIfExists('sysadmins');
     }
 }

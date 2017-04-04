@@ -13,8 +13,8 @@ class CreateTableCupones extends Migration
      */
     public function up()
     {
-    
-     Schema::create('cupon', function (Blueprint $table) {
+        if (!Schema::hasTable('cupon')) {
+         Schema::create('cupon', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('servicio_id')->unsigned()->index();
             $table->foreign('servicio_id')->references('id')->on('tipo')->onDelete('cascade');
@@ -24,6 +24,9 @@ class CreateTableCupones extends Migration
             $table->date('fecha_final');
             $table->timestamps();
         });    
+}
+    
+ 
     }
 
     /**
@@ -33,6 +36,6 @@ class CreateTableCupones extends Migration
      */
     public function down()
     {
-          Schema::drop('cupon');
+          Schema::dropIfExists('cupon');
     }
 }

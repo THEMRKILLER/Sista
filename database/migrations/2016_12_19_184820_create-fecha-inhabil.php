@@ -13,7 +13,8 @@ class CreateFechaInhabil extends Migration
      */
     public function up()
     {
-        Schema::create('fecha_inhabil', function (Blueprint $table) {
+        if (!Schema::hasTable('fecha_inhabil')) {
+          Schema::create('fecha_inhabil', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('calendario_id')->unsigned()->index();
             $table->foreign('calendario_id')->references('id')->on('calendario')->onDelete('cascade');
@@ -22,6 +23,8 @@ class CreateFechaInhabil extends Migration
 
             $table->timestamps();
         });
+}
+
     }
 
     /**
