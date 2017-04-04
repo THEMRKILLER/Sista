@@ -98,6 +98,8 @@ class User extends Authenticatable
             throw new Exception("Ocurrió un error al cambiar contraseña", 1);
             
         }
+
     }
+
 
 }
