@@ -1,18 +1,3 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title></title>
-</head>
-<body>
-El medico
-{{$medico}}
-le indica a usted pendejo 
-{{$cita->cliente_nombre}}
-que su cita del ah sido {{$opcionMensaje}} el
-{{$cita->fecha_inicio}}
-. gracias por su preferencia
-</body>
-</html>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -285,7 +270,7 @@ table[class=hide], img[class=hide], td[class=hide] {
                 
                 <table class="one-column" border="0" cellpadding="0" cellspacing="0" width="100%" style="border-spacing:0; border-left:1px solid #e8e7e5; border-right:1px solid #e8e7e5; border-bottom:1px solid #e8e7e5" bgcolor="#FFFFFF">
                   <tr>
-                    <td align="left" style="padding:0px 40px 40px 40px"><p style="color:#262626; font-size:32px; text-align:left; font-family: Verdana, Geneva, sans-serif">Hola, {{$cita->fecha_inicio}}</p>
+                    <td align="left" style="padding:0px 40px 40px 40px"><p style="color:#262626; font-size:32px; text-align:left; font-family: Verdana, Geneva, sans-serif">Hola, {{$cita->cliente_nombre}}</p>
                       <p style="color:#000000; font-size:16px; text-align:left; font-family: Verdana, Geneva, sans-serif; line-height:22px "> 
                       		Le notificamos que su cita ha sido {{$opcionMensaje}} para el día {{$cita->fecha_inicio}}, con el siguiente código cita: <strong>{{$cita->codigo}}</strong>. Agradecemos su preferencia.
 
