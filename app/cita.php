@@ -468,10 +468,7 @@ class cita extends Model
 
         if ($diasInhabiles!=null) {
             if ($diasInhabiles->completo==1) {
-                $inicioDiaInhabil=carbon::parse($diasInhabiles->fecha);
-                $finDiaInhabil=carbon::parse($diasInhabiles->fecha)->addDay()->subSecond();
-                $disponibilidad= $fechaAgendar->between($inicioDiaInhabil, $finDiaInhabil);
-                return $disponibilidad;
+                return false;
             } else {
               $horasInhabiles= $diasInhabiles->horasInhabiles()->pluck('hora')->toArray();
               foreach ($horasInhabiles as $hora) {
@@ -480,11 +477,16 @@ class cita extends Model
                 $inicioHoraInhabil->minute=0;
                 $finHoraInhabil=carbon::parse($inicioHoraInhabil)->addHour()->subSecond();
                 $disponibilidad= $fechaAgendar->between($inicioHoraInhabil, $finHoraInhabil);
-                var_dump($disponibilidad);
-                return $disponibilidad;
+                ///fecha esta entre la hora inhabil
+                if($disponibilidad==true){
+                  return false;
+                }
               }
             }
+        }else{
+          return true;
         }
+        return true;
     }
   /**
    * Function sms
