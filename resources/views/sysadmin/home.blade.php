@@ -22,6 +22,7 @@
                                     <thead>
                                       <tr>
                                         <th>ID</th>
+                                        <th>Calendario</th>
                                         <th>Nombre</th>
                                         <th>Correo Electronico</th>
                                         <th>Acción</th>
@@ -30,8 +31,12 @@
                                     <tbody>
                                         @foreach($users as $user)
                                             <tr>
+                                                <form action="completar" method="post">
                                                 <td>
                                                     {{$user->id}}
+                                                </td>
+                                                <td>
+                                                    {{$user->calendario->id}}
                                                 </td>
                                                 <td>
                                                     {{$user->name}}
@@ -39,7 +44,15 @@
                                                 <td>
                                                     {{$user->email}}
                                                 </td>
-                                                <td></td>
+                                                <td>
+                                                    @if(isset($user->extra->completo))
+                                                        <button type="submit">Completar Proceso Registro</button>
+                                                    @else
+                                                        <label>Proceso completado</label>
+                                                    @endif
+                                                    
+                                                </td>
+                                                </form>
                                             </tr>
                                     
                                         @endforeach

@@ -31,7 +31,7 @@ class UsuarioController extends Controller
         $validator = $this->validar_user($data);
         if($validator->fails())
         {
-            return redirect('sysadmin/alta_usuario')
+            return redirect('sysadmin/altausuario')
                         ->withErrors($validator)
                         ->withInput();
         }
@@ -41,6 +41,7 @@ class UsuarioController extends Controller
          $user->name = $data['name'];
          $user->email = $data['email'];
          $user->password = bcrypt($data['password']);
+         $user->extra->dominio = $data['dominio'];
          $user->avatar = 'default.png';
          $user->informacion_profesional_resumen = "";
          $user->informacion_profesional_completo = "";
@@ -78,6 +79,7 @@ class UsuarioController extends Controller
             'name' => 'required|max:255',
             'email' => 'required|email|max:255|unique:users',
             'password' => 'required|min:6|confirmed',
+            'dominio' => 'required|url',
             'cedula' => 'required'
         ]);
     }
@@ -227,6 +229,16 @@ class UsuarioController extends Controller
        
 
         
+
+    }
+
+    public function completar_registro(Request $request)
+    {
+        $calendario_id = $request->get('calendario');
+        $calendario = calendario::find($calendario_id);
+        if(!$calendario) return "El calendario no existe";
+        $user = $calendario->user;
+    //    $user->prueba();
 
     }
 

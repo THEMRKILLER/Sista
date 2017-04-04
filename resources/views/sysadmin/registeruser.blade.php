@@ -37,6 +37,19 @@
                                 @endif
                             </div>
                         </div>
+                         <div class="form-group{{ $errors->has('dominio') ? ' has-error' : '' }}">
+                            <label for="dominio" class="col-md-4 control-label">Dominio</label>
+
+                            <div class="col-md-6">
+                                <input id="dominio" placeholder="Ingresa un dominio, especifica https o http" type="url" class="form-control" name="dominio" value="{{ old('dominio') }}">
+
+                                @if ($errors->has('dominio'))
+                                    <span class="help-block">
+                                        <strong>{{ $errors->first('dominio') }}</strong>
+                                    </span>
+                                @endif
+                            </div>
+                        </div>
 
                          <div class="form-group{{ $errors->has('cedula') ? ' has-error' : '' }}">
                             <label for="cedula" class="col-md-4 control-label">Cedula Profesional</label>
