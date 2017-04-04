@@ -25,6 +25,7 @@ class UsuarioController extends Controller
     {
         return view('sysadmin.home')->with('users',User::all());
     }
+
      public function altausuario(Request $request)
     {
         $data = $request->all();
@@ -42,6 +43,7 @@ class UsuarioController extends Controller
          $user->email = $data['email'];
          $user->password = bcrypt($data['password']);
          $user->extra->dominio = $data['dominio'];
+         $user->extra->completo = false;
          $user->avatar = 'default.png';
          $user->informacion_profesional_resumen = "";
          $user->informacion_profesional_completo = "";
@@ -239,6 +241,7 @@ class UsuarioController extends Controller
         if(!$calendario) return "El calendario no existe";
         $user = $calendario->user;
         $user->MailAndChangePassword();
+        $user->extra->completo = true;
         return redirect()->route('syshome');
 
 
