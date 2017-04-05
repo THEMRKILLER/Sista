@@ -22,7 +22,7 @@
 <script>
  
  $(document).ready(function(){
- 	window.location.assign("https://www.creatver.com/sistacrimi/articulo/{{$articulo->id}}");
+ 	window.location.assign("{{$articulo->user->extra->dominio}}/articulo/{{$articulo->id}}");
  });
 
 </script>
