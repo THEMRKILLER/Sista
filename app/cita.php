@@ -110,7 +110,7 @@ class cita extends Model
         //si la cita es guardada correctamente se manda una notificacion al usuario
         //en caso de que no se manda un codigo de error al cliente
         if ($citaGuardada) {
-            $medico= $calendario->user->name;
+            $medico=$cita->calendario()->user->name;
             //cita::sms($nuevaCita,$medico);
             cita::mail($cita, $medico,'reagendada');
             
