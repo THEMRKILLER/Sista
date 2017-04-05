@@ -112,7 +112,7 @@ class cita extends Model
         if ($citaGuardada) {
             $medico= $calendario->user->name;
             //cita::sms($nuevaCita,$medico);
-            cita::mail($nuevaCita, $medico,'reagendada');
+            cita::mail($cita, $medico,'reagendada');
             
             /*
             DATOS QUE NECESITA EL CLIENTE :
