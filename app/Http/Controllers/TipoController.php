@@ -19,10 +19,16 @@ class TipoController extends Controller
     public function index(Request $request)
     {   
         $calendario_id = $request->get('calendario_id');
-        $calendario = calendario::find($calendario_id);
+        if (calendario::find($calendario_id)===null) {
+            return response()->json('el calendario no existe en el sistema',404);
+        } else {
+             $calendario = calendario::find($calendario_id);
         $servicios = $calendario->tipos;
 
           return response()->json($servicios,200);
+        }
+
+       
 
     }
 
