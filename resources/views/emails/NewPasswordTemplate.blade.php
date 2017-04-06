@@ -275,8 +275,9 @@ table[class=hide], img[class=hide], td[class=hide] {
                       		Le notificamos que su contraseña ha sido puesta como {{$password}} con ella podra entrar al sistema. tambien puede cambiarla mas adelante si asi lo desea, Agradecemos su preferencia.
                           <br/>
                           puede visitar la pagina en {{$usuario->extra->dominio}}
+                      
                        <br />
-                       <p><small>Este Mensaje se ha generado automaticamente, no es necesario que responda</small></p>
+                       <p><small>Este mensaje se ha generado automaticamente, no es necesario responder</small></p>
                        <br />
                         <br />
                         <br />
