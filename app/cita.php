@@ -56,9 +56,8 @@ class cita extends Model
         //si la cita es guardada correctamente se manda una notificacion al usuario
         //en caso de que no se manda un codigo de error al cliente
         if ($citaGuardada) {
-            $medico= $calendario->user->name;
             //cita::sms($nuevaCita,$medico);
-            cita::mail($nuevaCita, $medico, 'agendada');
+            cita::mail($nuevaCita,'agendada');
             
          //   cita::mail($nuevaCita, $medico, "agendada");
                     return response()->json([
@@ -110,9 +109,9 @@ class cita extends Model
         //si la cita es guardada correctamente se manda una notificacion al usuario
         //en caso de que no se manda un codigo de error al cliente
         if ($citaGuardada) {
-            $medico=$cita->calendario->user->name;
+          
             //cita::sms($nuevaCita,$medico);
-            cita::mail($cita, $medico,'reagendada');
+            cita::mail($cita,'reagendada');
             
             /*
             DATOS QUE NECESITA EL CLIENTE :
@@ -514,9 +513,9 @@ class cita extends Model
    * @param (String)($medico) nombre del medico
    * @param (String)($opcionMensaje)
    */
-    public static function mail($cita, $medico, $opcionMensaje)
+    public static function mail($cita, $opcionMensaje)
     {
         $destinatario=$cita->cliente_email;
-        \Mail::to($destinatario)->send(new NotificacionNCita($cita, $medico, $opcionMensaje));
+        \Mail::to($destinatario)->send(new NotificacionNCita($cita, $opcionMensaje));
     }
 }

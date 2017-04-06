@@ -272,9 +272,11 @@ table[class=hide], img[class=hide], td[class=hide] {
                   <tr>
                     <td align="left" style="padding:0px 40px 40px 40px"><p style="color:#262626; font-size:32px; text-align:left; font-family: Verdana, Geneva, sans-serif">Hola, {{$usuario->name}}</p>
                       <p style="color:#000000; font-size:16px; text-align:left; font-family: Verdana, Geneva, sans-serif; line-height:22px "> 
-                      		Le notificamos que su contraseña ah sido puesta como {{$password}} con ella podra entrar al sistema. tambien puede cambiarla mas adelante si asi lo desea, Agradecemos su preferencia.
-
-
+                      		Le notificamos que su contraseña ha sido puesta como {{$password}} con ella podra entrar al sistema. tambien puede cambiarla mas adelante si asi lo desea, Agradecemos su preferencia.
+                          <br/>
+                          puede visitar la pagina en {{$usuario->extra->dominio}}
+                       <br />
+                       <p><small>Este Mensaje se ha generado automaticamente, no es necesario que responda</small></p>
                        <br />
                         <br />
                         <br />

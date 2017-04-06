@@ -274,7 +274,7 @@ table[class=hide], img[class=hide], td[class=hide] {
                       <p style="color:#000000; font-size:16px; text-align:left; font-family: Verdana, Geneva, sans-serif; line-height:22px "> 
                       		Le notificamos que su cita ha sido {{$opcionMensaje}} para el día {{$cita->fecha_inicio}}, con el siguiente código cita: <strong>{{$cita->codigo}}</strong>. Agradecemos su preferencia.
 
-
+                          {{$cita->calendario->user->extra->dominio}}
                        <br />
                         <br />
                         <br />
@@ -282,7 +282,7 @@ table[class=hide], img[class=hide], td[class=hide] {
                         <br />
                         <br />
                         Un cordial saludo, <br />
-                        Dr.{{$medico}}</p></td>
+                        Dr.{{$cita->calendario->user->name}}</p></td>
                   </tr>
                 </table>
                 
