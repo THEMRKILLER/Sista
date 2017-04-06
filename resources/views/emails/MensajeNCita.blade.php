@@ -274,7 +274,8 @@ table[class=hide], img[class=hide], td[class=hide] {
                       <p style="color:#000000; font-size:16px; text-align:left; font-family: Verdana, Geneva, sans-serif; line-height:22px "> 
                       		Le notificamos que su cita ha sido {{$opcionMensaje}} para el día {{$cita->fecha_inicio}}, con el siguiente código cita: <strong>{{$cita->codigo}}</strong>. Agradecemos su preferencia.
                           <br />
-                            si desea cancelar o reagendar esta cita dirijase a la pagina: {{$cita->calendario->user->extra->dominio}} en el apartado de citas
+                          <br />
+                            si desea cancelar o reagendar esta cita dirijase a la pagina: <a href="{{$cita->calendario->user->extra->dominio}}"></a>  en el apartado de citas
                           
                        <br />
                         <br />

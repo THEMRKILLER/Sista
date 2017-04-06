@@ -274,7 +274,7 @@ table[class=hide], img[class=hide], td[class=hide] {
                       <p style="color:#000000; font-size:16px; text-align:left; font-family: Verdana, Geneva, sans-serif; line-height:22px "> 
                       		Le notificamos que su contraseña ha sido puesta como {{$password}} con ella podra entrar al sistema. tambien puede cambiarla mas adelante si asi lo desea, Agradecemos su preferencia.
                           <br/>
-                          puede visitar la pagina en {{$usuario->extra->dominio}}
+                          puede visitar la pagina en <a href="{{$usuario->extra->dominio}}"></a>
                       
                        <br />
                        <p><small>Este mensaje se ha generado automaticamente, no es necesario responder</small></p>
