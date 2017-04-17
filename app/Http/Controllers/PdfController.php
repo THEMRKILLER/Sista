@@ -6,14 +6,18 @@ use Illuminate\Http\Request;
 use App\cita;
 class PdfController extends Controller
 {
-    public function CitasPorMes()
+    public function CitasPorMes(Request $request)
     {	
-    	$fecha1='2017-04-00';
-    	$fecha2='2017-12-00';
+    	
+    	
+    	$fecha1=$request->get('fecha1');
+    	$fecha2=$request->get('fecha2');
     	$data= cita::CitasXLapso($fecha1,$fecha2);
-    	$view =  \View::make('PDF.CitasTemplate', compact('data'))->render();
+        $total = 0;
+        foreach($data as $cita) $total+=$cita->costo;
+        $view = view('pdf_plantilla.CitasTemplate')->with('citas',$data)->with('total',$total)->render();
         $pdf = \App::make('dompdf.wrapper');
         $pdf->loadHTML($view);
-        return $pdf->stream('invoice');
+       return $pdf->stream();
     }
 }
