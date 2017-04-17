@@ -32,7 +32,7 @@ Route::group(['middleware' => ['cors'], 'prefix' => 'v1'], function () {
     Route::get('pdf', 'PdfController@CitasPorMes');
 
 
-
+    Route::get('citas','CitaController@index');
 
     Route::get('images/{image_name}', 'ArticuloController@getImage');
     Route::get('articulo/{id}', 'ArticuloController@getArticulo');

@@ -14,6 +14,19 @@ use App\Cupon;
 
 class CitaController extends Controller
 {
+    public function index(Request $request)
+    {
+        $fecha_inicio = $request->get('fecha_inicio');
+        $fecha_final = $request->get('fecha_final');
+        $data= cita::CitasXLapso($fecha_inicio,$fecha_final);
+        $total = 0;
+        foreach($data as $cita) $total+=$cita->costo;
+        $view = view('pdf_plantilla.CitasTemplate')->with('citas',$data)->with('total',$total)->render();
+        $pdf = \App::make('dompdf.wrapper');
+        $pdf->loadHTML($view);
+       return $pdf->stream();
+
+    }
  
     /**
      * Store a newly crea6ted resource in storage.
