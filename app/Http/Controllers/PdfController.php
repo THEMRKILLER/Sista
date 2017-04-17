@@ -8,8 +8,8 @@ class PdfController extends Controller
 {
     public function CitasPorMes()
     {	
-    	$fecha1='2017-04-00';
-    	$fecha2='2017-12-00';
+    	$fecha1='2017-04-17';
+    	$fecha2='2017-04-30';
     	$data= cita::CitasXLapso($fecha1,$fecha2);
     	$view =  \View::make('PDF.CitasTemplate', compact('data'))->render();
         $pdf = \App::make('dompdf.wrapper');
