@@ -138,6 +138,22 @@ class cita extends Model
                 ], 500);
         }
     }
+    /**
+     * Function CitasXLapso
+     * regresa las citas en un lapso de tiempo determinado
+     * @param mes (int) 0 - 12
+     * return coleccion de las citas en el lapso establecido
+     */
+
+    public static function CitasXLapso($fecha1,$fecha2)
+    {
+        $Time1 = new DateTime($fecha1);
+        $Time2 = new DateTime($fecha2);
+      return calendario::find(2)->citas()->whereBetween('fecha_inicio', [$Time1, $Time2])->with('tipo')->get();
+
+      //->whereMonth('fecha_inicio','=',$mes)->with('tipo')->first();
+     //return calendario::first()->citas()->whereMonth('fecha_inicio','=',$mes)->get();
+    }
  /**
   * Function fechaDisponible
   * verifica que no existan registros de una fecha a la misma hora que en la base de datos
