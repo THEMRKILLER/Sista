@@ -1,6 +1,8 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta charset="utf-8">
 <style>
 table {
     border-collapse: collapse;
@@ -24,7 +26,7 @@ th {
 
 <div align="center">
 	<h2>Informe de citas</h2>
-
+	<h4>Periodo : del  {{$inicio}} al {{$final}} </h4>
 </div>
 <table>
   <tr>
@@ -56,11 +58,20 @@ th {
 <table>
 	<tr>
 		<th>
-			Total :
+			Total Citas
 		</th>
 		<th>
-			${{$total}}
+			Total Costo
 		</th>
+		
+	</tr>
+	<tr>
+		<td>
+			{{count($citas)}}
+		</td>
+		<td>
+			${{$total}}
+		</td>
 	</tr>
 </table>  
 

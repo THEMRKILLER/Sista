@@ -11,20 +11,29 @@ use App\Mail\NotificacionNCita;
 use App\tipo;
 use App\calendario;
 use App\Cupon;
+use JWTAuth;
 
 class CitaController extends Controller
 {
     public function index(Request $request)
     {
+        $token = JWTAuth::getToken();
+        $user = JWTAuth::toUser($token);
+
         $fecha_inicio = $request->get('fecha_inicio');
         $fecha_final = $request->get('fecha_final');
-        $data= cita::CitasXLapso($fecha_inicio,$fecha_final);
+        $citas = cita::CitasXLapso($fecha_inicio,$fecha_final,$user->calendario);
         $total = 0;
-        foreach($data as $cita) $total+=$cita->costo;
-        $view = view('pdf_plantilla.CitasTemplate')->with('citas',$data)->with('total',$total)->render();
-        $pdf = \App::make('dompdf.wrapper');
-        $pdf->loadHTML($view);
-       return $pdf->stream();
+        $citas_arr = array();
+        foreach($citas as $cita){ 
+            array_push($citas_arr, ['nombre' => $cita->cliente_nombre,
+                'servicio' => $cita->tipo->nombre,
+                'costo' => $cita->costo,
+                'fecha' => $cita->fecha_inicio]);
+            $total+=$cita->costo;
+        }
+        
+        return response()->json(['citas' => $citas_arr , 'total'  => $total],200);
 
     }
  

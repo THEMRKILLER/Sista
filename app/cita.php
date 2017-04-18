@@ -145,11 +145,11 @@ class cita extends Model
      * return coleccion de las citas en el lapso establecido
      */
 
-    public static function CitasXLapso($fecha1,$fecha2)
+    public static function CitasXLapso($fecha1,$fecha2,$calendario)
     {
         $Time1 = new DateTime($fecha1);
         $Time2 = new DateTime($fecha2);
-      return calendario::find(2)->citas()->whereBetween('fecha_inicio', [$Time1, $Time2])->with('tipo')->get();
+      return $calendario->citas()->whereBetween('fecha_inicio', [$Time1, $Time2])->with('tipo')->get();
 
       //->whereMonth('fecha_inicio','=',$mes)->with('tipo')->first();
      //return calendario::first()->citas()->whereMonth('fecha_inicio','=',$mes)->get();

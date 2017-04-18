@@ -48,8 +48,9 @@ class CalendarioController extends Controller
             $cita_tipo      = $cita->tipo->nombre;
             array_push($events, ['id' => $id,'codigo' => $cita->codigo,'title' => $title, 'start' => $start, 'end' => $end,'cliente_nombre' => $cliente_nombre , 'cliente_telefono' => $cliente_telefono,'cliente_email' => $cliente_email , 'servicio' => $cita_tipo ]);
         }
+        $horario = ['inicio' => $calendario->hora_inicio, 'final' => $calendario->hora_final];
  
-        return \Response::json(['citas' => $events, 'servicios' => $servicios,'dia_no_habil'=>$DiasnoHabiles,'dias_inhabiles'=>$diasInhabiles], 200);
+        return \Response::json(['citas' => $events, 'servicios' => $servicios,'dia_no_habil'=>$DiasnoHabiles,'dias_inhabiles'=>$diasInhabiles,'horario' => $horario], 200);
     }
     /**
      * Show the form for creating a new resource.
