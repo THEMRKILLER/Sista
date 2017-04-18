@@ -167,8 +167,11 @@ class cita extends Model
         $FechaProcesada=carbon::parse($fecha)->addMinutes($duracionServicio)->subMinute()->toDateTimeString();
         $fechaInicial = new DateTime($fecha);
         $fechaFinal = new DateTime($FechaProcesada);
+        $from = min($fechaInicial, $fechaFinal);
+        $till = max($fechaInicial, $fechaFinal);
         //se hace una consulta que regresa la cita que esten en el rango de horas propuesto
-        $Dates = cita::whereBetween('fecha_inicio', [$fechaInicial, $fechaFinal])->orwhereBetween('fecha_final', [$fechaInicial, $fechaFinal])->first();
+        //$Dates = cita::whereBetween('fecha_inicio', [$fechaInicial, $fechaFinal])->orwhereBetween('fecha_final', [$fechaInicial, $fechaFinal])->first();
+        $Dates = cita::whereDate('fecha_inicio', '<=',$fechaFinal)->whereDate('fecha_inicio', '>=',$fechaInicial)->whereDate('fecha_final', '<=',$fechaInicial)->whereDate('fecha_final', '<=',$fechaFinal)->first();
         if (count($Dates)<=0) {
             return true;
         } else {
