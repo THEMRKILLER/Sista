@@ -171,12 +171,19 @@ class cita extends Model
         $till = max($fechaInicial, $fechaFinal);
         //se hace una consulta que regresa la cita que esten en el rango de horas propuesto
         //$Dates = cita::whereBetween('fecha_inicio', [$fechaInicial, $fechaFinal])->orwhereBetween('fecha_final', [$fechaInicial, $fechaFinal])->first();
-        $Dates = cita::whereDate('fecha_inicio', '<=',$fechaFinal)->whereDate('fecha_inicio', '>=',$fechaInicial)->whereDate('fecha_final', '<=',$fechaInicial)->whereDate('fecha_final', '<=',$fechaFinal)->first();
-        if (count($Dates)<=0) {
-            return true;
-        } else {
+        $Dates = cita::whereDate('fecha_inicio', $fechaInicial)->get();
+        $inicial=carbon::parse($fecha);
+        $final=carbon::parse($fecha)->addMinutes($duracionServicio)->subMinute();
+        foreach ($Dates as $date) {
+          $fechain=carbon::parse($date['fecha_inicio']);
+          $fechafin=carbon::parse($date['fecha_final']);
+          $flag1=$inicial->between($fechain, $fechafin);
+          $flag2=$final->between($fechain, $fechafin);
+          if($flag1||$flag2){
             return false;
+          }
         }
+        return true;
     }
  /**
   * Function notInCitas

@@ -26,6 +26,10 @@ class CitaTest extends TestCase
         $datosCita['cupon_descuento']='';
         $nuevaCita = $this->action('Post', 'CitaController@store', $datosCita);
         $this->assertEquals(404, $nuevaCita->getStatusCode(), "".$nuevaCita);
+
+        $datosCita['fecha_inicio']='2017-05-09 9:00:00';
+        $nuevaCita = $this->action('Post', 'CitaController@store', $datosCita);
+        $this->assertEquals(200, $nuevaCita->getStatusCode(), "".$nuevaCita);
           }
     public function creacion_de_citas()
     {
