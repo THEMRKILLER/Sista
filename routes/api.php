@@ -55,6 +55,7 @@ Route::group(['middleware' => ['cors'], 'prefix' => 'v1'], function () {
     Route::get('foto_perfil/{image_name}', 'UsuarioController@getProfilePicture');
 
     Route::post('cita', 'CitaController@store');
+    Route::get('verificar_cita', 'CitaController@verificarhora');
     
     Route::delete('cita', 'CitaController@destroy');
 

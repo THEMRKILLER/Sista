@@ -18,14 +18,16 @@ class CitaTest extends TestCase
           {
                       $datosCita['calendario_id']=2;
         $datosCita['tipo_id']=2;
-        $datosCita['fecha_inicio']='2017-05-10 13:25:00';
+        $datosCita['fecha_inicio']='2017-11-11 12:25:00';
         $datosCita['cliente_nombre']='Metatron';
         $datosCita['cliente_telefono']='9612280890';
+        $datosCita['verificar']='1';
+
         $datosCita['cliente_email']='nyhedgg@gmail.com';
         $datosCita['costo_total']=500.0000;
         $datosCita['cupon_descuento']='';
         $nuevaCita = $this->action('Post', 'CitaController@store', $datosCita);
-        $this->assertEquals(404, $nuevaCita->getStatusCode(), "".$nuevaCita);
+        $this->assertEquals(412, $nuevaCita->getStatusCode(), "".$nuevaCita);
 
         $datosCita['fecha_inicio']='2017-05-09 9:00:00';
         $nuevaCita = $this->action('Post', 'CitaController@store', $datosCita);

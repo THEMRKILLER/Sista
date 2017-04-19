@@ -285,6 +285,21 @@ class cita extends Model
         }
         return $horasHabiles;
     }
+    public static function verificarhora($fecha,$calendario,$servicio)
+{
+  $duracion_servicio=$servicio->duracion;
+   $fecha_final_cita = carbon::parse($fecha)->addMinutes($duracion_servicio)->subMinute();
+    $horasDia=cita::horasDelDia($fecha,$calendario);
+    $horafinal=max($horasDia);
+            $fechafinalDia=carbon::parse($fecha);
+        $fechafinalDia->hour=$horafinal;
+        $fechafinalDia->minute=0;
+        if ($fecha_final_cita>$fechafinalDia){
+        return \Response::json($fecha_final_cita, 412);
+        }else{
+          return \Response::json('fecha disponible', 200);
+        }
+}
   /**
    * Function filtroHorasInhabiles
    * obtiene las horas inhabiles del dia
