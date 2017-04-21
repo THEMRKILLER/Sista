@@ -12,6 +12,12 @@ use Redirect;
 use Hash;
 use Illuminate\Support\Facades\Storage;
 use App\informacion_extra;
+use Exception;
+use App\Mail\RestablecerPassword;
+use Mail;
+use App\ResetPassword;
+use Carbon\Carbon;
+use DB;
 class UsuarioController extends Controller
 {
 
@@ -148,7 +154,7 @@ class UsuarioController extends Controller
                 
             }
         }
-        catch(\Exception $e){}
+        catch(Exception $e){}
         }
 
         $url = Storage::disk('s3')->url('avatars/' . $safeName);
@@ -259,6 +265,100 @@ class UsuarioController extends Controller
         return redirect()->route('syshome');
 
 
+    }
+
+    public function validar_email(Request $request)
+    {
+        try
+        {
+            $email = $request->get('email');
+            if($email)
+            {
+                $valido = User::where('email',$email)->exist();
+                if($valido) return response()->json(null,200);
+                else response()->json(null,403);
+            }
+            else {
+                response()->json(null,403);
+            }
+        }
+        catch(Exception $e)
+        {
+            response()->json($e,500);
+        }
+    }
+
+    public function enviar_email_forgotten(Request $request)
+    {
+        try{
+        $email = $request->get('email');
+        if($email)
+        {
+            $destinatario= User::where('email',$email)->first();
+            if(!$destinatario) return response()->json(null,404);
+            try
+            {
+                Mail::to($destinatario)->send(new RestablecerPassword($destinatario));
+            }
+            catch(Exception $e)
+            {
+                return response()->json($e,500);
+            }
+        }
+        else
+        {
+            return response()->json(null,403);
+        }
+    }
+    catch(Exception $e)
+    {
+        return response()->json($e,500);
+    }
+
+    }
+
+    public function validar_password_codigo(Request $request)
+    {
+        $token = $request->get('token');
+        if(!$token) return response()->json(null,404);
+        $valido = DB::table('password_resets')
+                            ->where('token', $token)->first();
+        if(!$valido) return response()->json(null,404);
+        $hora_actual = Carbon::now();
+        if( $hora_actual->diffInHours(new Carbon($valido->created_at)) > 2)
+        {
+            
+            DB::table('password_resets')->where('token', $token)->delete();
+            return response()->json(null,409);
+        }
+        else {
+            return response()->json(null,200);
+        }
+    }
+
+    public function cambiar_password_forgotten(Request $request)
+    {
+     $nuevo_password = $request->get('npassword');
+     $nuevo_password_confirm = $request->get('npassword_confirm');
+     if($nuevo_password == '' || $nuevo_password == null || strlen($nuevo_password) < 6)
+     {
+        return response()->json(null,401);
+     }
+     if($nuevo_password != $nuevo_password_confirm)
+     {
+        return response()->json(null,409);
+     }
+
+     $token = $request->get('token');
+     $tokenmodel  =  DB::table('password_resets')->where('token', $token)->first();
+     if(!$tokenmodel) return response()->json(null,404);
+     $user = User::where('email',$tokenmodel->email)->first();
+     if(!$user) return response()->json(null,404);
+
+    $user->password = Hash::make($nuevo_password);
+    $user->save();
+    DB::table('password_resets')->where('email', $user->email)->delete();
+    return response()->json(null,200);   
     }
 
     

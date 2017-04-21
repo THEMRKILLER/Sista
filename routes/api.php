@@ -62,6 +62,18 @@ Route::group(['middleware' => ['cors'], 'prefix' => 'v1'], function () {
     /*cupones*/
 
     Route::get('verificarcupon','CuponController@verificar');
+
+    /*Restablecimiento de contraseña*/
+
+    //verificar email
+    Route::get('verificar_email','UsuarioController@validar_email');
+    Route::post('enviar_email_password','UsuarioController@enviar_email_forgotten');
+    //verifica token 
+    Route::get('validar_password_codigo','UsuarioController@validar_password_codigo');   
+   //cambiar password olvidado
+
+   Route::post('cambiar_password_forgotten','UsuarioController@cambiar_password_forgotten');
+
 });
 
 Route::group(['middleware' => ['cors','jwt.refresh'],'prefix' => 'v1'], function () {
