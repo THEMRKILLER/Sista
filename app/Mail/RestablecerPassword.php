@@ -44,6 +44,6 @@ class RestablecerPassword extends Mailable
         $token = bin2hex(random_bytes(16));
        $datas =  ['email' => $email, 'token' => $token, 'created_at' => Carbon::now()];
         DB::table('password_resets')->insert($datas);
-        return "https://www.sistacliente.herokuapp.com/sistema/passwordreset/".$token;
+        return "https://sistacliente.herokuapp.com/sistema/passwordreset/".$token;
     }
 }
