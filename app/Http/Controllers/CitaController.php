@@ -48,6 +48,7 @@ class CitaController extends Controller
     {
         $idCalendario=intval($request->get('calendario_id'));
         $idTipo=intval($request->get('tipo_id'));
+        $verificar=intval($request->get('verificar'));
         $fechaActual=carbon::now();
         $verificarId=$this->verificarIdentificadoresA($idCalendario, $idTipo);
         if ($verificarId) {
@@ -71,9 +72,14 @@ class CitaController extends Controller
                 }
 
             $fecha=$request->get('fecha_inicio');
+
                 $val = cita::fechaDisponible($fecha,$servicio)&&cita::revisarDiasInhabiles($fecha,$calendario);
                 
                             if ($val) {
+                                            if($verificar==1){
+                return cita::verificarhora($fecha,$calendario,$servicio);
+            }
+
                     $cupon_descuento = $request->get('cupon_descuento');
                     $costo_total = $request->get('costo_total');
                     

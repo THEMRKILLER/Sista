@@ -96,7 +96,7 @@ class CitaUnitTest extends TestCase
         $dia=cita::revisarDiasInhabiles($datoscita);
         $this->assertFalse($dia);
     }
-    /** @test */
+
     public function verificar_funcionamiento_de_timeslot()
     {
         ////todo esto es asumiendo un dia de 9 horas
