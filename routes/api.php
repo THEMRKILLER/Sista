@@ -77,7 +77,7 @@ Route::group(['middleware' => ['cors'], 'prefix' => 'v1'], function () {
 
 });
 
-Route::group(['middleware' => ['cors','jwt.refresh'],'prefix' => 'v1'], function () {
+Route::group(['middleware' => ['cors','customRefresh'],'prefix' => 'v1'], function () {
 
 
     Route::get('refresh_token', function () {
@@ -88,7 +88,10 @@ Route::group(['middleware' => ['cors','jwt.refresh'],'prefix' => 'v1'], function
 
 });
 
-Route::group(['middleware' => ['cors','jwt.auth'], 'prefix' => 'v1'],
+
+
+
+Route::group(['middleware' => ['cors','jwt.auth','jwt.refresh'], 'prefix' => 'v1'],
  function () {
 
     /* USUARIO */
@@ -145,4 +148,7 @@ Route::group(['middleware' => ['cors','jwt.auth'], 'prefix' => 'v1'],
     Route::get('checktoken',function(){});
   
 Route::get('checktoken',function(){});
+
+Route::post('invalidar_t','AuthenticateController@invalidar_token');
+
  });

@@ -27,4 +27,16 @@ class AuthenticateController extends Controller
             return response()->json(['token'  => compact('token') , 'user' => $user,'calendario_id' => $user->calendario->id],200);
     }
 
+    public function invalidar_token(Request $request)
+    {
+        if( ! $request->has('token_old') )
+            return response()->json(['esto' => $request->get('token_old')],403);
+
+        $token = JWTAuth::getToken();
+        $nuevo_usuario = JWTAuth::toUser($token);
+      //  JWTAuth::invalidate($request->get('token_old'));
+        response()->json(null,200);
+        
+    }
+
 }
