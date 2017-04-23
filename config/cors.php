@@ -26,7 +26,7 @@ return [
        'v1/*' => [
            'allowedOrigins' => ['*'],
            'allowedHeaders' => ['*'],
-           'exposedHeaders' => ['*'],
+           'exposedHeaders' => [],
            'allowedMethods' => ['*'],
            'maxAge' => 3600,
        ],

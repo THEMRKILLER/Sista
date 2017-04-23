@@ -75,6 +75,9 @@ Route::group(['middleware' => ['cors'], 'prefix' => 'v1'], function () {
 
    Route::post('cambiar_password_forgotten','UsuarioController@cambiar_password_forgotten');
 
+       Route::get('user','UsuarioController@index');
+
+
 });
 
 Route::group(['middleware' => ['cors','customRefresh'],'prefix' => 'v1'], function () {
@@ -95,7 +98,6 @@ Route::group(['middleware' => ['cors','jwt.auth','jwt.refresh'], 'prefix' => 'v1
  function () {
 
     /* USUARIO */
-    Route::get('user','UsuarioController@index');
     Route::put('user','UsuarioController@update');
     Route::put('password','UsuarioController@settingsUpdatePassword');
 
