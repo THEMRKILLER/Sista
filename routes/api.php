@@ -80,10 +80,9 @@ Route::group(['middleware' => ['cors'], 'prefix' => 'v1'], function () {
 
 });
 
-Route::group(['middleware' => ['cors','jwt.refresh'],'prefix' => 'v1'], function () {
+Route::group(['middleware' => ['cors','refrescartoken'],'prefix' => 'v1'], function () {
 
     Route::put('refresh_token', function () {
-        response()->header('Access-Control-Expose-Headers', 'Authorization' );
     });
 
 });
