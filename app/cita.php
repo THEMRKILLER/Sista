@@ -160,7 +160,7 @@ class cita extends Model
   * @param (2 fechas en un arreglo) inicial,final de una cita
   * @return (bool) verdadero cuando la fecha este disponible
   */
-    public static function fechaDisponible($fecha, $servicio)
+    public static function fechaDisponible($calendario,$fecha, $servicio)
     {
         $duracionServicio=$servicio->duracion;
         //añade la duracion del servicio a la fecha inicial para calcular la fecha final
@@ -171,7 +171,7 @@ class cita extends Model
         $till = max($fechaInicial, $fechaFinal);
         //se hace una consulta que regresa la cita que esten en el rango de horas propuesto
         //$Dates = cita::whereBetween('fecha_inicio', [$fechaInicial, $fechaFinal])->orwhereBetween('fecha_final', [$fechaInicial, $fechaFinal])->first();
-        $Dates = cita::whereDate('fecha_inicio', $fechaInicial)->get();
+        $Dates = cita::where('calendario_id','=',$calendario->id)->whereDate('fecha_inicio', $fechaInicial)->get();
         $inicial=carbon::parse($fecha);
         $final=carbon::parse($fecha)->addMinutes($duracionServicio)->subMinute();
         foreach ($Dates as $date) {
