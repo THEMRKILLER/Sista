@@ -22,7 +22,7 @@
 <script>
  
  $(document).ready(function(){
- 	window.location.assign("{{$articulo->user->extra->dominio}}/articulo/{{$articulo->id}}");
+ 	window.location.assign("https://sistacliente.herokuapp.com/sistema/articulo/{{$articulo->id}}");
  });
 
 </script>
