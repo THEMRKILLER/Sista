@@ -13,24 +13,39 @@ class CitaTest extends TestCase
    
 
     
-              /** @test */
-          public function testhora()
+       
+          public function atesthora()
           {
-                      $datosCita['calendario_id']=2;
-        $datosCita['tipo_id']=2;
+        $datosCita['calendario_id']=2;
+        $datosCita['tipo_id']=9;
         $datosCita['fecha_inicio']='2017-11-11 12:25:00';
         $datosCita['cliente_nombre']='Metatron';
         $datosCita['cliente_telefono']='9612280890';
         $datosCita['verificar']='1';
-
         $datosCita['cliente_email']='nyhedgg@gmail.com';
-        $datosCita['costo_total']=500.0000;
+        $datosCita['costo_total']=550.0000;
         $datosCita['cupon_descuento']='';
         $nuevaCita = $this->action('Post', 'CitaController@store', $datosCita);
         $this->assertEquals(412, $nuevaCita->getStatusCode(), "".$nuevaCita);
-
+        
+        $datosCita['verificar']='0';
         $datosCita['fecha_inicio']='2017-05-09 9:00:00';
         $nuevaCita = $this->action('Post', 'CitaController@store', $datosCita);
+        $this->assertEquals(200, $nuevaCita->getStatusCode(), "".$nuevaCita);
+          }
+           /**@test */
+          public function citastest()
+          {
+                      $datosCita['calendario_id']=2;
+        $datosCita['tipo_id']=9;
+        $datosCita['fecha_inicio']='2018-02-21 08:00:00';
+        $datosCita['cliente_nombre']='Metatron';
+        $datosCita['cliente_telefono']='6665360022';
+        $datosCita['cliente_email']='nyhedgg@gmail.com';
+        $datosCita['costo_total']=550;
+        $datosCita['cupon_descuento']='';
+        $datosCita['verificar']='0';
+                $nuevaCita = $this->action('Post', 'CitaController@store', $datosCita);
         $this->assertEquals(200, $nuevaCita->getStatusCode(), "".$nuevaCita);
           }
     public function creacion_de_citas()
@@ -172,16 +187,22 @@ class CitaTest extends TestCase
         $this->assertEquals(200, $eliminar->getStatusCode(), ''.$eliminar);
     }
 
-    public function regreso_de_horas_dispónibles()
+    public function testregreso_de_horas_dispónibles()
     {
-        $datosCita['dia']='2017-02-20';
-        $datosCita['tipo_id']=4;
+        $datosCita['dia']='2017-04-27';
+        $datosCita['tipo_id']=9;
+        $datosCita['calendario_id']=2;
+        $horasDisponible=$this->action('get', 'CitaController@horasDisponibles', $datosCita);
+        $this->assertEquals(200, $horasDisponible->getStatusCode(), ''.$horasDisponible);
+
+        $datosCita['dia']='2017-04-27';
+        $datosCita['tipo_id']=1;
         $datosCita['calendario_id']=1;
         $horasDisponible=$this->action('get', 'CitaController@horasDisponibles', $datosCita);
+        $this->assertEquals(400, $horasDisponible->getStatusCode(), ''.$horasDisponible);
 
-        $this->assertEquals(200, $horasDisponible->getStatusCode(), ''.$horasDisponible);
          ///acceso restringido
-        $datosCita['tipo_id']=1;
+        /**$datosCita['tipo_id']=1;
         $datosCita['calendario_id']=3;
         $horasDisponible=$this->action('get', 'CitaController@horasDisponibles', $datosCita);
         $this->assertEquals(403, $horasDisponible->getStatusCode(), ''.$horasDisponible);
@@ -197,7 +218,7 @@ class CitaTest extends TestCase
         $datosCita['tipo_id']=1;
         $datosCita['calendario_id']=500;
         $horasDisponible=$this->action('get', 'CitaController@horasDisponibles', $datosCita);
-        $this->assertEquals(404, $horasDisponible->getStatusCode(), ''.$horasDisponible);
+        $this->assertEquals(404, $horasDisponible->getStatusCode(), ''.$horasDisponible);*/
     }
      
         public function disponibilidadCalendario()

@@ -160,7 +160,7 @@ class cita extends Model
   * @param (2 fechas en un arreglo) inicial,final de una cita
   * @return (bool) verdadero cuando la fecha este disponible
   */
-    public static function fechaDisponible($fecha, $servicio)
+    public static function fechaDisponible($calendario,$fecha, $servicio)
     {
         $duracionServicio=$servicio->duracion;
         //añade la duracion del servicio a la fecha inicial para calcular la fecha final
@@ -171,7 +171,7 @@ class cita extends Model
         $till = max($fechaInicial, $fechaFinal);
         //se hace una consulta que regresa la cita que esten en el rango de horas propuesto
         //$Dates = cita::whereBetween('fecha_inicio', [$fechaInicial, $fechaFinal])->orwhereBetween('fecha_final', [$fechaInicial, $fechaFinal])->first();
-        $Dates = cita::whereDate('fecha_inicio', $fechaInicial)->get();
+        $Dates = cita::where('calendario_id','=',$calendario->id)->whereDate('fecha_inicio', $fechaInicial)->get();
         $inicial=carbon::parse($fecha);
         $final=carbon::parse($fecha)->addMinutes($duracionServicio)->subMinute();
         foreach ($Dates as $date) {
@@ -191,12 +191,12 @@ class cita extends Model
   * @param (datetime[])($rango) fecha inicial,fecha final
   * @return 1 en  caso de que la hora sea libre, fechafinal de la cita cuando exista una en ese rango
  */
-       public static function notInCitas($inicial, $final)
+       public static function notInCitas($calendario,$inicial, $final)
        {
            $FechaProcesada=carbon::parse($final)->subMinute()->toDateTimeString();
            $fechaInicial = new DateTime($inicial);
            $fechaFinal = new DateTime($FechaProcesada);
-           $Dates = cita::whereBetween('fecha_inicio', [$fechaInicial, $fechaFinal])->orwhereBetween('fecha_final', [$fechaInicial, $fechaFinal])->get();
+           $Dates = cita::where('calendario_id','=',$calendario->id)->whereBetween('fecha_inicio', [$fechaInicial, $fechaFinal])->orwhereBetween('fecha_final', [$fechaInicial, $fechaFinal])->get();
            if (count($Dates) <= 0) {
                return 1;
            } else {
@@ -336,7 +336,7 @@ class cita extends Model
    * @param (int)($hora_final_dia)
    * @return arreglo con los huecos libres del dia
    */
-    public static function rellenarHoras($fecha, $horas_filtrado, $duracion_servicio, $hora_inicial, $horas_propuestas, $hora_final_dia)
+    public static function rellenarHoras($calendario,$fecha, $horas_filtrado, $duracion_servicio, $hora_inicial, $horas_propuestas, $hora_final_dia)
     {
         $h_p = $horas_propuestas;
         //validacion extra
@@ -349,17 +349,17 @@ class cita extends Model
         $d_s = $duracion_servicio;
         $h_f_d  = $hora_final_dia;
         $hora_final = carbon::parse($hora_inicial)->addMinutes($duracion_servicio)->toDateTimeString();
-        $cita = cita::notInCitas($hora_inicial, $hora_final);
+        $cita = cita::notInCitas($calendario,$hora_inicial, $hora_final);
         if ($cita != 1) {
-            return cita::rellenarHoras($fecha, $horas_filtrado, $d_s, carbon::parse($cita)->addMinute()->toDateTimeString(), $horas_propuestas, $hora_final_dia);
+            return cita::rellenarHoras($calendario,$fecha, $horas_filtrado, $d_s, carbon::parse($cita)->addMinute()->toDateTimeString(), $horas_propuestas, $hora_final_dia);
         } else {
             $hora_inicial_next = cita::nextDisponible($hora_inicial, $horas_filtrado);
             if ($hora_inicial_next == $hora_inicial) {
                 array_push($horas_propuestas, $hora_inicial);
                 $hora_final_tmp = carbon::parse($hora_inicial_next)->addMinutes($duracion_servicio)->toDateTimeString();
-                return cita::rellenarHoras($fecha, $horas_filtrado, $d_s, $hora_final_tmp, $horas_propuestas, $h_f_d);
+                return cita::rellenarHoras($calendario,$fecha, $horas_filtrado, $d_s, $hora_final_tmp, $horas_propuestas, $h_f_d);
             } else {
-                return cita::rellenarHoras($fecha, $horas_filtrado, $d_s, $hora_inicial_next, $horas_propuestas, $h_f_d);
+                return cita::rellenarHoras($calendario,$fecha, $horas_filtrado, $d_s, $hora_inicial_next, $horas_propuestas, $h_f_d);
             }
         }
     }
@@ -457,7 +457,7 @@ class cita extends Model
             $horas_filtrado=cita::hourtoDateTime($fecha, $horas_filtrado);
             $hora_inicial = reset($horas_filtrado);
             $hora_final_dia = end($horas_filtrado);
-            $horas_propuestas = cita::rellenarHoras($fecha, $horas_filtrado, $duracion_servicio, $hora_inicial, $horas_propuestas, $hora_final_dia);
+            $horas_propuestas = cita::rellenarHoras($calendario,$fecha, $horas_filtrado, $duracion_servicio, $hora_inicial, $horas_propuestas, $hora_final_dia);
             return cita::ConversionArray($horas_propuestas);
         }
     }
