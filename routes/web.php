@@ -51,7 +51,7 @@ Route::any('authtest','ValidacionController@authenticate');
   Route::post('/password/reset', 'SysadminAuth\ResetPasswordController@reset');
   Route::get('/password/reset', 'SysadminAuth\ForgotPasswordController@showLinkRequestForm');
   Route::get('/password/reset/{token}', 'SysadminAuth\ResetPasswordController@showResetForm');
-  Route::get('/home','UsuarioController@getUsers')->name('syshome');
+  Route::get('/home','UsuarioController@getUsers')->name('syshome')->middleware('auth:sysadmin');;
   Route::post('/completar','UsuarioController@completar_registro');
   Route::post('/borrar','UsuarioController@delete_user');
 
