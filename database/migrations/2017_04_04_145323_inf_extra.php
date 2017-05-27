@@ -22,7 +22,10 @@ class InfExtra extends Migration
              $table->tinyInteger('completo');
              $table->timestamps();
         });
+
 }
+
+
 
     }
 

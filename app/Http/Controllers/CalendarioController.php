@@ -46,7 +46,7 @@ class CalendarioController extends Controller
             $cliente_telefono = $cita->cliente_telefono;
             $cliente_email = $cita->cliente_email;
             $cita_tipo      = $cita->tipo->nombre;
-            array_push($events, ['id' => $id,'codigo' => $cita->codigo,'title' => $title, 'start' => $start, 'end' => $end,'cliente_nombre' => $cliente_nombre , 'cliente_telefono' => $cliente_telefono,'cliente_email' => $cliente_email , 'servicio' => $cita_tipo ]);
+            array_push($events, ['id' => $id,'servicio_domicilio' => $cita->servicioDomicilio,'codigo' => $cita->codigo,'title' => $title, 'start' => $start, 'end' => $end,'cliente_nombre' => $cliente_nombre , 'cliente_telefono' => $cliente_telefono,'cliente_email' => $cliente_email , 'servicio' => $cita_tipo ]);
         }
         $horario = ['inicio' => $calendario->hora_inicio, 'final' => $calendario->hora_final];
  

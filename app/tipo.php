@@ -43,6 +43,7 @@ class tipo extends Model
         $tipo->duracion = $datas['duracion'];
         $tipo->costo  = $datas['costo'];
         $tipo->denominacion = $datas['denominacion'];
+        $tipo->servicio_domicilio = $datas['servicio'];
         $calendario->tipos()->save($tipo);
 
 
@@ -61,6 +62,7 @@ class tipo extends Model
           $this->duracion = $ArrayDatos['duracion'];
           $this->costo = $ArrayDatos['costo'];
           $this->denominacion = $ArrayDatos['denominacion'];
+          $this->servicio_domicilio = $ArrayDatos['servicio'];
           $this->save();
     	}
 

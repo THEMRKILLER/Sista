@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
 use App\tipo;
 use App\calendario;
+use App\CitaDireccion;
 use Carbon\Carbon;
 use Carbon\CarbonInterval;
 use DateTime;
@@ -32,6 +33,10 @@ class cita extends Model
     {
         return $this->belongsTo('App\tipo');
     }
+    public function servicioDomicilio()
+    {
+      return $this->hasOne('App\CitaDireccion');
+    }
 
     //metodos de clase
 
@@ -51,11 +56,37 @@ class cita extends Model
         $nuevaCita->cliente_email = $datosCita['cliente_email'];
         $nuevaCita->codigo = $codigo;
         $nuevaCita->costo = $datosCita['costo_total'];
+        
+
         $nuevaCita->tipo()->associate($servicio);
         $citaGuardada=$calendario->citas()->save($nuevaCita);
+        if(isset($servicio->servicio_domicilio))
+        {
+                  $nuevaCita->servicio_domicilio = $datosCita['servicio_domicilio'];
+                  if($datosCita['servicio_domicilio'])
+                  {
+                    if($datosCita['direccion'] == '' || $datosCita['direccion'] == null || 
+                      $datosCita['longitud'] == 0 || $datosCita['longitud'] == null ||
+                      $datosCita['latitud'] == '' || $datosCita['latitud'] == null)
+                    {
+                      return response()->json(['errors' => ['domicilio' => ['Los datos del servicio a domicilio no están completos, verifique que la información esté presente en los campos correspondientes']]],400);
+                    }
+                    $nuevo_servicio_domicilio = new CitaDireccion();
+                    $nuevo_servicio_domicilio->direccion = $datosCita['direccion'];
+                    $nuevo_servicio_domicilio->referencia = $datosCita['referencia'];
+                    $nuevo_servicio_domicilio->longitud = $datosCita['longitud'];
+                    $nuevo_servicio_domicilio->latitud = $datosCita['latitud'];
+                    $nuevo_servicio_domicilio->cita()->associate($nuevaCita);
+                    $nuevo_servicio_domicilio->save();
+                  }
+
+        }
+        
+
         //si la cita es guardada correctamente se manda una notificacion al usuario
         //en caso de que no se manda un codigo de error al cliente
         if ($citaGuardada) {
+
             //cita::sms($nuevaCita,$medico);
             cita::mail($nuevaCita,'agendada');
             

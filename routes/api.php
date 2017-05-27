@@ -73,6 +73,8 @@ Route::group(['middleware' => ['cors'], 'prefix' => 'v1'], function () {
     Route::get('validar_password_codigo','UsuarioController@validar_password_codigo');   
    //cambiar password olvidado
 
+    Route::get('servicios_domicilio','ServicioDomicilioController@index');
+
    Route::post('cambiar_password_forgotten','UsuarioController@cambiar_password_forgotten');
 
        Route::get('user','UsuarioController@index');

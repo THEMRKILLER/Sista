@@ -25,6 +25,8 @@ class CreateTipo extends Migration
             $table->timestamps();
         });
 }
+    
+
 
     }
 

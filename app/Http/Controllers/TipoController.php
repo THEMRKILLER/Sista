@@ -48,7 +48,8 @@ class TipoController extends Controller
         $rules = array(
             'nombre' => 'required|max:255',
             'duracion' => 'required|integer|min:1|max:1440',
-            'costo'     => 'required|numeric|min:0|max:1000000000'
+            'costo'     => 'required|numeric|min:0|max:1000000000',
+            'servicio' => 'required|boolean'
         );
         $validator = Validator::make($request->all(), $rules);
         if ($validator->fails())

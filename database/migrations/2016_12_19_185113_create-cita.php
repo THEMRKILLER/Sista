@@ -31,6 +31,10 @@ class CreateCita extends Migration
         });
 }
 
+    Schema::table('cita', function (Blueprint $table) {
+    $table->boolean('servicio_domicilio')->default(false);
+    });
+
     }
 
     /**
