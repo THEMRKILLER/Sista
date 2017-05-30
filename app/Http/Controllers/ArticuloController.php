@@ -14,11 +14,17 @@ use Illuminate\Support\Facades\Storage;
 
 class ArticuloController extends Controller
 {
+  /**
+  * Validator valida las entradas mandadas desde el cliente mediantes una serie de reglas
+  * establecidas, en caso de no pasar las reglas de validación devuelve una respuesta con
+  * código de estado 400 (Bad request)
+  */
+
     /**
      * Guarda un nuevo articulo
      *    
      * @param  \Illuminate\Http\Request  $request  ['titulo','resumen','caratula','contenido']
-     * @return \Illuminate\Http\Response 
+     * @return \Illuminate\Http\Response  id del articulo creado
      */
     public function store(Request $request)
     {
@@ -35,22 +41,21 @@ class ArticuloController extends Controller
                                             'success' => false,
                                             'errors' => $validator->getMessageBag()->toArray()
                                             ), 
-                                400); // 400 being the HTTP code for an invalid request.
+                                400); 
         
             }
-
-
-
 
        $token = JWTAuth::getToken();
        $user = JWTAuth::toUser($token);
 
-       try {
-       $path = $request->file('caratula')->store('art_caratulas','s3');
-       $caratula_path = Storage::disk('s3')->url($path);
-       } catch (Exception $e) {
-       	return response()->json(null,500);
-       	
+       try 
+       {
+        $path = $request->file('caratula')->store('art_caratulas','s3');
+        $caratula_path = Storage::disk('s3')->url($path);
+       } 
+       catch (Exception $e) 
+       {
+       	  return response()->json(null,500);
        }
 
        $articulo = new Articulo();
@@ -68,7 +73,7 @@ class ArticuloController extends Controller
      * Actualiza un articulo mediante su id
      *  
      * @param  \Illuminate\Http\Request  $request  ['titulo','resumen','caratula','contenido','id','caratula_url']
-     * caratula_url -> es la url de la última imagen que contenia el articulo, en caso de haber cargado
+     * caratula_url  es la url de la última imagen que contenia el articulo, en caso de haber cargado
      * una nueva imagen esta vendrá como null 
      * @return \Illuminate\Http\Response [json -> responde con el id del articulo que se acaba de actualizar]
      */
@@ -89,19 +94,22 @@ class ArticuloController extends Controller
                                             'success' => false,
                                             'errors' => $validator->getMessageBag()->toArray()
                                             ), 
-                                400); // 400 being the HTTP code for an invalid request.
+                                400); 
         
             }
 
 
-
-
-       $token = JWTAuth::getToken();
-       $user = JWTAuth::toUser($token);
+      $token = JWTAuth::getToken();
+      $user = JWTAuth::toUser($token);
       $articulo = Articulo::find($request->get('id'));
 
-       try {
-        if($request->hasFile('caratula')) {
+      if(!$articulo) 
+        return response()->json(['errors' => ['not_found' => ['El articulo solicitado no fue encontrado']]],404);
+
+      try 
+      {
+        if($request->hasFile('caratula')) 
+        {
           //el archivo es eliminado del servidor en caso de existir
           $file_name_actual = explode('/', $articulo->caratula);
           $file_name_actual = $file_name_actual[count($file_name_actual)-1];
@@ -112,19 +120,20 @@ class ArticuloController extends Controller
           $path = $request->file('caratula')->store('art_caratulas','s3');
           $caratula_path = Storage::disk('s3')->url($path);
         }
-        else $caratula_path = $articulo->caratula;
-       } catch (Exception $e) {
+        else 
+          $caratula_path = $articulo->caratula;
+      } 
+      catch (Exception $e) 
+      {
         return response()->json(null,500);
-        
-       }
+      }
 
-       $articulo->titulo = $request->get('titulo');
-       $articulo->resumen = $request->get('resumen');
-       $articulo->caratula = $caratula_path;
-       $articulo->contenido = $request->get('contenido');
-       $user->articulos()->save($articulo);
-       return response()->json(['id' => $articulo->id],200);
-
+      $articulo->titulo = $request->get('titulo');
+      $articulo->resumen = $request->get('resumen');
+      $articulo->caratula = $caratula_path;
+      $articulo->contenido = $request->get('contenido');
+      $user->articulos()->save($articulo);
+      return response()->json(['id' => $articulo->id],200);
     }
 
      /**
@@ -137,11 +146,8 @@ class ArticuloController extends Controller
     {
       
         $articulo = Articulo::find($request->get('id'));
-        if(!$articulo) return response()->json(['errors'=>["El articulo no fue encontrado"]],404);
+        if(!$articulo) return response()->json(['errors'=>["not_found"=> ["El articulo no fue encontrado"] ]],404);
         $articulo->delete();
-        return response()->json(null,200);
-      
-      
     }
 
      /**
@@ -155,7 +161,7 @@ class ArticuloController extends Controller
     {
     	$pathToFile = storage_path('app/images/'.$image_name);
       if(file_exists($pathToFile))return response()->file($pathToFile);
-      else return response()->json(['errors'=> ['imagen' => 'la imagen solicitada no se encuentra en el servidor']],404);
+      else return response()->json(['errors'=> ['image_not_found' => 'la imagen solicitada no se encuentra en el servidor']],404);
     	
     }
 
@@ -173,7 +179,6 @@ class ArticuloController extends Controller
 
       //obtiene toda la información necesaria relacionada al autor del articulo que se solicita
     	$autor = $articulo->user()->get(['name','avatar','informacion_profesional_resumen'])->first();
-
       //obtiene los ids de los articulos redactados por el mismo autor
       $articulos_models = $articulo->user->articulos()->get(['id']);
       $articulos_arr = array();
@@ -183,9 +188,7 @@ class ArticuloController extends Controller
     }
      /**
      * Obtiene una lista de articulos redactados por el autor quien hace la petición
-     *  
-     * @param  
-     * @return \Illuminate\Http\Response 
+     * @return \Illuminate\Http\Response Articulos
      */
     public function getArticulos()
     {
@@ -206,7 +209,14 @@ class ArticuloController extends Controller
        	 return response()->json($articulos_arr,200);
 
     }
-
+    /**
+    * articulos_list devuelve los articulos de un cliente en particular excepto 
+    * el id_articulo que se envía y 
+    * le indica si existen más por cargar o ya se han devuelto todos
+    * @param \Illuminate\Http\Request ['id_calendario', 'to_take', 'id_articulo']
+    * to_take -> respresenta la cantidad de articulos que el cliente solicita
+    * @return \Illuminate\Http\Response Articulo. 
+   */
     function articulos_list(Request $request){
 
       $id_calendario = $request->get('id_calendario');
@@ -224,11 +234,20 @@ class ArticuloController extends Controller
 
                                     ]);
          }
+      // overflow es una variable booleana que indica si existen más articulos 
+      // del numero que se está solicitando.
       $overflow =  $calendario->user->articulos->count() >= count($articulos_arr);
 
       return response()->json(['articulos' => $articulos_arr,'overflow' => $overflow],200);
     }
 
+    /**
+    * resolveArticulo hace una renderización del lado del servidor para crear un preview
+    * cuando se comparta en redes sociales 
+    * @param id recibe el id para renderizar un articulo en específico
+    * @return la vista con los meta tags correspondiente para visualizar 
+    * la información en redes sociales. 
+    */
     public function resolveArticulo($id)
     {
       $articulo = Articulo::find($id);
