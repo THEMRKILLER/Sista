@@ -75,7 +75,13 @@
                         </table>
                        
                     </ul>
-                       
+                       {{Auth::user()->google2fa_secret}}
+                    @endif
+
+                                        @if (Auth::user()->google2fa_secret)
+                    <a href="{{ url('sysadmin/2fa/disable') }}" class="btn btn-warning">Disable 2FA</a>
+                    @else
+                    <a href="{{ url('sysadmin/2fa/enable') }}" class="btn btn-primary">Enable 2FA</a>
                     @endif
                 </div>
             </div>
