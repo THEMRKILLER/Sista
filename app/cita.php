@@ -304,7 +304,6 @@ class cita extends Model
     public static function horasDelDia($fecha, $calendario)
     {
         $dia=carbon::parse($fecha)->dayOfWeek;
-        $dia=($dia== 0 ? 7 :$dia);
           
         $diasHabiles=  $calendario->diasHabiles()->where('dia', $dia)->first();
         $horasHabiles = array();

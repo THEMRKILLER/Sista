@@ -168,7 +168,6 @@ return [
         Nexmo\Laravel\NexmoServiceProvider::class,
         Intervention\Image\ImageServiceProvider::class,
         Barryvdh\DomPDF\ServiceProvider::class,
-        PragmaRX\Google2FA\Vendor\Laravel\ServiceProvider::class,
         /*
          * Package Service Providers...
          
@@ -241,6 +240,5 @@ return [
         'JWTFactory' => Tymon\JWTAuth\Facades\JWTFactory::class,
         'Nexmo' => \Nexmo\Laravel\Facade\Nexmo::class,
         'Image' => Intervention\Image\Facades\Image::class,
-        'Google2FA' => PragmaRX\Google2FA\Vendor\Laravel\Facade::class,
         ]
         ];
